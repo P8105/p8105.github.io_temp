@@ -1,0 +1,22 @@
+---
+title: "Other material"
+---
+
+Previous iterations of this course have covered other topics: over time we've added somethings at the expense of others. The collection below may be helpful for self-study.
+
+The lecture below is a quick introduction to writing Shiny dashboards and apps, and dovetails with other interactive approaches:
+
+* [Shiny](shiny.html)
+
+Statistical learning is a really broad topic, and the subject of semester-length courses; this lecture is a quick intro with examples of the lasso and k-means clustering:
+
+* [Statistical learning](stat_learning.html)
+
+Some material on Tidy Text and text analysis extends ideas in Data Wrangling II:
+
+* [Tidy Text](tidy_text.html)
+
+There are two lectures on Writing R Packages that are relevant once you know how to write R functions:
+
+* Writing R Packages: [Part I](writing_r_packages_i.html)
+* Writing R Packages: [Part II](writing_r_packages_ii.html)

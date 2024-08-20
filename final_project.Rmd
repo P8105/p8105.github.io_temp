@@ -1,0 +1,183 @@
+---
+title: "Final project"
+output:
+  html_document: 
+    toc: true
+    toc_float: true
+---
+
+Your final project in this course will be a collaborative that uses each element of the data science process to answer questions on a topic of your choosing. Your team will be responsible for finding and cleaning data; producing visualizations and exploratory analyses; producing concrete data-centric deliverables; and disseminating results. You are expect to organize your work and to collaborate using best practices. 
+
+
+## Structure and due dates
+
+### Team 
+
+You will work closely with other classmates in a team of 4-5 on this project, and are free to form teams of your choosing. 
+
+If you can't find a team, or wish to form a team of a different size, please reach out to the instructor. In general, we do not anticipate that the grades for each group member will be different. We do, however, reserve the right to assign different grades to each group member based on peer assessments or public records of contribution (e.g. through commit histories).
+
+
+### Due dates
+
+Date                    | Description                         | Deliverable
+----------------------- | ----------------------------------- | -----------------------------------
+November 11 by 1:00 pm  | Form a team and submit a proposal   | Written proposal document
+November 13-17          | Project review meeting              | Zoom meeting -- no "deliverable"
+December 9 by 11:59 pm  | Report                              | Written report giving detailed project description 
+December 9 by 11:59 pm  | Webpage and screencast              | Webpage overview of project, with short explanatory video (published online)
+December 9 by 11:59 pm  | Peer assessment                     | Brief assessment of your teammates contributions (as a short document)
+December 14             | "In class" discussion of projects   | Enjoy hearing about projects! (Also get hex stickers...)
+
+
+
+## Deliverables
+
+### Submissions
+
+Other than peer assessments, each deliverable will appear online (as e.g. a GH repo or youtube video). Links should be submitted via Courseworks by one team member (not necessarily the same person for each deliverable).
+
+
+### Team registration and proposal
+
+First, you will define your teams and propose a project. This proposal should be a half-page to a page in length and include:
+
+* The group members (names and UNIs)
+* The tentative project title
+* The motivation for this project
+* The intended final products
+* The anticipated data sources
+* The planned analyses / visualizations / coding challenges
+* The planned timeline
+
+There should be one proposal per group, written collaboratively using .Rmd (rendering to a GH document) in a dedicated GitHub repo. This is intended to describe a project that is in the planning stages. Only one team member should submit this proposal via Canvas. 
+
+Please also submit (only once per team) a list of your team's UNIs using [this form](https://forms.gle/4JLUtmwDwdP1WiR28). Doing so will help us keep track of teams. 
+
+
+### Project review meeting
+
+Based on the topic of your proposal, you will work a member of the teaching team; this person will be your primary resource and will guide you through the rest of the project. In particular, you will schedule a project review meeting with your teaching team leader to discuss the proposal, anticipated stumbling blocks, and preliminary work. All team members are required to be present for the meeting. The project review meeting is intended to ensure all team members are in agreement about the project, that there is a clear timeline, and that there are contingency plans in case of major difficulties.
+
+
+### Report
+
+The written report produced by your team is central to this project. This will detail how you completed your project, and should cover data collection and cleaning, exploratory analyses, alternative strategies, descriptions of approaches, and a discussion of results. We anticipate that your project will change somewhat over time; these changes and the reasons for them should be documented! You will write one report document per group, and be sure to include all group member names in the document.
+
+Your report should include the following topics. Depending on your project type the amount of discussion you devote to each of them will vary:
+
+* Motivation: Provide an overview of the project goals and motivation.
+* Related work: Anything that inspired you, such as a paper, a web site, or something we discussed in class.
+* Initial questions: What questions are you trying to answer? How did these questions evolve over the course of the project? What new questions did you consider in the course of your analysis?
+* Data: Source, scraping method, cleaning, etc.
+* Exploratory analysis: Visualizations, summaries, and exploratory statistical analyses. Justify the steps you took, and show any major changes to your ideas. 
+* Additional analysis: If you undertake formal statistical analyses, describe these in detail
+* Discussion: What were your findings? Are they what you expect? What insights into the data can you make?
+
+As this will be your only chance to describe your project in detail, make sure that your report is a standalone document that fully describes your process and results. We also expect you to write high-quality code that is understandable to an outside reader. Coding collaboratively and actively reviewing code within the team will help with this!
+
+
+### Webpage and screencast
+
+You will create a webpage for your project. This should gives an overview of the project scope, data, approaches, visualizations, and other results, in a way that it accessible to a broad audience. Include the full report as a page in the website, so that readers can find a detailed explanation of your work. 
+
+You will also create a two-minute narrated screencast illustrating your project (screencasts are videos of your computer screen with spoken audio explaining what is shown on the screen -- see the [RStudio webinar page](https://www.rstudio.com/resources/webinars/) for some examples). You may use slides, demonstrations, or any other content that is relevant to your project. Publish your screencast on youtube, vimeo, or another online platform, and embed the screencast in your website. The two-minute limit will be strictly enforced.
+
+For both the website and the screencast, your audience is classmates who worked on other projects. It will be helpful to put yourself in their shoes, and ask what information you think will be most interesting. We suggest you emphasize motivation, questions, and results over methods; after all, interested folks can view your complete project report on the same page.
+
+
+### GitHub repo
+
+Your report and website should be written collaboratively using GitHub. A link to this repo should be included prominently on your website's landing page. 
+
+
+### Project submission
+
+You will be asked to submit a link to your project website.
+
+
+### Peer assessment
+
+It is important to provide positive feedback to people who worked hard for the good of the team and to also make suggestions to those you perceived not to be working as effectively on team tasks. We ask you to provide an honest assessment of the contributions of the members of your team, including yourself. The feedback you provide should reflect your judgment of each team member:
+
+* Preparation - were they prepared during team meetings?
+* Contribution - did they contribute productively to the team discussion and work?
+* Respect - did they encourage others to contribute their ideas, and provide feedback in a constructive way?
+* Flexibility - were they flexible when disagreements occurred?
+
+
+
+### Rubric
+
+Grading for the final project will roughly follow the rubric below:
+
+* **60 points** for general project quality and execution, including interest and motivation for the topic selected, level of difficulty and ambition in the project goals, clarity in the approach taken to address questions of interest, appropriateness of any exploratory and / or formal analysis, and attention to detail in the execution of project deliverables.
+* **20 points** for reproducibility, including clear description of where and how data were obtained, quality of code for data import, manipulation, and analysis, and structure of git repos for deliverables.
+* **20 points** for dissemination, focusing on project website, report, and screencast; in each, we will evaluate whether the deliverable had the appropriate level of detail, was clearly structured and easy to navigate, and was implemented in a polished way.
+
+As noted above, we anticipate that team members will recieve the same grade in most instances, but we may assign different grades to each group member based on peer assessments or public records of contribution (e.g. through commit histories).
+
+
+### Examples
+
+The examples below are drawn from previous submissions in the to give an idea of the range of possible projects.
+
+#### Fall 2023
+
+* [Project 1](https://fish-carolyn.github.io/p8105_squirrel_final/)
+* [Project 2](https://nishalingam.github.io/p8105_final-project/)
+* [Project 3](https://pengshihui99.github.io/cholesterol.github.io/)
+* [Project 4](https://skulali.github.io/operation_lorax.github.io/)
+* [Project 5](https://mirahk.github.io/p8105_museums_finalproject.github.io/)
+
+#### Fall 2022
+
+* [Inequality in Film](https://sopochkon1.github.io/sheroes_finalproject.github.io/About.html)
+* [Abortion Laws](https://st3431.github.io/abortionlaws.github.io/index.html)
+* [Life Expectancy](https://shunxie.github.io/life_expectancy.github.io/)
+* [Survivor Analysis](https://yhuan196.github.io/survivor_analysis/index.html)
+* [Emma's Marathon Training](https://els2250.github.io/marathontraining.github.io/)
+
+#### Fall 2021
+
+* [NYC COVID Trends](https://zacharykatz1.github.io/nyc_covid_trends/index.html)
+* [Parking Violations](https://sarahyanwang.github.io/parking_violation.github.io/)
+* [Bus Delays](https://marionetteshf.github.io/DS_final.github.io/)
+* [Movie Recommender](https://shaocongz.github.io/Final_Project/)
+* [Transportation Changes During COVID](https://jessrosenberg14.github.io/nyccitibikes.github.io/)
+
+#### Fall 2020
+
+* [Attacks on Aid](https://nab2194.github.io/aidworkers.github.io/final_report.html)
+* [Risky Coffee??](https://zl2974.github.io/hot_coffee/index.html)
+* [Bikes in NYC](https://byilma.github.io/nyc_microvehicle_injuries/index.html)
+* [Police Violence and Protest](https://rebekahhughes97.github.io/policeviolence/index.html)
+* [Trends in adult vaccination](https://mggn.github.io/vaccine.github.io/index.html)
+
+#### Fall 2019
+
+* [Evicted in Brooklyn](https://simmwill.github.io/evictions/)
+* [Vehicle Collision in New York City](https://wx2233.github.io/p8105_final_project/)
+* [Prevalence Trend of Suicide Commitments](https://suicideproj.github.io/index)
+* [Fragility Index](https://yy3019.github.io/P8105_final_project.github.io/index)
+* [Factors Influencing Candidate Performance ... ](https://tlayouni.github.io/debate_impact.github.io/index)
+* [Climate Change & Natural Disasters in the United States](https://ilz2105.github.io/disasters.github.io/index.html)
+
+
+#### Fall 2018
+
+* [The Heart Project](https://alc2279.github.io/p8105_final_project/)
+* [Gun violence in the United States](https://eshea6.github.io/us_gun_violence.github.io/index.html)
+* [I thought you said your dog did not bite!](https://nevilleq.github.io/p8105_fp_qzal/index.html)
+* [Influential Factors in Colectomy Complications](https://tiffttu.github.io/P8105_final_website/)
+* [Hot and Humid Baseball: 
+Pitch Speed and Heat in the MLB](https://vdl2103.github.io/hot_humid_baseball.github.io/)
+
+
+#### Fall 2017 
+
+* Assessing Medicare Hospital Scores [[website](https://candacehaghighi.github.io/Data_Science_Final/) | [screencast](https://youtu.be/xTQKZP_36tE)]
+* Factors Associated with Vehicle Accidents in New York City from 2014 to 2016 [[website](https://florazca.github.io/final_web/) | [screencast](https://www.youtube.com/watch?v=gKTbngKyjgc)]
+* The Alzheimers Project [[website](https://ijeasthausen.github.io/website/index.html) | [screencast](https://youtu.be/9KN3wHJv8DA)]
+* Exposure to Lead in NYC Public School Water [[website](https://lizzyagibson.github.io/p8105_final_project/) | [screencast](https://youtu.be/VCaCc4Wtje8)]
+* The relationship between restaurant geographical distribution and chronic disease outcomes in New York City [[website](https://austinyue.github.io/DSFinalWebsite/) | [screencast](https://youtu.be/zUc040x_0UQ)]

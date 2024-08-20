@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Writing with data</title>
+
+<script src="site_libs/header-attrs-2.24/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" />
+<script defer src="https://use.fontawesome.com/releases/v5.0.3/js/all.js"></script>
+<script defer src="https://use.fontawesome.com/releases/v5.0.0/js/v4-shims.js"></script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-151578452-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-151578452-1');
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">P8105</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="schedule.html">Schedule</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Topics
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="topic_what_is_data_science.html">What is Data Science?</a>
+    </li>
+    <li>
+      <a href="topic_building_blocks.html">Building Blocks</a>
+    </li>
+    <li>
+      <a href="topic_data_wrangling_i.html">Data Wrangling I</a>
+    </li>
+    <li>
+      <a href="topic_visualization_and_eda.html">Visualization and EDA</a>
+    </li>
+    <li>
+      <a href="topic_data_wrangling_ii.html">Data Wrangling II</a>
+    </li>
+    <li>
+      <a href="topic_interactivity.html">Interactivity</a>
+    </li>
+    <li>
+      <a href="topic_iteration.html">Iteration</a>
+    </li>
+    <li>
+      <a href="topic_linear_models.html">Linear Models</a>
+    </li>
+    <li>
+      <a href="topic_other_material.html">Other Materials</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Datasets
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="dataset_airbnb.html">Airbnb</a>
+    </li>
+    <li>
+      <a href="dataset_brfss.html">BRFSS</a>
+    </li>
+    <li>
+      <a href="dataset_fivethirtyeight.html">FiveThirtyEight</a>
+    </li>
+    <li>
+      <a href="dataset_instacart.html">Instacart</a>
+    </li>
+    <li>
+      <a href="dataset_mr_trash_wheel.html">Mr. Trash Wheel</a>
+    </li>
+    <li>
+      <a href="dataset_noaa.html">NOAA</a>
+    </li>
+    <li>
+      <a href="dataset_restaurant_inspections.html">NYC Restaurant Inspections</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="homework_and_projects.html">Homework and Projects</a>
+</li>
+<li>
+  <a href="course_communication.html">Communication</a>
+</li>
+<li>
+  <a href="https://github.com/P8105/p8105.github.io">
+    <span class="fa fa-github"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Writing with data</h1>
+
+</div>
+
+
+<p>You will typically (if not always) need to summarize your work in
+writing. This page describes how to do so using R Markdown.</p>
+<p>This is the second module in the <a
+href="topic_building_blocks.html">Building blocks</a> topic.</p>
+<div id="overview" class="section level2 tabset tabset-pills">
+<h2 class="tabset tabset-pills">Overview</h2>
+<div id="learning-objectives" class="section level3">
+<h3>Learning Objectives</h3>
+<p>We’ll be getting up-to-speed on the basic tools in R. As part of
+that, we’ll define and establish some good habits.</p>
+</div>
+<div id="slide-deck" class="section level3">
+<h3>Slide Deck</h3>
+<div class="vid_container">
+<p><iframe 
+    src="https://speakerdeck.com/player/f1ca5d878d3f429692f3350bd4ef8f77" 
+    allowfullscreen 
+    frameborder="0"
+    class="video"> </iframe></p>
+</div>
+<div style="margin-bottom:5px">
+<strong>
+<a href="https://speakerdeck.com/jeffgoldsmith/p8105-writing-with-data" title="Writing with data" target="_blank">Writing
+with data</a> </strong> from
+<strong><a href="https://speakerdeck.com/jeffgoldsmith" target="_blank">Jeff
+Goldsmith</a></strong>.
+</div>
+<p><br></p>
+<hr />
+</div>
+<div id="video-lecture" class="section level3">
+<h3>Video Lecture</h3>
+<div class="vid_container">
+<p><iframe 
+    src="https://www.youtube.com/embed/5dEZSYq11VU"
+    frameborder="0" allowfullscreen class="video"> </iframe></p>
+</div>
+<hr />
+</div>
+</div>
+<div id="example" class="section level2">
+<h2>Example</h2>
+<p>Before jumping in, one short note about the default RStudio treatment
+of R Markdown documents: it behaves like a “notebook” and shows output
+mixed in with the code, rather than in the console or viewer. I don’t
+like this, and I’m definitely not the only one. I might just be old and
+set in my ways, but there are <a
+href="https://docs.google.com/presentation/d/1n2RlMdmv1p25Xy5thJUhkKGvjtV-dkAIsUXP-AL4ffI/preview?slide=id.g362da58057_0_1">good
+reasons</a> to <a
+href="https://twitter.com/hspter/status/1034511875499732993">avoid
+notebooks</a>. These can be turned off using Global Options &gt; R
+Markdown &gt; Show output inline.</p>
+<div id="basic-rmd" class="section level3">
+<h3>Basic RMD</h3>
+<p>Below is a first RMD file. To follow along, create a .Rmd file using
+File &gt; New File &gt; R Markdown, and replace the default text with
+what’s below; you can also download the template <a
+href="resources/template.Rmd">here</a>. Don’t forget to keep this in a
+directory you can find again later!</p>
+<pre><code>---
+title: &quot;Simple document&quot;
+output: html_document
+---
+
+I&#39;m an R Markdown document! 
+
+# Section 1
+
+Here&#39;s a **code chunk** that samples from 
+a _normal distribution_:
+
+```{r}
+samp = rnorm(100)
+length(samp)
+```
+
+# Section 2
+
+I can take the mean of the sample, too!
+The mean is `r mean(samp)`.</code></pre>
+<p>There are three major components to this file:</p>
+<ul>
+<li><strong>YAML header:</strong> The segment at the beginning of the
+document bracketed by <code>---</code>s.</li>
+<li><strong>Text + inline R:</strong> Written text with simple
+formatting like <code># heading</code>, <code>**bold**</code>, and
+<code>_italic_</code></li>
+<li><strong>Code chunks:</strong> Blocks of code surrounded by
+<code>```</code></li>
+</ul>
+<p>The combination of these elements allows you a great deal of
+flexibility and power as an author.</p>
+<p>R Markdown documents are rendered to produce complete reports with
+text, formatting, and code results by “knitting”. You can knit your
+document using the RStudio GUI or CMD / Ctrl + Shift + K; these options
+execute <code>knitr::knit</code> (which you can run directly from the
+command line if you prefer). Behind the scenes, <code>knitr</code> is
+creating a Markdown document and pandoc is translating that to the
+output format you specify (e.g. HTML, .pdf, .docx).</p>
+<p><strong><em>Learning assessment:</em></strong> Take two minutes and
+create an R Markdown document as above. Make sure you can knit it and
+find the result in your local directory.</p>
+</div>
+<div id="code-chunks-and-snippets" class="section level3">
+<h3>Code chunks and snippets</h3>
+<p>We’ll start with code chunks, since these are the distinguishing
+feature of R Markdown documents. The code chunks take the place of
+scripts in that they hold the code you use to produce your results.
+However, they tend to be briefer and more self-contained: you’re
+nestling these bits of code among the text the supports them and the
+results they produce. You can still execute code in chunks using
+Cmd/Ctrl + Enter, and you will still develop code by writing and
+refining until you have something you’re happy with.</p>
+<p>Although the benefits will mostly become apparently later, I
+recommend you get in the habit of naming your code chunks now using
+<code>{r chunk_name}</code>. I also recommend inserting code chunks
+using hotkeys (Opt + Cmd + I for Mac, Ctrl + Alt + I for Windows).</p>
+<p>Beyond the name, you can customize the behavior of your code chunk
+via options defined in the chunk header. Some common options are:</p>
+<ul>
+<li><code>eval = FALSE</code>: code will be displayed but not executed;
+results are not included.</li>
+<li><code>echo = FALSE</code>: code will be executed but not displayed;
+results are included.</li>
+<li><code>include = FALSE</code>: code won’t be executed or
+displayed.</li>
+<li><code>message = FALSE</code> and <code>warning = FALSE</code>:
+prevents messages and warnings from being displayed.</li>
+<li><code>results = hide</code> and <code>fig.show = hide</code>:
+prevents results and figures from being shown, respectively.</li>
+<li><code>collapse = TRUE</code>: output will be collapsed into a single
+block at shown at the end of the chunk.</li>
+<li><code>error</code>: errors in code will stop rendering when
+<code>FALSE</code>; errors in code will be printed in the doc when
+<code>TRUE</code>. The default is <code>FALSE</code> and you should
+almost never change it.</li>
+</ul>
+<p>Use these options to be judicious about what you include in your
+report. Remember to keep your audience in mind: how much do they want or
+need to see?</p>
+<p>You can also cache the results of a code chunk, but we will largely
+avoid this. Caching can save time by saving the results of a code chunk
+instead of re-executing when the document is knit. However, you have to
+be careful when using this option since downstream code can depend on
+upstream changes. Controlling this behavior through the
+<code>dependson</code> option can help, but if you cache code you’ll
+want to periodically clear you cache to ensure you’re getting
+reproducible results.</p>
+<p>Inserting brief code snippets inline is sometimes helpful; I use
+these to give the sample size or summary statistics in text. You can
+insert code inline using <code>`r `</code>, often in conjunction with
+the <code>format()</code> function to clean up your output.</p>
+<p><strong><em>Learning assessment:</em></strong> Write a named code
+chunk that creates a dataframe comprised of: a numeric variable
+containing a random sample of size 500 from a normal variable with mean
+1; a logical vector indicating whether each sampled value is greater
+than zero; and a numeric vector containing the absolute value of each
+element. Then, produce a histogram of the absolute value variable just
+created. Add an inline summary giving the median value rounded to two
+decimal places. What happens if you set <code>eval = FALSE</code> to the
+code chunk? What about <code>echo = FALSE</code>?</p>
+<details>
+<summary>
+Solution
+</summary>
+<p>The snippet below shows the relevant section of an R Markdown
+document.</p>
+<pre><code>The chunk below creates a dataframe containing a sample of size 500 from a 
+random normal variable, constructs the specified logical vector, takes the 
+absolute value of each element of that sample,and produces a histogram of 
+the absolute value. The code chunk also finds the median of the sample and
+stores it for easy in-line printing.
+
+```{r learning_assessment_1}
+library(tidyverse)
+
+la_df = tibble(
+  norm_samp = rnorm(500, mean = 1),
+  norm_samp_pos = norm_samp &gt; 0,
+  abs_norm_samp = abs(norm_samp)
+)
+
+ggplot(la_df, aes(x = abs_norm_samp)) + geom_histogram()
+
+median_samp = median(pull(la_df, norm_samp))
+```
+
+The median of the variable containing absolute values is 
+`r round(median_samp, digits = 2)`.</code></pre>
+</details>
+</div>
+<div id="formatting-text" class="section level3">
+<h3>Formatting text</h3>
+<p>There are a huge number of ways to format your documents. The
+overview below is essentially copied from <a
+href="http://r4ds.had.co.nz/r-markdown.html">R for Data Science</a>; a
+link to a handy cheatsheet is below.</p>
+<pre><code>Text formatting 
+------------------------------------------------------------
+
+*italic*  or  _italic_
+**bold**  or  __bold__
+`code`
+superscript^2^ and subscript~2~
+
+
+Headings
+------------------------------------------------------------
+
+# 1st Level Header
+
+## 2nd Level Header
+
+### 3rd Level Header
+
+
+Lists
+------------------------------------------------------------
+
+*   Bulleted list item 1
+
+*   Item 2
+
+    * Item 2a
+
+    * Item 2b
+
+1.  Numbered list item 1
+
+1.  Item 2. The numbers are incremented automatically in the output.
+
+
+Tables 
+------------------------------------------------------------
+
+First Header  | Second Header
+------------- | -------------
+Content Cell  | Content Cell
+Content Cell  | Content Cell</code></pre>
+<p>You’ll need to refer to this list (or to similar resources) pretty
+often at first, but most of it will become second-nature after you’ve
+written a few documents.</p>
+<p><strong><em>Learning assessment:</em></strong> After the previous
+code chunk, write a bullet list given the mean, median, and standard
+deviation of the original random sample.</p>
+<details>
+<summary>
+Solution
+</summary>
+<p>The snippet below shows the relevant section of an R Markdown
+document.</p>
+<pre><code>* The mean of the sample is `r mean(pull(ls_df, norm_samp))`
+* The median of the sample is `r median(pull(ls_df, norm_samp))`
+* The median of the sample is `r median(pull(ls_df, norm_samp))`</code></pre>
+</details>
+</div>
+<div id="yaml-and-output-formats" class="section level3">
+<h3>YAML and output formats</h3>
+<p>The YAML header controls global features of the document. I generally
+will include both the <code>author</code> and <code>date</code> in each
+document I produce.</p>
+<pre class="yaml"><code>author: &quot;Jeff Goldsmith&quot;
+date: 2023-09-12</code></pre>
+<p>We’re mostly concerned with the output format, which is controlled
+through the <code>output:</code> field.</p>
+<p>The snippet below will produce an HTML document. Notice that this has
+subfields to add a table of contents, and float that table alongside the
+content. These lines are used throughout the course website.</p>
+<pre class="yaml"><code>output:
+  html_document:
+    toc: true
+    toc_float: true</code></pre>
+<p>HTML documents are great because they allow interactivity in a way
+that static formats (PDF, Word) do not. For example, adding the subfield
+<code>code_folding: hide</code> under <code>html_document</code> will
+hide all the code in the document until the reader clicks to show it (I
+almost always use this for collaborative reports).</p>
+<p>That said, some collaborators will need or prefer static documents.
+You can create these using the YAML snippet below, which will produce a
+PDF or a Word document when knitted. These require extra software (LaTeX
+and Word, respectively).</p>
+<pre class="yaml"><code>output:
+  pdf_document: default</code></pre>
+<pre class="yaml"><code>output:
+  word_document: default</code></pre>
+<p>The formatting for both PDF and Word documents can be controlled
+through options as well, although these can be tricky to control
+(especially for Word documents). If you’re really interested in
+generating reports using Word, you may want to read up on the <a
+href="https://noamross.github.io/redoc/index.html"><code>redoc</code></a>
+package!</p>
+<p>We use the <code>github_document</code> format extensively in this
+course, and talk more about why in <a href="git.html">git and
+github</a>. Later in the course we’ll talk about some other output
+formats – especially dashboards and websites – introducing other YAML
+options as needed.</p>
+</div>
+</div>
+<div id="new-workflow" class="section level2">
+<h2>New workflow</h2>
+<p>All of this suggests a slight modification to the previous
+workflow:</p>
+<ul>
+<li>Create a directory with a reasonable name and path
+(e.g. <code>~/Documents/School/P8105/Homework_2/</code>)</li>
+<li>Put an R Project in the directory</li>
+<li>Keep everything related to the analysis – data inputs, scripts /
+<strong>R Markdown files</strong>, reports, output – in there,
+<strong>and use R Markdown as much as possible</strong></li>
+<li>Periodically check for reproducibility of the analysis</li>
+</ul>
+<p>The bold stuff is new; This should become your default behavior when
+starting any new project.</p>
+<p>A last note about reproducibility: each time you knit an R Markdown
+file, <code>knitr</code> uses a new R session to run the included code.
+As a result, knitting is a great way to make sure your analysis is
+self-contained and you should knit frequently!</p>
+<p><strong><em>Learning assessment:</em></strong> Convert the scripts
+for exploring vector classes and producing basic plots (from <a
+href="best_practices.html">best practices</a>) to self-contained R
+Markdown files that produce HTML documents.</p>
+<details>
+<summary>
+Solution
+</summary>
+<p>Here is a R Markdown file for vector classes:</p>
+<pre><code>---
+title: &quot;Exploring Vector Classes&quot;
+author: &quot;Jeff Goldsmith&quot;
+date: 2019-09-10
+output: html_document
+---
+
+```{r setup, include = FALSE}
+library(tidyverse)
+```
+
+The purpose of this file is to examine a few data types (or data classes) in R.
+
+First we create a dataframe containing variables of four different types.
+
+```{r}
+example_df = tibble(
+  vec_numeric = 5:8,
+  vec_char = c(&quot;My&quot;, &quot;name&quot;, &quot;is&quot;, &quot;Jeff&quot;),
+  vec_logical = c(TRUE, TRUE, TRUE, FALSE),
+  vec_factor = factor(c(&quot;male&quot;, &quot;male&quot;, &quot;female&quot;, &quot;female&quot;))
+)
+```
+
+The variable `vec_numeric` has class `r class(pull(example_df, vec_numeric))`, and the variable `vec_factor` has class `r class(pull(example_df, vec_factor))`.</code></pre>
+<p>And here’s one for basic plots:</p>
+<pre><code>---
+---
+---
+title: &quot;Basic Plots&quot;
+author: &quot;Jeff Goldsmith&quot;
+date: 2019-09-10
+output: html_document
+---
+
+```{r setup, include = FALSE}
+library(tidyverse)
+```
+
+The purpose of this file is to present a couple of basic plots using `ggplot`.
+
+First we create a dataframe containing variables for our plots.
+
+```{r df_create}
+set.seed(1234)
+
+plot_df = tibble(
+  x = rnorm(1000, sd = .5),
+  y = 1 + 2 * x + rnorm(1000)
+)
+```
+
+First we show a histogram of the `x` variable.
+
+```{r x_hist}
+ggplot(plot_df, aes(x = x)) + geom_histogram()
+```
+
+Next we show a scatterplot of `y` vs `x`. 
+
+```{r yx_scatter}
+ggplot(plot_df, aes(x = x, y = y)) + geom_point()
+```</code></pre>
+</details>
+</div>
+<div id="other-materials" class="section level2">
+<h2>Other materials</h2>
+<p>Constructing useful documents that combine text and code is the
+subject of several online guides. See below for a sampling:</p>
+<ul>
+<li>The R Markdown <a
+href="https://www.rstudio.com/wp-content/uploads/2016/03/rmarkdown-cheatsheet-2.0.pdf">cheatsheet</a>
+and this more <a
+href="https://github.com/rstudio/cheatsheets/raw/master/rmarkdown-2.0.pdf">recent
+version</a> are useful resources once you have the basics down</li>
+<li>R For Data Science devotes chapters to <a
+href="http://r4ds.had.co.nz/r-markdown.html">R Markdown</a>, <a
+href="http://r4ds.had.co.nz/r-markdown-formats.html">additional output
+formats</a>, and a useful <a
+href="http://r4ds.had.co.nz/r-markdown-workflow.html">workflow</a>.</li>
+<li>The <a href="http://rmarkdown.rstudio.com/articles_intro.html">Intro
+to R Markdown</a> from RStudio overlaps a lot with the previous bullet,
+but is also handy to review</li>
+<li>This <a
+href="https://ismayc.github.io/rbasics-book/4-rmarkdown.html">chapter</a>
+from <a href="https://ismayc.github.io/rbasics-book/">R Basics</a> is a
+good intro to R Markdown</li>
+<li>If Webinars are more to your liking, this <a
+href="https://www.rstudio.com/resources/webinars/getting-started-with-r-markdown/">intro</a>
+and this <a
+href="https://www.rstudio.com/resources/webinars/the-ecosystem-of-r-markdown/">follow-up</a>
+are good</li>
+</ul>
+<p>You’ll also find a lot of stuff online that has been written using R
+Markdown and, with a little digging, can often find the .RMD file as
+well. This is a great way to spot new tools and figure out how to
+incorporate them in your own documents!!</p>
+<p>The code that I produced working examples in lecture is <a
+href="https://github.com/jeff-goldsmith/example_repo">here</a>.</p>
+</div>
+
+<br><br>
+<footer>
+  <img src="images/p8105_stickers.png" alt="stickers" style="width:30%">
+  <br>
+  <p class="copyright text-muted" align="center">Copyright &copy; 2019 Jeff Goldsmith</p>
+</footer>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

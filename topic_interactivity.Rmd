@@ -1,0 +1,12 @@
+---
+title: "Interactivity"
+---
+
+Connections between statistical software and web-style output formats allow the incorporation of interactivity into deliverable products, even when those products are not online. In this topic, we first look at the dissemination of products via a website and then explore interactive graphics (scatterplots, bar charts, box plots) and collections of these in dashboards. 
+
+This topic is made up of the following components:
+
+* [Making websites](making_websites.html)
+* [Plot.ly and `flexdashboards`](plotly_and_dashboards.html)
+
+The code that I produced working examples in lecture is [here](https://github.com/jeff-goldsmith/example_interactivity).

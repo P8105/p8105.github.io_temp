@@ -1,0 +1,272 @@
+---
+title: "`Shiny`"
+output:
+  html_document: 
+    toc: true
+    toc_float: true
+---
+
+`Shiny` is RStudio's framework for creating interactive graphics and web-like applications. There are several ways to use `Shiny`, and we're going to focus on how to use it in conjunction with `flexdashboard` to make interactive dashboards within R Markdown.
+
+This page is related to content in [plotly and dashboards](plotly_and_dashboards.html).
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  fig.width = 6,
+  fig.asp = .6,
+  out.width = "90%"
+)
+
+library(tidyverse)
+```
+
+
+## Some slides
+
+<script async class="speakerdeck-embed" data-id="c1b6fe0d9dd44fa494b5004c839798c2" data-ratio="1.77777777777778" src="//speakerdeck.com/assets/embed.js"></script>
+<div style="margin-bottom:5px"> <strong> <a href="https://speakerdeck.com/jeffgoldsmith/p8105-shiny" title="Shiny" target="_blank">Shiny</a> </strong> from <strong><a href="https://speakerdeck.com/jeffgoldsmith" target="_blank">Jeff Goldsmith</a></strong>. </div><br>
+
+
+## Example
+
+As always, I'll work on today's example in a GitHub repo + local directory / R Project. [This template](resources/shiny_dashboard_template.Rmd) will be the starting point for the `flexdashboard` we'll be creating today; create a new .Rmd file with this structure and put it in your directory.
+
+```{r, echo = FALSE, comment = ""}
+text = htmltools::includeText("resources/shiny_dashboard_template.Rmd")
+text = str_replace(text, "---\n---\n\n", "")
+cat(text)
+```
+
+This is very similar to the usual `flexdashboard` template, with some small changes. First, we've added `runtime: shiny` to the YAML header. Second, we are using slightly different layout because we have a sidebar column which will hold our input widgets. 
+
+I'll add the following libraries to the template, but we won't need much else.
+
+```{r}
+library(tidyverse)
+library(viridis)
+library(p8105.datasets)
+
+library(plotly)
+```
+
+As in [plotly and dashboards](plotly_and_dashboards.html), we're going to focus on the [Airbnb](dataset_airbnb.html) data. Our goal is to make a dashboard similar to the one produced there, but with interactive elements in place of hard-coded data manipulation choices. 
+
+### Data import
+
+The code below loads and cleans the data, and selects only a few of the variables. 
+
+```{r import_data}
+data("nyc_airbnb")
+
+nyc_airbnb = 
+  nyc_airbnb |> 
+  mutate(rating = review_scores_location / 2) |>
+  rename(latitude = lat, longitude = long) |>
+  select(
+    boro = neighbourhood_group, neighbourhood, rating, price, room_type,
+    latitude, longitude) |>
+  drop_na(rating)
+```
+
+Previously, we chose to focus on Manhattan rentals in a certain price range, and included those choices in our data manipulation. Now, we're going to filter the dataset interactively based on user input, and use the resulting dataset as the basis for our plots.
+
+### Input widgets
+
+We'll place code for widgets in the sidebar, but this is a stylistic choice and they could be placed elsewhere in the dashboard. 
+
+The `selectInput` widget creates a drop-down menu with choices for the user to select from. By adding the code in the chunk below to the sidebar panel in the dashboard, we can obtain user input regarding the borough of interest.
+
+```{r, eval = FALSE}
+boros = nyc_airbnb |> distinct(boro) |> pull()
+
+# selectInput widget
+selectInput(
+  "boro_choice", 
+  label = h3("Select boro"),
+  choices = boros, selected = "Manhattan")
+```
+
+Now a user can select each of the different boros in New York, although it's not clear yet where this input goes. In the background, Shiny is creating an object called `input` of class `reactivevalues` -- it's not critical that you know much about this, but it's something you can treat like a named list and use inside `render` functions. The "named" part matters, too -- your input widget names are how you access elements of the `input` object.
+
+Try adding the code below to one of the panels (later we'll use these for plots, but for now it's helpful to get a sense for how Shiny works).
+
+```{r, eval = FALSE}
+renderPrint({ 
+  input[["boro_choice"]]
+})
+```
+
+This produces a string containing the selected borough, and updates when a user manipulates the input widget. 
+
+The `sliderInput` function produces a slider input widget. We'll use this to get a user-specified price range, but if you provide only a single initial value it will produce a "regular" slider. Add this slider input to the sidebar, and then modify your `renderPrint` code chunk to examine the value of `input[["price_range"]]`.
+
+```{r, eval = FALSE}
+max_price = 1000
+min_price = nyc_airbnb |> distinct(price) |> min()
+  
+# sliderInput widget
+sliderInput(
+  "price_range", 
+  label = h3("Choose price range"), 
+  min = min_price, max = max_price, value = c(100, 400))
+```
+
+The last input widget we'll look at is `radioButtons`, which is helpful for getting users to select among several options. As with the preceeding inputs, add a chunk containing the code below to the sidebar and then update the `renderPrint` function to inspect the behavior of this widget. 
+
+```{r, eval = FALSE}
+room_choice = nyc_airbnb |> distinct(room_type) |> pull()
+
+# radioButtons widget
+radioButtons(
+  "room_choice", 
+  label = h3("Choose room type"),
+  choices = room_choice, selected = "Entire home/apt")
+```
+
+For other types of widgets (and there are lots!) check out the [widget gallery](https://shiny.rstudio.com/gallery/widget-gallery.html).
+
+### Reactive plots
+
+In [plotly and dashboards](plotly_and_dashboards.html), we made plots showing rental locations, number of rentals in each neighborhood, and the price range of rentals in some neighborhoods. We're going to make similar plots now, but we want these to update based on user inputs. 
+
+We'll start with the `plot_ly` scatterplot showing rental location and prices. As a first step, replace the `renderText` code in your dashboard with the `renderPlotly` code below.
+
+```{r, eval = FALSE}
+renderPlotly({ 
+  nyc_airbnb |>
+  mutate(text_label = str_c("Price: $", price, '\nRating: ', rating)) |> 
+  plot_ly(
+    x = ~longitude, y = ~latitude, type = "scatter", mode = "markers",
+    alpha = 0.5, color = ~price, text = ~text_label)
+})
+```
+
+The plot does appear, but we haven't incorporated user input yet. To do that, we'll add some data manipuation that uses the `input` object produced by the Shiny input widgets.
+
+```{r, eval = FALSE}
+renderPlotly({
+  nyc_airbnb |>
+  filter(
+    boro == input$boro_choice, 
+    price %in% input$price_range[1]:input$price_range[2],
+    room_type == input$room_choice) |>
+  mutate(text_label = str_c("Price: $", price, '\nRating: ', rating)) |> 
+  plot_ly(
+    x = ~longitude, y = ~latitude, type = "scatter", mode = "markers",
+    alpha = 0.5, color = ~price, text = ~text_label)
+})
+```
+
+**_Learning Assessment:_**
+
+Update the following boxplot code to react to user input and add it to your dashboard. 
+
+```{r, eval = FALSE}
+renderPlotly({
+  nyc_airbnb |> 
+    count(neighbourhood) |> 
+    mutate(neighbourhood = fct_reorder(neighbourhood, n)) |> 
+    plot_ly(x = ~neighbourhood, y = ~n, color = ~neighbourhood, type = "bar")
+})
+```
+
+<details>
+<summary> Solution </summary>
+
+The code chunk below, when added to the dashboard, will update the bar chart based on user input.
+
+```{r, eval = FALSE}
+renderPlotly({
+  nyc_airbnb |> 
+    filter(
+      boro == input$boro_choice, 
+      price %in% input$price_range[1]:input$price_range[2],
+      room_type == input$room_choice) |>
+    count(neighbourhood) |> 
+    mutate(neighbourhood = fct_reorder(neighbourhood, n)) |> 
+    plot_ly(x = ~neighbourhood, y = ~n, color = ~neighbourhood, type = "bar")
+})
+```
+
+</details>
+
+Lastly, the code provided below will produce a reactive boxplot showing price ranges in popular neighborhoods in the selected borough.
+
+```{r, eval = FALSE}
+renderPlotly({ 
+  common_neighborhoods =
+    nyc_airbnb |> 
+    filter(
+      boro == input$boro_choice,
+      price %in% input$price_range[1]:input$price_range[2],
+      room_type == input$room_choice) |>
+    count(neighbourhood, sort = TRUE) |> 
+    top_n(8) |> 
+    select(neighbourhood)
+
+  nyc_airbnb |>
+    filter(
+      boro == input$boro_choice,
+      price %in% input$price_range[1]:input$price_range[2],
+      room_type == input$room_choice) |>
+    inner_join(., common_neighborhoods, by = "neighbourhood") |> 
+    plot_ly(y = ~price, color = ~neighbourhood, type = "box")
+})
+```
+
+Now you have a `flexdashboard` with Shiny elements! 
+
+
+### Debugging Shiny documents
+
+As you've probably noticed by now, debugging Shiny documents is a hassle. The code depends on an `input` object, so testing individual lines isn't easy -- I often have to create "placeholder" inputs when building plots and other outputs, and then make sure these plots react to changing user inputs. This was the approach in the Airbnb dashboard, where I started with "working" plots and then updated them to include `input` values. I also typically double check (via printing) that the `input` object itself behaves the way I'm expecting.
+
+All that said, though, it can be frustrating to make these "work"
+
+
+### A/B testing dashboard
+
+One of my favorite data science products is Julia Silge's [dashboard](https://juliasilge.shinyapps.io/power-app/) looking at power in A/B tests, which is explained in the accompanying [blog post]( https://juliasilge.com/blog/ab-testing/). I like this because it conveys real statistical concerns about power, sample size, and effect size in a user-friendly way. It's also coded very nicely and made public for anyone to inspect, edit, or use. 
+
+The code for the dashboard is printed below; create a new .Rmd file and copy this code to reproduce the dashboard yourself.
+
+```{r, echo = FALSE, comment = ""}
+cat(htmltools::includeText("resources/silge_powerdash.Rmd"))
+```
+
+There are a few user inputs controlling the desired power level, alpha level, and the baseline conversion rate (which is the probability of "success" in the reference group). Given these inputs, code chunks compute power for given sample sizes over a dense grid on effect sizes using `purrr` functions, `power.prop.test`, and `broom::tidy`; the results are plotted using `ggplot` or printed as a table. 
+
+### Hosting Shiny documents
+
+Unfortunately, you can't email Shiny-based HTML files like you can a static HTML file generated by R Markdown. This is because Shiny-based documents need to run `R` locally. However, you can host them through [Shinyapps.io](https://www.shinyapps.io/). A slightly fancier version of the Shiny-based Airbnb `flexdashboard` for this class is hosted [here](https://julia-wrobel.shinyapps.io/airbnb_dashboard/), and Julia Silge's A/B testing dashboard is hosted on Shinyapps.io as well. 
+
+Shinyapps.io has a free user level and will host your app as long as it's relatively small and has limited usage. Deploying an app to Shinyapps.io requires you to create an account and connect it to RStudio, but it's not too bad -- this [walkthrough](https://shiny.rstudio.com/articles/shinyapps.html) will help.
+
+
+### Shiny apps
+
+So far we've focused on adding Shiny to a `flexdashboard`. We refer to our completed dashboard as a _Shiny document_.  However, there other ways to use Shiny, and the most common is to make a Shiny _application_, or _app_. So you know how these work, we're going to make a super-simple app; if you are interested in making a more complicated _Shiny app_, check out the resources included below.
+
+Shiny apps use **.R** files, rather than **.Rmd**. You can initialize a Shiny app from RStudio using File > New File > Shiny Web App. This will create a template app consisting of a `ui` object and a `server` object; in some cases these are stored in separate `ui.R` and `server.R` files, but that's not necessary. The `ui` object controls the app layout, includes the input widgets, and displays any outputs. The `server` object holds the code that performs computations on `input` elements and produces an `output` object.
+
+Given `ui` and `server`, the command 
+
+```{r, eval = FALSE}
+shinyApp(ui = ui, server = server)
+```
+
+will run the app. 
+
+Shiny apps can be quite flexible, if a little harder to get used to that Shiny documents, and can be hosted online through Shinyapps.io as well.
+
+## Other materials
+
+* For more on using flexdashboards with Shiny, here's a [tutorial](https://pkgs.rstudio.com/flexdashboard/articles/shiny.html)
+* There are also several [examples](https://pkgs.rstudio.com/flexdashboard/articles/examples.html) of people making these types flexdashboards, many which incorporate Shiny
+* This guide (linked above) will help in hosting your shiny document or app online through [shinyapps.io](https://shiny.rstudio.com/articles/shinyapps.html)
+* For more on making Shiny apps, check out R Studio's [tutorial](https://shiny.rstudio.com/tutorial/), or [this one](https://deanattali.com/blog/building-shiny-apps-tutorial/)
+* This [gallery](https://shiny.rstudio.com/gallery/) of Shiny apps might be a useful inspiration!
+
+The code that I produced working examples in lecture is [here](https://github.com/P8105/extra_topics).
+

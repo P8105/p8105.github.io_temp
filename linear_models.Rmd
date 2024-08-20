@@ -1,0 +1,344 @@
+---
+title: "Linear models"
+output:
+  html_document: 
+    toc: true
+    toc_float: true
+---
+
+Linear regression models are fundamental in statistics and data science. When seeking to understand how covariates are associated with outcomes, linear models are among the first, best options. Although other regression approaches are possible, the flexibility and  interpretability and of linear models make them essential. 
+
+This content assumes some familiarity with linear models, and focuses on the implementation of models in R rather than on the theory or interpretation of the models themselves.
+
+This is the first module in the [Linear Models](topic_linear_models.html) topic.
+
+```{r, include = FALSE,message=FALSE,warning=FALSE}
+library(tidyverse)
+
+knitr::opts_chunk$set(
+	echo = TRUE,
+	warning = FALSE,
+  fig.width = 6,
+  fig.asp = .6,
+  out.width = "90%"
+)
+
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+
+scale_colour_discrete = scale_colour_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+```
+
+## Overview {.tabset .tabset-pills}
+
+### Learning Objectives
+
+Review fundamentals of linear and generalized linear models, fit models in R, and tidy results for further analysis.
+
+### Slide Deck
+
+<div class="vid_container">
+  <iframe 
+    src="https://speakerdeck.com/player/3d7ef29c65ab4412a21c18ad2711dca2" 
+    allowfullscreen 
+    frameborder="0"
+    class="video">
+  </iframe>
+</div>
+
+<div style="margin-bottom:5px"> <strong> <a href="https://speakerdeck.com/jeffgoldsmith/p8105-linear-models" title="Linear models" target="_blank">Linear Models</a> </strong> from <strong><a href="https://speakerdeck.com/jeffgoldsmith" target="_blank">Jeff Goldsmith</a></strong>. </div><br>
+
+***
+
+### Video Lecture
+
+<div class="vid_container">
+  <iframe 
+    src="https://www.youtube.com/embed/nW796MKc2AE"
+    frameborder="0" allowfullscreen class="video">
+  </iframe>
+</div>
+
+***
+
+## Example
+
+I'll write code for today's content in a new R Markdown document called `linear_models.Rmd` in a `linear_models` directory / repo. The code chunk below loads some usual packages and sets a seed for reproducibility.
+
+```{r}
+library(tidyverse)
+library(p8105.datasets)
+
+set.seed(1)
+```
+
+
+### Model fitting
+
+The code below loads and cleans the [Airbnb](dataset_airbnb.html) data, which we'll use as a primary example for fitting linear models. 
+
+```{r}
+data("nyc_airbnb")
+
+nyc_airbnb = 
+  nyc_airbnb |> 
+  mutate(stars = review_scores_location / 2) |> 
+  rename(
+    borough = neighbourhood_group,
+    neighborhood = neighbourhood) |> 
+  filter(borough != "Staten Island") |> 
+  select(price, stars, borough, neighborhood, room_type)
+```
+
+An good place to start is to consider price as an outcome that may depend on rating and borough. We fit that initial model in the following code. 
+
+```{r}
+fit = lm(price ~ stars + borough, data = nyc_airbnb)
+```
+
+The `lm` function begins with the formula specification -- outcome on the left of the `~` and predictors separated by `+` on the right. As we'll see shortly, interactions between variables can be specified using `*`. You can also specify an intercept-only model (`outcome ~ 1`), a model with no intercept (`outcome ~ 0 + ...`), and a model using all available predictors (`outcome ~ .`). 
+
+R will treat categorical (factor) covariates appropriately and predictably: indicator variables are created for each non-reference category and included in your model, and the factor level is treated as the reference. As with `ggplot`, being careful with factors is therefore critical!
+
+```{r}
+nyc_airbnb = 
+  nyc_airbnb |> 
+  mutate(
+    borough = fct_infreq(borough),
+    room_type = fct_infreq(room_type))
+
+fit = lm(price ~ stars + borough, data = nyc_airbnb)
+```
+
+It's important to note that changing reference categories won't change "fit" or statistical sigificance, but can affect ease of interpretation.
+
+### Tidying output
+
+The output of a `lm` is an object of class `lm` -- a very specific list that isn't a dataframe but that can be manipulated using other functions. Some common functions for interacting with `lm` fits are below, although we omit the output.
+
+```{r, eval = FALSE}
+summary(fit)
+summary(fit)$coef
+coef(fit)
+fitted.values(fit)
+```
+
+The reason that we omit the output is that it's a huge pain to deal with. `summary` produces an object of class `summary.lm`, which is also a list -- that's how we extracted the coefficients using `summary(fit)$coef`. `coef` produces a vector of coefficient values, and `fitted.values` is a vector of fitted values. None of this is tidy. 
+
+It's helpful to know about the products of `lm` and to know there are a range of ways to interact with models in base R. That said, for the most part it's easiest to use tidy tools. 
+
+The `broom` package has functions for obtaining a quick summary of the model and for cleaning up the coefficient table.
+
+```{r}
+fit |> 
+  broom::glance()
+
+fit |> 
+  broom::tidy()
+```
+
+Both of these functions produce data frames, which makes it straightforward to include the results in subsequent steps.
+
+```{r}
+fit |> 
+  broom::tidy() |> 
+  select(term, estimate, p.value) |> 
+  mutate(term = str_replace(term, "^borough", "Borough: ")) |> 
+  knitr::kable(digits = 3)
+```
+
+As an aside, `broom::tidy` works with lots of things, including most of the functions for model fitting you're likely to run into (survival, mixed models, additive models, ...). 
+
+
+### Diagnostics
+
+Regression diagnostics can identify issues in model fit, especially related to certain failures in model assumptions. Examining residuals and fitted values are therefore an imporant component of any modeling exercise.
+
+The `modelr` package can be used to add residuals and fitted values to a dataframe. 
+
+```{r}
+modelr::add_residuals(nyc_airbnb, fit)
+modelr::add_predictions(nyc_airbnb, fit)
+```
+
+Like many things in the tidyverse, the first argument is a dataframe. That makes it easy to included steps adding residuals or predictions in pipeline of commands to conduct inspections and perform diagnostics.
+
+```{r}
+nyc_airbnb |> 
+  modelr::add_residuals(fit) |> 
+  ggplot(aes(x = borough, y = resid)) + geom_violin()
+
+nyc_airbnb |> 
+  modelr::add_residuals(fit) |> 
+  ggplot(aes(x = stars, y = resid)) + geom_point()
+```
+
+This example has some obvious issues, most notably the presence of extremely large outliers in price and a generally skewed residual distribution. There are a few things we might try to do here -- including creating a formal rule for the exclusion of outliers, transforming the price variable (e.g. using a log transformation), or fitting a model that is robust to outliers. Dealing with these issues isn't really the purpose of this class, though, so we'll note the issues and move on; shortly we'll look at using the [bootstrap](bootstrapping.html) for inference in cases like this, where standard approaches to inference may fail. 
+
+(For what it's worth, I'd probably use a combination of median regression, which is less sensitive to outliers than OLS, and maybe bootstrapping for inference. If that's not feasible, I'd omit rentals with price over $1000 (< 0.5% of the sample) from the primary analysis and examine these separately. I usually avoid transforming the outcome, because the results model is difficult to interpret.)
+
+
+### Hypothesis testing
+
+We'll comment briefly on hypothesis testing. Model summaries include results of t-tests for single coefficients, and are the standard way of assessing statistical significance. 
+
+Testing multiple coefficients is somewhat more complicated. A useful approach is to use nested models, meaning that the terms in a simple "null" model are a subset of the terms in a more complex "alternative" model. The are formal tests for comparing the null and alternative models, even when several coefficients are added in the alternative model. Tests of this kind are required to assess the significance of a categorical predictor with more than two levels, as in the example below.
+
+```{r}
+fit_null = lm(price ~ stars + borough, data = nyc_airbnb)
+fit_alt = lm(price ~ stars + borough + room_type, data = nyc_airbnb)
+```
+
+The test of interest is implemented in the `anova()` function which, of course, can be summarized using `broom::tidy()`. 
+
+```{r}
+anova(fit_null, fit_alt) |> 
+  broom::tidy()
+```
+
+Note that this works for *nested* models only. Comparing non-nested models is a common problem that requires other methods; we'll see one approach in [cross validation](cross_validation.html).
+
+
+### Nesting data
+
+We'll now turn our attention to fitting models to datasets nested within variables -- meaning, essentially, that we'll use `nest()` to create a list column containing datasets and fit separate models to each. This is very different from fitting *nested models*, even though the terminology is similar.
+
+In the airbnb data, we might think that star ratings and room type affects price differently in each borough. One way to allow this kind of effect modification is through interaction terms:
+
+```{r}
+nyc_airbnb |> 
+  lm(price ~ stars * borough + room_type * borough, data = _) |> 
+  broom::tidy() |> 
+  knitr::kable(digits = 3)
+```
+
+This works, but the output takes time to think through -- the expected change in price comparing an entire apartment to a private room in Queens, for example, involves the main effect of room type and the Queens / private room interaction.
+
+Alternatively, we can nest within boroughs and fit borough-specific models associating price with rating and room type:
+
+```{r}
+nest_lm_res =
+  nyc_airbnb |> 
+  nest(data = -borough) |> 
+  mutate(
+    models = map(data, \(df) lm(price ~ stars + room_type, data = df)),
+    results = map(models, broom::tidy)) |> 
+  select(-data, -models) |> 
+  unnest(results)
+```
+
+The results of this approach are given in the table below. 
+
+```{r}
+nest_lm_res |> 
+  select(borough, term, estimate) |> 
+  mutate(term = fct_inorder(term)) |> 
+  pivot_wider(
+    names_from = term, values_from = estimate) |> 
+  knitr::kable(digits = 3)
+```
+
+The estimates here are the same as those in the model containing interactions, but are easier to extract from the output.
+
+Fitting models to nested datasets is a way of performing stratified analyses. These have a tradeoff: stratified models make it easy to interpret covariate effects in each stratum, but don't provide a mechanism for assessing the significance of differences across strata. 
+
+An even more extreme example is the assessment of neighborhood effects in Manhattan. The code chunk below fits neighborhood-specific models:
+
+```{r}
+manhattan_airbnb =
+  nyc_airbnb |> 
+  filter(borough == "Manhattan")
+
+manhattan_nest_lm_res =
+  manhattan_airbnb |> 
+  nest(data = -neighborhood) |> 
+  mutate(
+    models = map(data, \(df) lm(price ~ stars + room_type, data = df)),
+    results = map(models, broom::tidy)) |> 
+  select(-data, -models) |> 
+  unnest(results)
+```
+
+And the chunk below shows neighborhood-specific estimates for the coefficients related to room type.
+
+```{r}
+manhattan_nest_lm_res |> 
+  filter(str_detect(term, "room_type")) |> 
+  ggplot(aes(x = neighborhood, y = estimate)) + 
+  geom_point() + 
+  facet_wrap(~term) + 
+  theme(axis.text.x = element_text(angle = 80, hjust = 1))
+```
+
+There is, generally speaking, a reduction in room price for a private room or a shared room compared to an entire apartment, but this varies quite a bit across neighborhoods. 
+
+With this many factor levels, it really isn't a good idea to fit models with main effects or interactions for each. Instead, you'd be best-off using a mixed model, with random intercepts and slopes for each neighborhood. Although it's well beyond the scope of this class, code to fit a mixed model with neighborhood-level random intercepts and random slopes for room type is below. And, of course, we can tidy the results using a mixed-model spinoff of the `broom` package.
+
+```{r}
+manhattan_airbnb |> 
+  lme4::lmer(price ~ stars + room_type + (1 + room_type | neighborhood), data = _) |> 
+  broom.mixed::tidy()
+```
+
+Mixed models are pretty great!
+
+### Binary outcomes
+
+Linear models are appropriate for outcomes that follow a continuous distribution, but binary outcomes are common. In these cases, logistic regression is a useful analytic framework. 
+
+The _Washington Post_ has gathered data on homicides in 50 large U.S. cities and made the data available through a [GitHub repository](https://github.com/washingtonpost/data-homicides); the final CSV is [here](data/homicide-data.csv). You can read their accompanying article [here](https://www.washingtonpost.com/graphics/2018/investigations/where-murders-go-unsolved/). We'll use data on unresolved murders in Baltimore, MD to illustrate logistic regression in R. The code below imports, cleans, and generally wrangles the data for analysis.
+
+```{r}
+baltimore_df = 
+  read_csv("data/homicide-data.csv") |> 
+  filter(city == "Baltimore") |> 
+  mutate(
+    resolved = as.numeric(disposition == "Closed by arrest"),
+    victim_age = as.numeric(victim_age),
+    victim_race = fct_relevel(victim_race, "White")) |> 
+  select(resolved, victim_age, victim_race, victim_sex)
+```
+
+Using these data, we can fit a logistic regression for the binary "resolved" outcome and victim demographics as predictors. This uses the `glm` function with the family specified to account for the non-Gaussian outcome distribution.
+
+```{r}
+fit_logistic = 
+  baltimore_df |> 
+  glm(resolved ~ victim_age + victim_race + victim_sex, data = _, family = binomial()) 
+```
+
+Many of the same tools we used to work with `lm` fits can be used for `glm` fits. The table below summaries the coefficients from the model fit; because logistic model estimates are log odds ratios, we include a step to compute odds ratios as well.
+
+```{r}
+fit_logistic |> 
+  broom::tidy() |> 
+  mutate(OR = exp(estimate)) |>
+  select(term, log_OR = estimate, OR, p.value) |> 
+  knitr::kable(digits = 3)
+```
+
+Homicides in which the victim is Black are substantially less likely to be resolved that those in which the victim is white; for other races the effects are not significant, possible due to small sample sizes. Homicides in which the victim is male are significantly less like to be resolved than those in which the victim is female. The effect of age is statistically significant, but careful data inspections should be conducted before interpreting too deeply. 
+
+We can also compute fitted values; similarly to the estimates in the model summary, these are expressed as log odds and can be transformed to produce probabilities for each subject.
+
+```{r}
+baltimore_df |> 
+  modelr::add_predictions(fit_logistic) |> 
+  mutate(fitted_prob = boot::inv.logit(pred))
+```
+
+
+## Other materials
+
+* This page touches on ideas that arise in several chapters on modeling in R for Data Science. These tend to assume that this is your first exposure to linear models but good reading:
+    * [Intro to modeling](https://r4ds.had.co.nz/model-intro.html)
+    * [Basics](https://r4ds.had.co.nz/model-basics.html)
+    * [Many models](https://r4ds.had.co.nz/many-models.html)
+* The `modelr` package also has a [website](https://modelr.tidyverse.org)
+
+The code that I produced working examples in lecture is [here](https://github.com/P8105/linear_models).

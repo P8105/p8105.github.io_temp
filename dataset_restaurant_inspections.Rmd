@@ -1,0 +1,78 @@
+---
+title: "NYC Restaurant Inspection Results"
+output:
+  html_document: 
+    toc: true
+    toc_float: true
+---
+
+The version of the DOHMH New York City Restaurant Inspection Results data we will use for this class is available [here](./data/DOHMH_New_York_City_Restaurant_Inspection_Results.csv.zip) or through the [p8105.datasets](https://github.com/P8105/p8105.datasets) package.
+
+
+## Context
+
+The New York City Department of Health and Mental Hygiene (DOHMH) conducts unannounced restaurant inspections on an annual basis in order to check for compliance with policies on food handling, food temperature, personal hygiene of restaurant workers, and vermin control. Regulation violations are each worth a pre-specified number of points, which are totaled at the end of the inspection. Scores are converted into grades, where a lower score earns a higher grade. 
+
+Each violation falls into one of three categories:
+
+1. A **public health hazard**, such as failing to store food at an appropriate temperature, results in a minimum score of 7
+
+2. A **critical violation**, such as improperly washing raw vegetables prior to serving, results in a minimum score of 5
+
+3. A **general violation**, such as improperly sanitizing cookware, results in a minimum score of 2
+
+Additional points can then be assigned based on the severity of the violation, ranging from 1-5, at the discretion of the inspector.
+
+More details about the scoring and grading process can be found [here](http://www1.nyc.gov/assets/doh/downloads/pdf/rii/how-we-score-grade.pdf).
+
+
+## Data description
+
+Data on restaurant inspection results are publicly available at [NYC Open Data](https://data.cityofnewyork.us/Health/DOHMH-New-York-City-Restaurant-Inspection-Results/43nn-pn8j) and are updated daily. The specific data to be used in this class, linked to at the top of this page, was accessed in October 2017 using the code below.
+
+```{r, eval = FALSE}
+library(tidyverse)
+library(httr)
+library(jsonlite)
+
+get_all_inspections = function(url) {
+  
+  all_inspections = vector("list", length = 0)
+  
+  loop_index = 1
+  chunk_size = 50000
+  DO_NEXT = TRUE
+  
+  while (DO_NEXT) {
+    message("Getting data, page ", loop_index)
+    
+    all_inspections[[loop_index]] = 
+      GET(url,
+          query = list(`$order` = "zipcode",
+                       `$limit` = chunk_size,
+                       `$offset` = as.integer((loop_index - 1) * chunk_size)
+                       )
+          ) %>%
+      content("text") %>%
+      fromJSON() %>%
+      as_tibble()
+    
+    DO_NEXT = dim(all_inspections[[loop_index]])[1] == chunk_size
+    loop_index = loop_index + 1
+  }
+  
+  all_inspections
+  
+}
+
+url = "https://data.cityofnewyork.us/resource/43nn-pn8j.json"
+
+nyc_inspections = 
+  get_all_inspections(url) %>%
+  bind_rows() 
+```
+
+The dataset contains roughly 400,000 rows and 26 columns. There is information on restaurant name and location, type of food, inspection date, and details on violation codes, total scores, and associated grades. The data is longitudinal in nature, with multiple rows per restaurant representing inspections over time. A complete data dictionary can be accessed [here](./data/Restaurant_Inspection_Open_Data_Dictionary_082214.xlsx).
+
+
+

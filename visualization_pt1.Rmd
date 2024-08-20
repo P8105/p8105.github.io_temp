@@ -1,0 +1,363 @@
+---
+title: "Visualization with `ggplot2`"
+subtitle: "Part 1"
+output:
+  html_document: 
+    toc: true
+    toc_float: true
+---
+
+Good visualization is a critical step in data analysis. 
+
+This is the first module in the [Visualization and EDA](topic_visualization_and_eda.html) topic.
+
+```{r, echo = FALSE,message=FALSE,warning=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  fig.width = 6,
+  fig.asp = .6,
+  out.width = "90%"
+)
+
+library(tidyverse)
+theme_set(theme_gray())
+```
+
+## Overview {.tabset .tabset-pills}
+
+### Learning Objectives
+
+Create effective graphics using ggplot and implement best practices for effective graphical communication.
+
+### Slide Deck
+
+<div class="vid_container">
+  <iframe 
+    src="https://speakerdeck.com/player/7272d2325e0d4f27a6bca25afbf149ce" 
+    allowfullscreen 
+    frameborder="0"
+    class="video">
+  </iframe>
+</div>
+
+<div style="margin-bottom:5px"> <strong> <a href="https://speakerdeck.com/jeffgoldsmith/p8105-visualization-i" title="Visualization" target="_blank">Visualization</a> </strong> from <strong><a href="https://speakerdeck.com/jeffgoldsmith" target="_blank">Jeff Goldsmith</a></strong>. </div><br>
+
+***
+
+### Video Lecture
+
+<div class="vid_container">
+  <iframe 
+    src="https://www.youtube.com/embed/32RI5q1IXAI"
+    frameborder="0" allowfullscreen class="video">
+  </iframe>
+</div>
+
+***
+
+## Example
+
+First, I'll create a GitHub repo + local R project for today's work (I'm calling mine `viz_and_eda`). Occasionally, we'll use the same datasets we saw in [Data Wrangling I](topic_data_wrangling_i.html), so I'll add sub-directory called `data` and put [these datasets](./resources/data_import_examples.zip) in there. Lastly I'll start an R Markdown file for today, and load the `tidyverse` package in "setup" code chunk. 
+
+```{r}
+library(tidyverse)
+library(ggridges)
+```
+
+We'll be working with NOAA weather data, which is downloaded using `rnoaa::meteo_pull_monitors` function in the code chunk below; similar code underlies the weather dataset used elsewhere in the course. Because this process can take some time, I'll cache the code chunk. 
+
+```{r weather_data_create, cache = TRUE}
+weather_df = 
+  rnoaa::meteo_pull_monitors(
+    c("USW00094728", "USW00022534", "USS0023B17S"),
+    var = c("PRCP", "TMIN", "TMAX"), 
+    date_min = "2021-01-01",
+    date_max = "2022-12-31") |>
+  mutate(
+    name = recode(
+      id, 
+      USW00094728 = "CentralPark_NY", 
+      USW00022534 = "Molokai_HI",
+      USS0023B17S = "Waterhole_WA"),
+    tmin = tmin / 10,
+    tmax = tmax / 10) |>
+  select(name, id, everything())
+
+weather_df
+```
+
+We'll start with a basic scatterplot to develop our understanding of `ggplot`'s data + mappings + geoms approach, and build quickly from there. 
+
+### Basic scatterplot
+
+We'll use the `weather_df` data throughout, so we'll move straight into defining aesthetic mappings. To create a basic scatterplot, we need to map variables to the X and Y coordinate aesthetics:
+
+```{r}
+ggplot(weather_df, aes(x = tmin, y = tmax))
+```
+
+Well, my "scatterplot" is blank. That's because I've defined the data and the aesthetic mappings, but haven't added any geoms: `ggplot` knows what data I want to plot and how I want to map variables, but not what I want to show. Below I add a `geom` to define my first scatterplot.
+
+```{r}
+ggplot(weather_df, aes(x = tmin, y = tmax)) + 
+  geom_point()
+```
+
+The code below could be used instead to produce the same figure. Using this style can be helpful if you want to do some pre-processing before making your plot but don't want to save the intermediate data. It's also consistent with many other pipelines: you start with a data frame, *and then* do stuff by piping the dataframe into the next function. Most of my plotting code is written like this. 
+
+```{r eval = FALSE}
+weather_df |>
+  ggplot(aes(x = tmin, y = tmax)) + 
+  geom_point()
+```
+
+Notice that we try to use good styling practices here as well -- new plot elements are added on new lines, code that's part of the same sequence is indented, we're making use of whitespace, etc. 
+
+You can also save the output of `ggplot()` to an object and modify / print it later. This is often helpful, although it's not my default approach to making plots. 
+
+```{r eval = FALSE}
+ggp_weather = 
+  weather_df |>
+  ggplot(aes(x = tmin, y = tmax)) 
+
+ggp_weather + geom_point()
+```
+
+### Advanced scatterplot
+
+The basic scatterplot gave some useful information -- the variables are related roughly as we'd expect, and there aren't any obvious outliers to investigate before moving on. We do, however, have other variables to learn about using additional aesthetic mappings. 
+
+Let's start with `name`, which I can incorporate using the `color` aesthetic:
+
+```{r}
+ggplot(weather_df, aes(x = tmin, y = tmax)) + 
+  geom_point(aes(color = name))
+```
+
+Nice! We get colors and have a handly legend. Maybe next I'll add a smooth curve and make the data points a bit transparent.
+
+```{r}
+ggplot(weather_df, aes(x = tmin, y = tmax)) + 
+  geom_point(aes(color = name), alpha = .5) +
+  geom_smooth(se = FALSE)
+```
+
+Neat! The curve gives a sense of the relationship between variables, and the transparency shows where data are overlapping. I can't help but notice, though, that the smooth curve is for all the data but the colors are only for the scatterplot. Turns out that this is due to where I defined the mappings. The X and Y mappings apply to the whole graphic, but color is currently geom-specific. Sometimes you want or need to do this, but for now I don't like it. If I'm honest, I'm also having a hard time seeing everything on one plot, so I'm going to add facet based on name as well. 
+
+```{r}
+ggplot(weather_df, aes(x = tmin, y = tmax, color = name)) + 
+  geom_point(alpha = .5) +
+  geom_smooth(se = FALSE) + 
+  facet_grid(. ~ name)
+```
+
+Awesome! I've learned a lot about these data. However, the relationship between minimum and maximum temperature is now kinda boring, so I'd prefer something that shows the time of year. Also I want to learn about precipitation, so let's do that. 
+
+```{r}
+ggplot(weather_df, aes(x = date, y = tmax, color = name)) + 
+  geom_point(aes(size = prcp), alpha = .5) +
+  geom_smooth(se = FALSE) + 
+  facet_grid(. ~ name)
+```
+
+Way more interesting! You get a whole range of temperatures in Central Park (sometimes it's maybe too hot); it's more temperate near Seattle but it rains _all the time_; and Molokai is great except for that a few (relatively) cold, rainy days. 
+
+**_Learning Assessment:_** Write a code chain that starts with `weather_df`; focuses only on Central Park, converts temperatures to Fahrenheit, makes a scatterplot of min vs. max temperature, and overlays a linear regression line (using options in `geom_smooth()`).
+
+<details>
+<summary> Solution </summary>
+
+I can produce the desired plot using the code below:
+
+```{r, eval = FALSE}
+weather_df |> 
+  filter(name == "CentralPark_NY") |> 
+  mutate(
+    tmax_fahr = tmax * (9 / 5) + 32,
+    tmin_fahr = tmin * (9 / 5) + 32) |> 
+  ggplot(aes(x = tmin_fahr, y = tmax_fahr)) +
+  geom_point(alpha = .5) + 
+  geom_smooth(method = "lm", se = FALSE)
+```
+
+Looks like there's a pretty linear relationship between min and max temperatures in Central Park.
+
+</details>
+
+### Odds and ends
+
+There are lots of ways you can mix and match elements, depending on your goals. I don't like the following plot as much (it doesn't show the data and omits precipitation), but it illustrates that you have lots of freedom in determining which geoms to include and how to compare your groups. If nothing else, you should be starting to get a sense for why you create way more plots for yourself than for others.
+
+```{r}
+ggplot(weather_df, aes(x = date, y = tmax, color = name)) + 
+  geom_smooth(se = FALSE) 
+```
+
+When you're making a scatterplot with lots of data, there's a limit to how much you can avoid overplotting using alpha levels and transparency. In these cases `geom_hex()`, `geom_bin2d()`, or `geom_density2d()` can be handy:
+
+```{r}
+ggplot(weather_df, aes(x = tmax, y = tmin)) + 
+  geom_hex()
+```
+
+There are lots of aesthetics, and these depend to some extent on the geom -- `color` worked for both `geom_point()` and `geom_smooth()`, but `shape` only applies to points. The help page for each geom includes a list of understood aesthetics.
+
+**_Learning Assessment:_** In the preceding, we set the alpha aesthetic "by hand" instead of mapping it to a variable. This is possible for other aesthetics too. To check your understanding of this point, try to explain why the two lines below don't produce the same result:
+
+```{r, eval = FALSE}
+ggplot(weather_df) + geom_point(aes(x = tmax, y = tmin), color = "blue")
+ggplot(weather_df) + geom_point(aes(x = tmax, y = tmin, color = "blue"))
+```
+
+<details>
+<summary> Solution </summary>
+
+In the first attempt, we're defining the color of the points by hand; in the second attempt, we're implicitly creating a color variable that has the value `blue` everywhere; `ggplot` is then assigning colors according to this variable using the default color scheme. 
+
+</details>
+
+
+### Univariate plots
+
+Scatterplots are great, but sometimes you need to carefully understand the distribution of single variables -- we'll tackle that now. This is primarily an issue of learning some new geoms and, where necessary, some new aesthetics. 
+
+First up is the histogram.
+
+```{r}
+ggplot(weather_df, aes(x = tmax)) + 
+  geom_histogram()
+```
+
+You can play around with things like the bin width and set the fill color using an aesthetic mapping.
+
+```{r}
+ggplot(weather_df, aes(x = tmax, fill = name)) + 
+  geom_histogram(position = "dodge", binwidth = 2)
+```
+
+The `position = "dodge"` places the bars for each group side-by-side, but this gets sort of hard to understand. I often prefer density plots in place of histograms.
+
+```{r}
+ggplot(weather_df, aes(x = tmax, fill = name)) + 
+  geom_density(alpha = .4, adjust = .5, color = "blue")
+```
+
+The `adjust` parameter in density plots is similar to the `binwidth` parameter in histograms, and it helps to try a few values. I set the transparency level to .4 to make sure all densities appear. You should also note the distinction between `fill` and `color` aesthetics here. You could facet by `name` as above but would have to ask if that makes comparisons easier or harder. Lastly, adding `geom_rug()` to a density plot can be a helpful way to show the raw data in addition to the density.
+
+Histograms and densities are one way of investigating univariate distributions; boxplots are another.
+
+```{r}
+ggplot(weather_df, aes(x = name, y = tmax)) + geom_boxplot()
+```
+
+Violin plots are sometimes nice, but folks complain that they don't [look like violins](https://simplystatistics.org/2017/07/13/the-joy-of-no-more-violin-plots/). 
+
+```{r}
+ggplot(weather_df, aes(x = name, y = tmax)) + 
+  geom_violin(aes(fill = name), alpha = .5) + 
+  stat_summary(fun = "median", color = "blue")
+```
+
+Ridge plots were the trendiest plot of 2017, and were a replacement for both boxplots and violin plots. They're implemented in the [`ggridges`](https://github.com/clauswilke/ggridges) package, and are nice if you have lots of categories in which the shape of the distribution matters.
+
+```{r}
+ggplot(weather_df, aes(x = tmax, y = name)) + 
+  geom_density_ridges(scale = .85)
+```
+
+**_Learning Assessment:_** Make plots that compare precipitation across locations. Try a histogram, a density plot, a boxplot, a violin plot, and a ridgeplot; use aesthetic mappings to make your figure readable. 
+
+<details>
+<summary> Solution </summary>
+
+I'll show a few possibilities, although this is by no means exhaustive!
+
+First a density plot:
+
+```{r, eval = FALSE}
+ggplot(weather_df, aes(x = prcp)) + 
+  geom_density(aes(fill = name), alpha = .5) 
+```
+
+Next a ridge plot:
+
+```{r, eval = FALSE}
+ggplot(weather_df, aes(x = prcp, y = name)) + 
+  geom_density_ridges(scale = .85)
+```
+
+Last a boxplot:
+
+```{r, eval = FALSE}
+ggplot(weather_df, aes(y = prcp, x = name)) + 
+  geom_boxplot() 
+```
+
+This is a tough variable to plot because of the highly skewed distribution in each location. Of these, I'd probably choose the boxplot because it shows the outliers most clearly. If the "bulk" of the data were interesting, I'd probably compliment this with a plot showing data for all precipitation less than 100, or for a data omitting days with no precipitation.
+
+```{r, eval = FALSE}
+weather_df |> 
+  filter(prcp > 0) |> 
+  ggplot(aes(x = prcp, y = name)) + 
+  geom_density_ridges(scale = .85)
+```
+
+</details>
+
+
+### Saving and embedding plots
+
+You will, on occasion, need to save a plot to a specific file. **Don't** use the built-in "Export" button! If you do, your figure is not reproducible -- no one will know how your plot was exported. Instead, use `ggsave()` by explicitly creating the figure and exporting; `ggsave` will guess the file type you prefer and has options for specifying features of the plot. In this setting, it's often helpful to save the `ggplot` object explicitly and then export it (using relative paths!).
+
+```{r, eval = FALSE}
+ggp_weather = 
+  ggplot(weather_df, aes(x = tmin, y = tmax)) + 
+  geom_point(aes(color = name), alpha = .5) 
+
+ggsave("ggp_weather.pdf", ggp_weather, width = 8, height = 5)
+```
+
+Embedding plots in an R Markdown document can also take a while to get used to, because there are several things to adjust. First is the size of the figure created by R, which is controlled using two of the three chunk options `fig.width`, `fig.height`, and `fig.asp`. I prefer a common width and plots that are a little wider than they are tall, so I set options to `fig.width = 6` and `fig.asp = .6`. Second is the size of the figure inserted into your document, which is controlled using `out.width` or `out.height`. I like to have a little padding around the sides of my figures, so I set `out.width = "90%"`. I do all this by including the following in a code snippet at the outset of my R Markdown documents.
+
+```{r, eval = FALSE}
+knitr::opts_chunk$set(
+  fig.width = 6,
+  fig.asp = .6,
+  out.width = "90%"
+)
+```
+
+What makes embedding figures difficult at first is that things like the font and point size in the figures generated by R are constant -- that is, they don't scale with the overall size of the figure. As a result, text in a figure with width 12 will _look_ smaller than text in a figure with width 6 after both have been embedded in a document. As an example, the code chunk below has set `fig.width = 12`.
+
+```{r, fig.width = 12}
+ggplot(weather_df, aes(x = tmin, y = tmax)) + 
+  geom_point(aes(color = name))
+```
+
+Usually you can get by with setting reasonable defaults, but keep a careful eye on figures you intend to show others -- everything should be legible!
+
+**_Learning Assessment:_** Set global options for your figure sizes in the "setup" code chunk and re-knit your document. What happens when you change `fig.asp`? What about `out.width`?
+
+## Other materials
+
+Oh goodness is there a lot of stuff about visualization ...
+
+* There are overviews on good and bad graphics
+    * Including an early paper on ["How to display data badly"](http://www.jstor.org/stable/2683253?seq=1#page_scan_tab_contents)
+    * Karl Broman's [top ten worst graphs](https://www.biostat.wisc.edu/~kbroman/topten_worstgraphs/)
+    * ... and Karl's talk on [creating effective figures and table](https://www.biostat.wisc.edu/~kbroman/presentations/graphs2017.pdf)
+    * Also Hadley Wickham's [paper](http://vita.had.co.nz/papers/layered-grammar.pdf) on the philosophy underlying `ggplot`
+* There are tutorials on making graphics using `ggplot`
+    * From R for Data Science: [basics](http://r4ds.had.co.nz/data-visualisation.html) and [advanced stuff](and http://r4ds.had.co.nz/graphics-for-communication.html)
+    * Jenny Bryan's [intro to ggplot](http://stat545.com/cm006_tibbles-dplyr-ggplot2.html) and her [ggplot tutorial](https://github.com/jennybc/ggplot2-tutorial) (with a [video presentation](https://www.youtube.com/watch?v=4MfUCX_KpdE) of the ggplot2 tutorial slides) 
+    * From [R Programming for Research](https://geanders.github.io/RProgrammingForResearch/exploring-data-1.html#plots-to-explore-data)
+    * The [Graphs](http://www.cookbook-r.com/Graphs/) chapter in the R Cookbook by Winston Chang
+    * ... and his [R Graphics Cookbook](http://shop.oreilly.com/product/0636920023135.do)
+    * And, of course, a [cheatsheet](https://www.rstudio.com/wp-content/uploads/2016/11/ggplot2-cheatsheet-2.1.pdf)
+* There are arguments about ggplot vs base R graphics
+    * [Why I don't use ggplot2](https://simplystatistics.org/2016/02/11/why-i-dont-use-ggplot2/)
+    * [Comparing ggplot2 and R Base Graphics](https://flowingdata.com/2016/03/22/comparing-ggplot2-and-r-base-graphics/)
+    * [Why I use ggplot2](http://varianceexplained.org/r/why-I-use-ggplot2/)
+
+
+The code that I produced working examples in lecture is [here](https://github.com/P8105/viz_and_eda).

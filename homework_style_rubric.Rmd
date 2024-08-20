@@ -1,0 +1,17 @@
+---
+title: "Homework Style Rubric"
+output:
+  html_document
+---
+
+A main emphasis in the course is the use of proper style when writing with data. For that reason, in addition to whatever points are allocated to a particular problem, the following points can be deducted for coding and text sytle issues:
+
+* 1 point: incomplete sentences and lack of explanitory text
+* 1 point: poor text formatting
+* 1 point: inappropriate whitespace in code
+* 1 point: unclear variable names
+* 1 point: generally disorganized code
+
+Whitespace and organization is generally covered by the R Style Guide in the Advanced R Textbook. Occasional typos won't be penalized (a missing space or indent is fine) but consistent or egregious errors will be.
+
+Some of this will be "subjective", but members of the teaching team are sufficiently experienced to make informed decisions. Like all grade-related matters, any concerns about style deductions should be directed to Jeff or a lead TA.

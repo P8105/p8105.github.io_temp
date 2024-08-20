@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Final project</title>
+
+<script src="site_libs/header-attrs-2.24/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" />
+<script defer src="https://use.fontawesome.com/releases/v5.0.3/js/all.js"></script>
+<script defer src="https://use.fontawesome.com/releases/v5.0.0/js/v4-shims.js"></script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-151578452-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-151578452-1');
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">P8105</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="schedule.html">Schedule</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Topics
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="topic_what_is_data_science.html">What is Data Science?</a>
+    </li>
+    <li>
+      <a href="topic_building_blocks.html">Building Blocks</a>
+    </li>
+    <li>
+      <a href="topic_data_wrangling_i.html">Data Wrangling I</a>
+    </li>
+    <li>
+      <a href="topic_visualization_and_eda.html">Visualization and EDA</a>
+    </li>
+    <li>
+      <a href="topic_data_wrangling_ii.html">Data Wrangling II</a>
+    </li>
+    <li>
+      <a href="topic_interactivity.html">Interactivity</a>
+    </li>
+    <li>
+      <a href="topic_iteration.html">Iteration</a>
+    </li>
+    <li>
+      <a href="topic_linear_models.html">Linear Models</a>
+    </li>
+    <li>
+      <a href="topic_other_material.html">Other Materials</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Datasets
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="dataset_airbnb.html">Airbnb</a>
+    </li>
+    <li>
+      <a href="dataset_brfss.html">BRFSS</a>
+    </li>
+    <li>
+      <a href="dataset_fivethirtyeight.html">FiveThirtyEight</a>
+    </li>
+    <li>
+      <a href="dataset_instacart.html">Instacart</a>
+    </li>
+    <li>
+      <a href="dataset_mr_trash_wheel.html">Mr. Trash Wheel</a>
+    </li>
+    <li>
+      <a href="dataset_noaa.html">NOAA</a>
+    </li>
+    <li>
+      <a href="dataset_restaurant_inspections.html">NYC Restaurant Inspections</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="homework_and_projects.html">Homework and Projects</a>
+</li>
+<li>
+  <a href="course_communication.html">Communication</a>
+</li>
+<li>
+  <a href="https://github.com/P8105/p8105.github.io">
+    <span class="fa fa-github"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Final project</h1>
+
+</div>
+
+
+<p>Your final project in this course will be a collaborative that uses
+each element of the data science process to answer questions on a topic
+of your choosing. Your team will be responsible for finding and cleaning
+data; producing visualizations and exploratory analyses; producing
+concrete data-centric deliverables; and disseminating results. You are
+expect to organize your work and to collaborate using best
+practices.</p>
+<div id="structure-and-due-dates" class="section level2">
+<h2>Structure and due dates</h2>
+<div id="team" class="section level3">
+<h3>Team</h3>
+<p>You will work closely with other classmates in a team of 4-5 on this
+project, and are free to form teams of your choosing.</p>
+<p>If you can’t find a team, or wish to form a team of a different size,
+please reach out to the instructor. In general, we do not anticipate
+that the grades for each group member will be different. We do, however,
+reserve the right to assign different grades to each group member based
+on peer assessments or public records of contribution (e.g. through
+commit histories).</p>
+</div>
+<div id="due-dates" class="section level3">
+<h3>Due dates</h3>
+<table>
+<colgroup>
+<col width="24%" />
+<col width="37%" />
+<col width="37%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Date</th>
+<th>Description</th>
+<th>Deliverable</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>November 11 by 1:00 pm</td>
+<td>Form a team and submit a proposal</td>
+<td>Written proposal document</td>
+</tr>
+<tr class="even">
+<td>November 13-17</td>
+<td>Project review meeting</td>
+<td>Zoom meeting – no “deliverable”</td>
+</tr>
+<tr class="odd">
+<td>December 9 by 11:59 pm</td>
+<td>Report</td>
+<td>Written report giving detailed project description</td>
+</tr>
+<tr class="even">
+<td>December 9 by 11:59 pm</td>
+<td>Webpage and screencast</td>
+<td>Webpage overview of project, with short explanatory video (published
+online)</td>
+</tr>
+<tr class="odd">
+<td>December 9 by 11:59 pm</td>
+<td>Peer assessment</td>
+<td>Brief assessment of your teammates contributions (as a short
+document)</td>
+</tr>
+<tr class="even">
+<td>December 14</td>
+<td>“In class” discussion of projects</td>
+<td>Enjoy hearing about projects! (Also get hex stickers…)</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="deliverables" class="section level2">
+<h2>Deliverables</h2>
+<div id="submissions" class="section level3">
+<h3>Submissions</h3>
+<p>Other than peer assessments, each deliverable will appear online (as
+e.g. a GH repo or youtube video). Links should be submitted via
+Courseworks by one team member (not necessarily the same person for each
+deliverable).</p>
+</div>
+<div id="team-registration-and-proposal" class="section level3">
+<h3>Team registration and proposal</h3>
+<p>First, you will define your teams and propose a project. This
+proposal should be a half-page to a page in length and include:</p>
+<ul>
+<li>The group members (names and UNIs)</li>
+<li>The tentative project title</li>
+<li>The motivation for this project</li>
+<li>The intended final products</li>
+<li>The anticipated data sources</li>
+<li>The planned analyses / visualizations / coding challenges</li>
+<li>The planned timeline</li>
+</ul>
+<p>There should be one proposal per group, written collaboratively using
+.Rmd (rendering to a GH document) in a dedicated GitHub repo. This is
+intended to describe a project that is in the planning stages. Only one
+team member should submit this proposal via Canvas.</p>
+<p>Please also submit (only once per team) a list of your team’s UNIs
+using <a href="https://forms.gle/4JLUtmwDwdP1WiR28">this form</a>. Doing
+so will help us keep track of teams.</p>
+</div>
+<div id="project-review-meeting" class="section level3">
+<h3>Project review meeting</h3>
+<p>Based on the topic of your proposal, you will work a member of the
+teaching team; this person will be your primary resource and will guide
+you through the rest of the project. In particular, you will schedule a
+project review meeting with your teaching team leader to discuss the
+proposal, anticipated stumbling blocks, and preliminary work. All team
+members are required to be present for the meeting. The project review
+meeting is intended to ensure all team members are in agreement about
+the project, that there is a clear timeline, and that there are
+contingency plans in case of major difficulties.</p>
+</div>
+<div id="report" class="section level3">
+<h3>Report</h3>
+<p>The written report produced by your team is central to this project.
+This will detail how you completed your project, and should cover data
+collection and cleaning, exploratory analyses, alternative strategies,
+descriptions of approaches, and a discussion of results. We anticipate
+that your project will change somewhat over time; these changes and the
+reasons for them should be documented! You will write one report
+document per group, and be sure to include all group member names in the
+document.</p>
+<p>Your report should include the following topics. Depending on your
+project type the amount of discussion you devote to each of them will
+vary:</p>
+<ul>
+<li>Motivation: Provide an overview of the project goals and
+motivation.</li>
+<li>Related work: Anything that inspired you, such as a paper, a web
+site, or something we discussed in class.</li>
+<li>Initial questions: What questions are you trying to answer? How did
+these questions evolve over the course of the project? What new
+questions did you consider in the course of your analysis?</li>
+<li>Data: Source, scraping method, cleaning, etc.</li>
+<li>Exploratory analysis: Visualizations, summaries, and exploratory
+statistical analyses. Justify the steps you took, and show any major
+changes to your ideas.</li>
+<li>Additional analysis: If you undertake formal statistical analyses,
+describe these in detail</li>
+<li>Discussion: What were your findings? Are they what you expect? What
+insights into the data can you make?</li>
+</ul>
+<p>As this will be your only chance to describe your project in detail,
+make sure that your report is a standalone document that fully describes
+your process and results. We also expect you to write high-quality code
+that is understandable to an outside reader. Coding collaboratively and
+actively reviewing code within the team will help with this!</p>
+</div>
+<div id="webpage-and-screencast" class="section level3">
+<h3>Webpage and screencast</h3>
+<p>You will create a webpage for your project. This should gives an
+overview of the project scope, data, approaches, visualizations, and
+other results, in a way that it accessible to a broad audience. Include
+the full report as a page in the website, so that readers can find a
+detailed explanation of your work.</p>
+<p>You will also create a two-minute narrated screencast illustrating
+your project (screencasts are videos of your computer screen with spoken
+audio explaining what is shown on the screen – see the <a
+href="https://www.rstudio.com/resources/webinars/">RStudio webinar
+page</a> for some examples). You may use slides, demonstrations, or any
+other content that is relevant to your project. Publish your screencast
+on youtube, vimeo, or another online platform, and embed the screencast
+in your website. The two-minute limit will be strictly enforced.</p>
+<p>For both the website and the screencast, your audience is classmates
+who worked on other projects. It will be helpful to put yourself in
+their shoes, and ask what information you think will be most
+interesting. We suggest you emphasize motivation, questions, and results
+over methods; after all, interested folks can view your complete project
+report on the same page.</p>
+</div>
+<div id="github-repo" class="section level3">
+<h3>GitHub repo</h3>
+<p>Your report and website should be written collaboratively using
+GitHub. A link to this repo should be included prominently on your
+website’s landing page.</p>
+</div>
+<div id="project-submission" class="section level3">
+<h3>Project submission</h3>
+<p>You will be asked to submit a link to your project website.</p>
+</div>
+<div id="peer-assessment" class="section level3">
+<h3>Peer assessment</h3>
+<p>It is important to provide positive feedback to people who worked
+hard for the good of the team and to also make suggestions to those you
+perceived not to be working as effectively on team tasks. We ask you to
+provide an honest assessment of the contributions of the members of your
+team, including yourself. The feedback you provide should reflect your
+judgment of each team member:</p>
+<ul>
+<li>Preparation - were they prepared during team meetings?</li>
+<li>Contribution - did they contribute productively to the team
+discussion and work?</li>
+<li>Respect - did they encourage others to contribute their ideas, and
+provide feedback in a constructive way?</li>
+<li>Flexibility - were they flexible when disagreements occurred?</li>
+</ul>
+</div>
+<div id="rubric" class="section level3">
+<h3>Rubric</h3>
+<p>Grading for the final project will roughly follow the rubric
+below:</p>
+<ul>
+<li><strong>60 points</strong> for general project quality and
+execution, including interest and motivation for the topic selected,
+level of difficulty and ambition in the project goals, clarity in the
+approach taken to address questions of interest, appropriateness of any
+exploratory and / or formal analysis, and attention to detail in the
+execution of project deliverables.</li>
+<li><strong>20 points</strong> for reproducibility, including clear
+description of where and how data were obtained, quality of code for
+data import, manipulation, and analysis, and structure of git repos for
+deliverables.</li>
+<li><strong>20 points</strong> for dissemination, focusing on project
+website, report, and screencast; in each, we will evaluate whether the
+deliverable had the appropriate level of detail, was clearly structured
+and easy to navigate, and was implemented in a polished way.</li>
+</ul>
+<p>As noted above, we anticipate that team members will recieve the same
+grade in most instances, but we may assign different grades to each
+group member based on peer assessments or public records of contribution
+(e.g. through commit histories).</p>
+</div>
+<div id="examples" class="section level3">
+<h3>Examples</h3>
+<p>The examples below are drawn from previous submissions in the to give
+an idea of the range of possible projects.</p>
+<div id="fall-2022" class="section level4">
+<h4>Fall 2022</h4>
+<ul>
+<li><a
+href="https://fish-carolyn.github.io/p8105_squirrel_final/">Project
+1</a></li>
+<li><a href="https://nishalingam.github.io/p8105_final-project/">Project
+2</a></li>
+<li><a
+href="https://pengshihui99.github.io/cholesterol.github.io/">Project
+3</a></li>
+<li><a
+href="https://skulali.github.io/operation_lorax.github.io/">Project
+4</a></li>
+<li><a
+href="https://mirahk.github.io/p8105_museums_finalproject.github.io/">Project
+5</a></li>
+</ul>
+</div>
+<div id="fall-2022-1" class="section level4">
+<h4>Fall 2022</h4>
+<ul>
+<li><a
+href="https://sopochkon1.github.io/sheroes_finalproject.github.io/About.html">Inequality
+in Film</a></li>
+<li><a
+href="https://st3431.github.io/abortionlaws.github.io/index.html">Abortion
+Laws</a></li>
+<li><a href="https://shunxie.github.io/life_expectancy.github.io/">Life
+Expectancy</a></li>
+<li><a
+href="https://yhuan196.github.io/survivor_analysis/index.html">Survivor
+Analysis</a></li>
+<li><a
+href="https://els2250.github.io/marathontraining.github.io/">Emma’s
+Marathon Training</a></li>
+</ul>
+</div>
+<div id="fall-2021" class="section level4">
+<h4>Fall 2021</h4>
+<ul>
+<li><a
+href="https://zacharykatz1.github.io/nyc_covid_trends/index.html">NYC
+COVID Trends</a></li>
+<li><a
+href="https://sarahyanwang.github.io/parking_violation.github.io/">Parking
+Violations</a></li>
+<li><a href="https://marionetteshf.github.io/DS_final.github.io/">Bus
+Delays</a></li>
+<li><a href="https://shaocongz.github.io/Final_Project/">Movie
+Recommender</a></li>
+<li><a
+href="https://jessrosenberg14.github.io/nyccitibikes.github.io/">Transportation
+Changes During COVID</a></li>
+</ul>
+</div>
+<div id="fall-2020" class="section level4">
+<h4>Fall 2020</h4>
+<ul>
+<li><a
+href="https://nab2194.github.io/aidworkers.github.io/final_report.html">Attacks
+on Aid</a></li>
+<li><a href="https://zl2974.github.io/hot_coffee/index.html">Risky
+Coffee??</a></li>
+<li><a
+href="https://byilma.github.io/nyc_microvehicle_injuries/index.html">Bikes
+in NYC</a></li>
+<li><a
+href="https://rebekahhughes97.github.io/policeviolence/index.html">Police
+Violence and Protest</a></li>
+<li><a href="https://mggn.github.io/vaccine.github.io/index.html">Trends
+in adult vaccination</a></li>
+</ul>
+</div>
+<div id="fall-2019" class="section level4">
+<h4>Fall 2019</h4>
+<ul>
+<li><a href="https://simmwill.github.io/evictions/">Evicted in
+Brooklyn</a></li>
+<li><a href="https://wx2233.github.io/p8105_final_project/">Vehicle
+Collision in New York City</a></li>
+<li><a href="https://suicideproj.github.io/index">Prevalence Trend of
+Suicide Commitments</a></li>
+<li><a
+href="https://yy3019.github.io/P8105_final_project.github.io/index">Fragility
+Index</a></li>
+<li><a
+href="https://tlayouni.github.io/debate_impact.github.io/index">Factors
+Influencing Candidate Performance …</a></li>
+<li><a
+href="https://ilz2105.github.io/disasters.github.io/index.html">Climate
+Change &amp; Natural Disasters in the United States</a></li>
+</ul>
+</div>
+<div id="fall-2018" class="section level4">
+<h4>Fall 2018</h4>
+<ul>
+<li><a href="https://alc2279.github.io/p8105_final_project/">The Heart
+Project</a></li>
+<li><a
+href="https://eshea6.github.io/us_gun_violence.github.io/index.html">Gun
+violence in the United States</a></li>
+<li><a href="https://nevilleq.github.io/p8105_fp_qzal/index.html">I
+thought you said your dog did not bite!</a></li>
+<li><a href="https://tiffttu.github.io/P8105_final_website/">Influential
+Factors in Colectomy Complications</a></li>
+<li><a
+href="https://vdl2103.github.io/hot_humid_baseball.github.io/">Hot and
+Humid Baseball: Pitch Speed and Heat in the MLB</a></li>
+</ul>
+</div>
+<div id="fall-2017" class="section level4">
+<h4>Fall 2017</h4>
+<ul>
+<li>Assessing Medicare Hospital Scores [<a
+href="https://candacehaghighi.github.io/Data_Science_Final/">website</a>
+| <a href="https://youtu.be/xTQKZP_36tE">screencast</a>]</li>
+<li>Factors Associated with Vehicle Accidents in New York City from 2014
+to 2016 [<a href="https://florazca.github.io/final_web/">website</a> |
+<a
+href="https://www.youtube.com/watch?v=gKTbngKyjgc">screencast</a>]</li>
+<li>The Alzheimers Project [<a
+href="https://ijeasthausen.github.io/website/index.html">website</a> |
+<a href="https://youtu.be/9KN3wHJv8DA">screencast</a>]</li>
+<li>Exposure to Lead in NYC Public School Water [<a
+href="https://lizzyagibson.github.io/p8105_final_project/">website</a> |
+<a href="https://youtu.be/VCaCc4Wtje8">screencast</a>]</li>
+<li>The relationship between restaurant geographical distribution and
+chronic disease outcomes in New York City [<a
+href="https://austinyue.github.io/DSFinalWebsite/">website</a> | <a
+href="https://youtu.be/zUc040x_0UQ">screencast</a>]</li>
+</ul>
+</div>
+</div>
+</div>
+
+<br><br>
+<footer>
+  <img src="images/p8105_stickers.png" alt="stickers" style="width:30%">
+  <br>
+  <p class="copyright text-muted" align="center">Copyright &copy; 2019 Jeff Goldsmith</p>
+</footer>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

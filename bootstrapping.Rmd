@@ -1,0 +1,349 @@
+---
+title: "Bootstrapping"
+output:
+  html_document: 
+    toc: true
+    toc_float: true
+---
+
+Bootstrapping is a popular resampling-based approach to statistical inference, and is helpful when usual statistical methods are intractable or inappropriate. The idea is to draw repeated samples from your original sample _with replacement_, thereby approximating the repeated sampling framework. Using list columns to store bootstrap samples is natural and provides a "tidy" approach to resampling-based inference.
+
+This is the third module in the [Linear Models](topic_linear_models.html) topic.
+
+```{r, echo = FALSE,message=FALSE,warning=FALSE}
+library(tidyverse)
+
+knitr::opts_chunk$set(
+	echo = TRUE,
+	warning = FALSE,
+  fig.width = 6,
+  fig.asp = .6,
+  out.width = "90%"
+)
+
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+
+scale_colour_discrete = scale_colour_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+```
+
+## Overview {.tabset .tabset-pills}
+
+### Learning Objectives
+
+Implement the bootstrap to obtain inference in non-standard cases using tools for iteration.
+
+### Slide Deck
+
+<div class="vid_container">
+  <iframe 
+    src="https://speakerdeck.com/player/dd7f4987ef08497696bdc9a66902203a" 
+    allowfullscreen 
+    frameborder="0"
+    class="video">
+  </iframe>
+</div>
+
+<div style="margin-bottom:5px"> <strong> <a href="https://speakerdeck.com/jeffgoldsmith/p8105-bootstrapping" title="Simulation and Bootstrapping" target="_blank">Bootstrapping</a> </strong> from <strong><a href="https://speakerdeck.com/jeffgoldsmith" target="_blank">Jeff Goldsmith</a></strong>. </div><br>
+
+***
+
+### Video Lecture
+
+<div class="vid_container">
+  <iframe 
+    src="https://www.youtube.com/embed/jOoNgeIDGWo"
+    frameborder="0" allowfullscreen class="video">
+  </iframe>
+</div>
+
+***
+
+## Example
+
+I'll write code for today's content in a new R Markdown document called `bootstrapping.Rmd` in the `linear_models` directory / repo. The code chunk below loads usual packages and sets a seed for reproducibility.
+
+```{r}
+library(tidyverse)
+library(p8105.datasets)
+
+set.seed(1)
+```
+
+### Bootstrapping
+
+Bootstrapping is based on the idea of repeated sampling which underlies most approaches to statistical inference. Traditionally, the distribution of a sample statistic (sample mean, SLR coefficients, etc.) for repeated, random draws from a population has been established theoretically. These theoretical distributions make some assumptions about the underlying population from which samples are drawn, or depend on large sample sizes for asymptotic results.
+
+In cases where the assumptions aren't met, or sample sizes aren't large enough for asymptotics to kick in, it is still necessary to make inferences using the sample statistic. In these cases, drawing repeatedly from the original population would be great -- one could simple draw a lot of samples and look at the empirical (rather than theoretical) distribution. But, as we said in [iteration and simulation](iteration_and_simulation.html), repeated sampling just doesn't happen in the real world.
+
+Repeated sampling _can_ happen on a computer though. To bootstrap, one draws repeated samples (with the same sample size) from the original sample **_with replacement_** to mimic the process of drawing repeated samples from the population. The bootstrap samples will differ from the original sample, and the sample statistic of interest (sample mean, SLR coefficients, etc.) can be computed for each bootstrap sample. Looking at the distribution of the statistic across samples gives a sense of the uncertainty in the estimate. 
+
+### Bootstrapping in SLR
+
+Let's create some simulated data. First I'll generate `x`, then an `error` sampled from a normal distribution, and then a response `y`; this all gets stored in `sim_df_const`. Then I'll modify this by multiplying the errors by a term that involves `x`, and create a new response variable `y`.
+
+```{r}
+n_samp = 250
+
+sim_df_const = 
+  tibble(
+    x = rnorm(n_samp, 1, 1),
+    error = rnorm(n_samp, 0, 1),
+    y = 2 + 3 * x + error
+  )
+
+sim_df_nonconst = sim_df_const |> 
+  mutate(
+  error = error * .75 * x,
+  y = 2 + 3 * x + error
+)
+```
+
+By generating data in this way, I'm creating one case in which the usual linear regression assumptions hold and one case in which they don't. The plot below illustrates the differences between the dataset. 
+
+```{r}
+sim_df = 
+  bind_rows(const = sim_df_const, nonconst = sim_df_nonconst, .id = "data_source") 
+
+sim_df |> 
+  ggplot(aes(x = x, y = y)) + 
+  geom_point(alpha = .5) +
+  stat_smooth(method = "lm") +
+  facet_grid(~data_source) 
+```
+
+These datasets have roughly the same overall variance, but the left panel shows data with constant variance and the right panel shows data with non-constant variance. For this reason, ordinary least squares should provide reasonable estimates in both cases, but inference is standard inference approaches may only be justified for the data on the left.
+
+The output below shows results from fitting simple linear regressions to both datasets.
+
+```{r}
+lm(y ~ x, data = sim_df_const) |> 
+  broom::tidy() |> 
+  knitr::kable(digits = 3)
+
+lm(y ~ x, data = sim_df_nonconst) |> 
+  broom::tidy() |> 
+  knitr::kable(digits = 3)
+```
+
+Despite the very different error structures, standard errors for coefficient estimates are similar in both cases! 
+
+We'll use the bootstrap to make inference for the data on the right. This is intended largely as an illustration for how to use the bootstrap in cases where the theoretical distribution is "unknown", although for these data in particular weighted least squares could be more appropriate.
+
+
+### Drawing one bootstrap sample
+
+Let's write a quick function to generate our bootstrap samples. This function should have the data frame as the argument, and should return a sample from that dataframe drawn with replacement.
+
+```{r}
+boot_sample = function(df) {
+  sample_frac(df, replace = TRUE)
+}
+```
+
+We should also do a quick check to see if this is working.
+
+```{r}
+boot_sample(sim_df_nonconst) |> 
+  ggplot(aes(x = x, y = y)) + 
+  geom_point(alpha = .5) +
+  stat_smooth(method = "lm")
+```
+
+That looks about right. In comparison with the original data, the bootstrap sample has the same characteristics but isn't a perfect duplicate -- some original data points appear more than once, others don't appear at all. 
+
+### Drawing many bootstrap samples
+
+We're going to draw repeated samples with replacement, and then analyze each of those samples separately. It would be really great to have a data structure that makes it possible to keep track of everything. Maybe a **_list column_**??!
+
+Let's give that a try:
+
+```{r}
+boot_straps = 
+  tibble(strap_number = 1:1000) |> 
+  mutate(
+    strap_sample = map(strap_number, \(i) boot_sample(df = sim_df_nonconst))
+  )
+
+boot_straps
+```
+
+We can do a few of quick checks to make sure this has worked as intended. First we'll look at a couple of bootstrap samples. 
+
+```{r}
+boot_straps |> 
+  slice(1:3) |> 
+  mutate(strap_sample = map(strap_sample, arrange, x)) |> 
+  pull(strap_sample)
+```
+
+Seems okay -- some values are repeated, some don't appear in both datasets. Next I'll use `ggplot` to show some of these datasets, and to include a linear fit for each.
+
+```{r}
+boot_straps |> 
+  slice(1:3) |> 
+  unnest(strap_sample) |> 
+  ggplot(aes(x = x, y = y)) + 
+  geom_point(alpha = .5) +
+  stat_smooth(method = "lm", se = FALSE) +
+  facet_grid(~strap_number) 
+```
+
+This shows some of the differences across bootstrap samples, and shows that the fitted regression lines aren't the same for every bootstrap sample.
+
+
+### Analyzing bootstrap samples
+
+My goal, of course, isn't to analyze bootstrap samples by plotting them -- I'd like to get a sense of the variability in estimated intercepts and slopes across all my bootstrap samples.
+
+To do that, I'll use the analytic pipeline we established when looking at nested datasets in [linear models](linear_models.html): fit the model; tidy the output; unnest and examine the results. The code chunk below uses this pipeline to look at bootstrap standard errors for the estimated regression coefficients. 
+
+```{r}
+bootstrap_results = 
+  boot_straps |> 
+  mutate(
+    models = map(strap_sample, \(df) lm(y ~ x, data = df) ),
+    results = map(models, broom::tidy)) |> 
+  select(-strap_sample, -models) |> 
+  unnest(results) 
+
+bootstrap_results |> 
+  group_by(term) |> 
+  summarize(boot_se = sd(estimate)) |> 
+  knitr::kable(digits = 3)
+```
+
+Comparing these to the results of ordinary least squares, the standard error for the intercept is much smaller and the standard error for the intercept is a bit larger. This is reasonable, given the non-constant variance in the data given smaller residuals around zero and larger residuals in the the tails of the `x` distribution.
+
+I can also use the estimates across bootstrap samples to construct a confidence interval. For a 95% CI, we might try to exclude the lower and upper 2.5% of the distribution of parameter estimates across "repeated" samples. The code below will do that. 
+
+```{r}
+bootstrap_results |> 
+  group_by(term) |> 
+  summarize(
+    ci_lower = quantile(estimate, 0.025), 
+    ci_upper = quantile(estimate, 0.975))
+```
+
+
+For a simple linear regression, we can show the fitted lines for each bootstrap sample to build intuition for these results. 
+
+```{r}
+boot_straps |> 
+  unnest(strap_sample) |> 
+  ggplot(aes(x = x, y = y)) + 
+  geom_line(aes(group = strap_number), stat = "smooth", method = "lm", se = FALSE, alpha = .1, color = "blue") +
+  geom_point(data = sim_df_nonconst, alpha = .5)
+```
+
+In comparison to the standard error bands in our previous plot (which are based on OLS), the distribution of regression lines is narrower near $x = 0$ and wider at the ends of the $x$ distribution.
+
+### `bootstrap`
+
+Bootstrapping is common enough that it's been automated, to some degree, in the `modelr::boostrap` function. This function makes it easy to draw bootstrap samples, and stores them in a mostly-helpful way -- as a `resample` object that can be converted to and treated like a data frame. (This keeps you from having to actually store 1000 dataframes, and saves a lot of memory on your computer.)
+
+```{r}
+boot_straps = 
+  sim_df_nonconst |> 
+  modelr::bootstrap(n = 1000)
+
+boot_straps |> pull(strap) |> nth(1)
+boot_straps |> pull(strap) |> nth(1) |> as_tibble()
+```
+
+Let's repeat our analysis pipeline using the `bootstrap` function instead of our own process for drawing samples with replacement.
+
+```{r}
+sim_df_nonconst |> 
+  modelr::bootstrap(n = 1000) |> 
+  mutate(
+    models = map(strap, \(df) lm(y ~ x, data = df) ),
+    results = map(models, broom::tidy)) |> 
+  select(-strap, -models) |> 
+  unnest(results) |> 
+  group_by(term) |> 
+  summarize(boot_se = sd(estimate))
+```
+
+The results are the same (up to resampling variability), and the code to get here is pretty clean.
+
+Also, check this out -- to bootstrap the dataset with constant error variance, we only have to change the input dataframe!
+
+```{r}
+sim_df_const |> 
+  modelr::bootstrap(n = 1000) |> 
+  mutate(
+    models = map(strap, \(df) lm(y ~ x, data = df)),
+    results = map(models, broom::tidy)) |> 
+  select(-strap, -models) |> 
+  unnest(results) |> 
+  group_by(term) |> 
+  summarize(boot_se = sd(estimate))
+```
+
+These results generally agree with the output of the OLS procedure, which is nice. 
+
+
+
+### Airbnb data
+
+As a final example, we'll revisit the [Airbnb data](dataset_airbnb.html). The code chunk below loads and tidies the data. 
+
+```{r}
+data("nyc_airbnb")
+
+nyc_airbnb = 
+  nyc_airbnb |> 
+  mutate(stars = review_scores_location / 2) |> 
+  rename(
+    borough = neighbourhood_group,
+    neighborhood = neighbourhood) |> 
+  filter(borough != "Staten Island") |> 
+  drop_na(price, stars) |> 
+  select(price, stars, borough, neighborhood, room_type)
+```
+
+I'll make a quick plot showing these data, with particular emphasis on the features I'm interested in analyzing: `price` as an outcome with `stars` and `room_type` as covariates.
+
+```{r}
+nyc_airbnb |> 
+  ggplot(aes(x = stars, y = price, color = room_type)) + 
+  geom_point() 
+```
+
+In this plot (and in [linear models](linear_models.html), we noticed that some large outliers in price might affect estimates and inference for the association between star rating and price. Because estimates are likely to be sensitive to those outliers and "usual" rules for inference may not apply, the code chunk below uses the bootstrap to examine the distribution of regression coefficients under repeated sampling.
+
+```{r}
+nyc_airbnb |> 
+  filter(borough == "Manhattan") |> 
+  modelr::bootstrap(n = 1000) |> 
+  mutate(
+    models = map(strap, \(df) lm(price ~ stars + room_type, data = df)),
+    results = map(models, broom::tidy)) |> 
+  select(results) |> 
+  unnest(results) |> 
+  filter(term == "stars") |> 
+  ggplot(aes(x = estimate)) + geom_density()
+```
+
+This distribution has a heavy tail extending to low values and a bit of a "shoulder", features that may be related to the frequency with which large outliers are included in the bootstrap sample. 
+
+
+## Other materials
+
+List columns take some getting used to; there are some materials to help with that.
+
+* R for Data Science has a chapter on [fitting many models](http://r4ds.had.co.nz/many-models.html)
+* Jenny Bryan's [purrr tutorial](https://jennybc.github.io/purrr-tutorial/) has useful list-column examples
+
+Boostrapping and resampling are also new concepts; the materials below explore these using tidyverse approaches. 
+
+* The [`modelr` package](https://github.com/tidyverse/modelr) has a page
+* The bootsrapping [vignette](https://cran.r-project.org/web/packages/broom/vignettes/bootstrapping.html) uses a framework similar to the one we used
+
+The code that I produced working examples in lecture is [here](https://github.com/jeff-goldsmith/linear_models).

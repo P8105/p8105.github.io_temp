@@ -1,0 +1,13 @@
+---
+title: "Collaboration and dissemination"
+---
+
+Much of the content through this point has focused on the work of a single individual. Data science work, however, often happens as part of a team. Moreover, the products of data science projects (including code for analyses as well as a discussion of results) are typically made public. This topic focuses on collaboration using Git and GitHub, either as an individual or as part of a team; best practices for team data science; and dissemination of products via a website. 
+
+The topic is made up of the following components:
+
+* [Git and GitHub](git.html)
+* [Team data science](team_data_science.html)
+* [Making websites](making_websites.html)
+
+The slack channel for this topic is [here](https://p8105-fall2017.slack.com/messages/C7G7KR6MP).

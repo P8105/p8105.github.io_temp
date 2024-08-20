@@ -1,0 +1,13 @@
+---
+title: "Iteration"
+---
+
+When writing code in general, and when implementing modern statistical approaches specifically, you'll find yourself doing the same thing over and over and _over_ and **_over_**. In these cases, abstracting what you're doing into a function and then using that function across a lot of iterations can simplify your code and make analysis much easier. Here we'll cover functions in R, iteration using loops and `map`, list columns, and simulations.
+
+This topic is made up of the following components:
+
+* [Writing functions](writing_functions.html)
+* [Iteration and list columns](iteration_and_listcols.html)
+* [Simulation](simulation.html)
+
+The code that I produced working examples in lecture is [here](https://github.com/p8105/iteration).

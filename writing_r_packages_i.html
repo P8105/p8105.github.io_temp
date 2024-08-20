@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Writing R Packages I</title>
+
+<script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" />
+<script defer src="https://use.fontawesome.com/releases/v5.0.3/js/all.js"></script>
+<script defer src="https://use.fontawesome.com/releases/v5.0.0/js/v4-shims.js"></script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-151578452-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-151578452-1');
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">P8105</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="schedule.html">Schedule</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Topics
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="topic_what_is_data_science.html">What is Data Science?</a>
+    </li>
+    <li>
+      <a href="topic_building_blocks.html">Building Blocks</a>
+    </li>
+    <li>
+      <a href="topic_data_wrangling_i.html">Data Wrangling I</a>
+    </li>
+    <li>
+      <a href="topic_visualization_and_eda.html">Visualization and EDA</a>
+    </li>
+    <li>
+      <a href="topic_data_wrangling_ii.html">Data Wrangling II</a>
+    </li>
+    <li>
+      <a href="topic_interactivity.html">Interactivity</a>
+    </li>
+    <li>
+      <a href="topic_iteration.html">Iteration</a>
+    </li>
+    <li>
+      <a href="topic_linear_models.html">Linear Models</a>
+    </li>
+    <li>
+      <a href="topic_other_material.html">Other Materials</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Datasets
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="dataset_airbnb.html">Airbnb</a>
+    </li>
+    <li>
+      <a href="dataset_brfss.html">BRFSS</a>
+    </li>
+    <li>
+      <a href="dataset_fivethirtyeight.html">FiveThirtyEight</a>
+    </li>
+    <li>
+      <a href="dataset_instacart.html">Instacart</a>
+    </li>
+    <li>
+      <a href="dataset_mr_trash_wheel.html">Mr. Trash Wheel</a>
+    </li>
+    <li>
+      <a href="dataset_noaa.html">NOAA</a>
+    </li>
+    <li>
+      <a href="dataset_restaurant_inspections.html">NYC Restaurant Inspections</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="homework_and_projects.html">Homework and Projects</a>
+</li>
+<li>
+  <a href="course_communication.html">Communication</a>
+</li>
+<li>
+  <a href="https://github.com/P8105/p8105.github.io">
+    <span class="fa fa-github"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Writing R Packages I</h1>
+
+</div>
+
+
+<p>If you write more than two functions, you need a package – this will
+remind you what functions do and how they interact with each other, help
+you keep track of inputs and outputs, and, if you want to share you
+code, allow you to do so in a standard format. This module will take us
+from a few functions to a complete package.</p>
+<p>This is the first of two lectures on writing R packages.</p>
+<div id="overview" class="section level2 tabset tabset-pills">
+<h2 class="tabset tabset-pills">Overview</h2>
+<div id="learning-objectives" class="section level3">
+<h3>Learning Objectives</h3>
+<p>Create an R package from scratch!</p>
+</div>
+<div id="slide-deck" class="section level3">
+<h3>Slide Deck</h3>
+<div class="vid_container">
+<p><iframe 
+    src="https://speakerdeck.com/player/130d6e5970124547bcc8e6f28936ffdf" 
+    allowfullscreen 
+    frameborder="0"
+    class="video"> </iframe></p>
+</div>
+<div style="margin-bottom:5px">
+<strong>
+<a href="https://speakerdeck.com/jeffgoldsmith/p8105-writing-r-packages-i" title="Writing R Packages I" target="_blank">Writing
+R Packages I</a> </strong> from
+<strong><a href="https://speakerdeck.com/jeffgoldsmith" target="_blank">Jeff
+Goldsmith</a></strong>.
+</div>
+<p><br></p>
+<hr />
+</div>
+<div id="video-lecture" class="section level3">
+<h3>Video Lecture</h3>
+<div class="vid_container">
+<p><iframe 
+    src="https://www.youtube.com/embed/3LXxb9-JuAM"
+    frameborder="0" allowfullscreen class="video"> </iframe></p>
+</div>
+<hr />
+</div>
+</div>
+<div id="example" class="section level2">
+<h2>Example</h2>
+<p>Rather than jumping into how to organize this material, we’ll start
+by motivating the need for an R package by revisiting an example from <a
+href="topic_iteration.html">Iteration</a>. There, we wrote a short
+function to simulate data from a simple linear regression; this function
+returns a data frame containing the sample size and estimated
+coefficients for the simualted dataset.</p>
+<pre class="r"><code>sim_mean_sd = function(n, mu = 2, sigma = 3) {
+  
+  sim_data = tibble(
+    x = rnorm(n, mean = mu, sd = sigma),
+  )
+  
+  sim_data %&gt;% 
+    summarize(
+      mu_hat = mean(x),
+      sigma_hat = sd(x)
+    )
+}</code></pre>
+<p>You can download an R scripts containing <a
+href="./resources/sim_mean_sd.R"><code>sim_mean_sd</code></a>.</p>
+<p>We used these functions to examine the properties of the sample
+mean.</p>
+<pre class="r"><code>library(tidyverse)
+
+sim_results = 
+  tibble(sample_size = c(30, 60, 120, 240)) %&gt;% 
+  mutate(
+    output_lists = map(.x = sample_size, ~rerun(1000, sim_mean_sd(n = .x))),
+    estimate_dfs = map(output_lists, bind_rows)) %&gt;% 
+  select(-output_lists) %&gt;% 
+  unnest(estimate_dfs)
+
+sim_results %&gt;% 
+  mutate(
+    sample_size = str_c(&quot;n = &quot;, sample_size),
+    sample_size = fct_inorder(sample_size)) %&gt;% 
+  ggplot(aes(x = sample_size, y = mu_hat, fill = sample_size)) + 
+  geom_violin()</code></pre>
+<p>It’s really easy to forget what these functions do and how to work
+with them, even in the space of a couple of weeks. In this case it’s not
+<em>too</em> bad to look back at the code, but for more complex
+functions it can be very challenging. That’s why writing packages is
+helpful.</p>
+<div id="create_package" class="section level3">
+<h3><code>create_package()</code></h3>
+<p>I’ll create a new package skeleton called
+<code>example.package</code> using
+<code>usethis::create_package()</code>.</p>
+<pre class="r"><code>usethis::create_package(&quot;~/Desktop/example.package&quot;)</code></pre>
+<p>(<strong>Note</strong>: you might have thought I was going to call
+this <code>example_package</code> in keeping with <em>literally
+everything else in the whole course</em>. You’d be right; that’s exactly
+what I was going to do. But early on CRAN decided not to let underscores
+in package names and that’s one of those things that just probably won’t
+change. Putting <code>.</code>s in package names causes other problems
+and I would usually avoid it, but it seemed like the best option in this
+case. So here we are, stuck with <code>example.package</code>.)</p>
+<p>Take a look at the directory that <code>create_package()</code>
+creates. This contains <code>DESCRIPTION</code> and
+<code>NAMESPACE</code> files, an empty <code>R</code> directory, and an
+R Project – everything you need to get a package started.</p>
+<p>Open the R Project, and notice the build tab. RStudio has a lot of
+helpful built-in tools for package development, which we’ll use
+frequently. Like other things we’ve seen, these are often shortcuts for
+commands that do the same stuff.</p>
+</div>
+<div id="add-function-and-document" class="section level3">
+<h3>Add function and document</h3>
+<p>My “package” currently doesn’t do anything, so I’m going to copy the
+<code>.R</code> file above into the <code>R</code> directory. Putting
+all your functions in a package keeps them from cluttering up your
+scripts and R Markdown documents, but packages aren’t really useful
+without documentation.</p>
+<p>Open <code>sim_regression.R</code> and put your cursor somewhere
+inside the function. In RStudio, go to Code &gt; Insert Roxygen
+Skeleton; this will add a bunch of commented lines above the function.
+We’ll use the <code>roxygen2</code> package to convert these specially
+formatted lines into the file <code>/man/sim_mean_sd.Rd</code>, which
+will become the help page accessed using <code>?sim_mean_sd</code>.</p>
+<p>After updating the title, writing a short summary of the function,
+describing input parameters and the return object (ignore
+<code>@export</code> and <code>@examples</code> for now), you should
+have something like the following:</p>
+<pre class="r"><code>#&#39; Generate sample mean and SD
+#&#39;
+#&#39; Simulates data from a normal distribution with a  user-defined
+#&#39; sample size, true mean, and true SD. Reports the sample mean and
+#&#39; SD.
+#&#39;
+#&#39; @param n sample size
+#&#39; @param mu true mean
+#&#39; @param sigma true standard deviation
+#&#39;
+#&#39; @return tibble with two rows, containing sample mean and SD
+#&#39; @export
+#&#39;
+#&#39; @examples</code></pre>
+<p>Once the roxygen comments are in place, use
+<code>devtools::document()</code> in the console or Build &gt; More &gt;
+Document to create help pages for the function. In the directory for the
+package, you should find a new <code>/man/</code> subdirectory, with a
+file for each function with the extension <code>.Rd</code>. These are
+the documentation files; you can open them if you want, but don’t edit
+them! Always change your documentation in the roxygen comments – doing
+so keeps your functions and documentation in the same place, which makes
+it easier to stay organized and up to date.</p>
+<p>As you’re writing documentation, keep in mind that you’ll need to
+understand how your functions work later – this is another case where
+you’re collaborating with “future you”, so anything you do now to make
+this clear will save you time in the long run! Illustrative examples are
+great for this! You can edit the roxygen comments to include the lines
+below, then run <code>devtools::document()</code>, to add an example to
+the help file.</p>
+<pre class="r"><code>#&#39; @examples
+#&#39; # simulate a single dataset
+#&#39; sim_mean_sd(30, 2, 3)</code></pre>
+<p>Now we have a function and some documentation, and need to install
+the package. Click Build &gt; Install and Restart; this will install the
+package and restart R – in particular, your global environment should be
+empty. You should be able to run the code below:</p>
+<pre class="r"><code>library(tidyverse)
+library(example.package)
+
+sim_mean_sd(n = 30) 
+?sim_mean_sd</code></pre>
+<p>This is great – we’ve made the functions accessible to R through
+<code>example.package</code>!! And there’s documentation for it!</p>
+<p>Right now, you have a package that contains a function that you can
+use. If someone else installed this, they could use the function as
+well. So, in a lot of ways, everything after this is just extra – stuff
+that will make your package better and more user-friendly, and that is
+not bad to get the hang of. But if you just stop here … congrats, you
+made an R package!</p>
+</div>
+<div id="package-description" class="section level3">
+<h3>Package description</h3>
+<p>The <code>DESCRIPTION</code> file should mostly be edited by hand.
+This is higher-level information about the package, and <a
+href="http://r-pkgs.had.co.nz/description.html">there’s a lot here</a>.
+Some of this really only matters if you plan to share your package with
+others, but it’s quick and easy to fill in (and you never know when a
+personal package will become public). A few quick points:</p>
+<ul>
+<li><a
+href="http://r-pkgs.had.co.nz/description.html#pkg-description">There
+are rules</a> for the title and description</li>
+<li>At this point, you’re probably the only author</li>
+<li>Start with version number <code>0.1.0</code>; Jeff Leek’s guide has
+some nice thoughts about <a
+href="https://github.com/jtleek/rpackages#versioning-your-package">versioning</a>
+based on Bioconductor.</li>
+<li>Maybe add a licence – run
+<code>usethis::use_mit_license("Jeff Goldsmith")</code></li>
+</ul>
+<p>Once you’ve done all this, install and restart.</p>
+</div>
+<div id="more-functions" class="section level3">
+<h3>More functions</h3>
+<p>Right now, <code>example.package</code> consists of a single function
+to simulate data from a Normal distribution and return the sample mean
+and SD. To build on this framework, we’ll add a new function that
+simulates from a different data generating mechanism.</p>
+<p>The <code>sim_bern_mean</code> function has the same general
+structure as <code>sim_mean_sd()</code> but simulates data from a
+Bernoulli distribution and returns the sample average (download the
+script <a href="./resources/sim_bern_mean.R">here</a>).</p>
+<pre class="r"><code>sim_bern_mean = function(n, prob) {
+  
+  sim_data = tibble(
+    x = rbinom(n, 1, prob)
+  )
+  
+  sim_data %&gt;% 
+    summarize(p_hat = mean(x))
+}</code></pre>
+<p>To add this to <code>example.package</code>, we need to copy the
+script to <code>/R/</code>, write some documentation using roxygen
+comments, use <code>document()</code> to create the <code>.Rd</code>
+file, and install + restart. After these steps, I can check that the
+function works the way I intended.</p>
+<pre class="r"><code>library(tidyverse)
+library(example.package)
+
+rm(list = ls())
+
+sim_bern_mean(25, .9)</code></pre>
+</div>
+<div id="dependencies" class="section level3">
+<h3>Dependencies</h3>
+<p>Our functions depend on other functions in <code>tibble</code>,
+<code>magrittr</code>, and <code>dplyr</code>, but we haven’t made this
+explicit. As a consequence, opening a new R session, loading only
+<code>example.package</code>, and running the functions as above will
+produce an error. We’ll talk more about the details of this process
+later, but for now we simply need to know that our package depends on
+those packages.</p>
+<p>The best way to make your package’s dependencies known to R is to use
+<code>package::function()</code> everywhere in your code
+(e.g. <code>tibble::tibble()</code>). This makes it clear which
+functions exist outside your package and can help prevent errors if
+multiple packages have functions with the same name.</p>
+<p>That strategy can be a bit heavy-handed if you use the same function
+a lot, or if you use lots of functions from the same package. In these
+cases, you can edit the roxygen comments to include
+<code>@importFrom package function</code> or
+<code>@import package</code>. These make it increasingly less clear
+which functions come from which package (especially
+<code>@import</code>) but will make the relevant functions available. In
+<code>example.package</code>, I’ll use <code>tibble::tibble()</code> to
+be clear about where this function comes from;
+<code>importFrom magrittr "%&gt;%"</code> to add the pipe; and
+<code>@import dplyr</code> for <code>summarize()</code>.</p>
+<p>These steps make it clear which packages you depend on, but you still
+need R to include them when you load your package. To address this
+point, add dependencies to the <code>Imports</code> field of the
+<code>DESCRIPTION</code>. This is a step you could do “by hand” since
+we’ve made edits to the file previously; instead we’ll run the following
+lines in the console. Check the <code>DESCRIPTION</code> before and
+after!</p>
+<pre class="r"><code>devtools::use_package(&quot;dplyr&quot;)
+devtools::use_package(&quot;magrittr&quot;)
+devtools::use_package(&quot;tibble&quot;)</code></pre>
+<p>To check that this has worked, restart R and run the following
+lines.</p>
+<pre class="r"><code>library(example.package)
+
+sim_results = 
+  tibble(sample_size = c(30, 60, 120, 240)) %&gt;% 
+  mutate(
+    output_lists = map(.x = sample_size, ~rerun(1000, sim_bern_mean(n = .x, prob = .85))),
+    estimate_dfs = map(output_lists, bind_rows)) %&gt;% 
+  select(-output_lists) %&gt;% 
+  unnest(estimate_dfs)
+
+sim_results %&gt;% 
+  mutate(
+    sample_size = str_c(&quot;n = &quot;, sample_size),
+    sample_size = fct_inorder(sample_size)) %&gt;% 
+  ggplot(aes(x = sample_size, y = p_hat, fill = sample_size)) + 
+  geom_violin()</code></pre>
+<p>Figuring out exactly what you depend on can take some getting used
+to, but it’s a critical step for ensuring your package really is
+self-contained. You should also try to limit your dependencies, both to
+keep your package simple and to make it easier to maintain if the
+dependencies are updated.</p>
+</div>
+<div id="deploy-on-github" class="section level3">
+<h3>Deploy on GitHub</h3>
+<p>I created the package in a folder using a workflow that’s a bit
+different from usual, and so right now my package isn’t on GitHub. I’m
+going to fix that using <code>usethis</code> in a couple of ways. I’ll
+run these lines in the console of the RStudio showing the project /
+package:</p>
+<pre class="r"><code>usethis::use_git()
+usethis::use_github()</code></pre>
+<p>Together (and after some input), these will initialize git in the
+directory and create a linked repository on GitHub.</p>
+<p>I use git and GitHub because that’s how I do all my work. In the case
+of package development, this turns out to have benefits beyond the usual
+version control stuff – you can install R packages directly from
+GitHub!!</p>
+<p>Try installing <code>example.package</code> using the lines
+below.</p>
+<pre class="r"><code>devtools::install_github(repo = &quot;jeff-goldsmith/example.package&quot;)</code></pre>
+<p>GitHub has become a common way to make R packages publicly available.
+Packages that exist only on GitHub have a lot fewer guarantees than
+packages on CRAN and may be less stable, but can be useful anyway
+(especially if they’re from a developer you trust). You can also
+frequently access the “developer versions” of CRAN packages using GitHub
+to get the latest features (again with the caveat that these might be
+less stable).</p>
+</div>
+<div id="readme" class="section level3">
+<h3>README</h3>
+<p>The information in the package documentation can be difficult for
+someone to find and read quickly, so it’s helpful to add a short
+description if you intend to make your package useful for others. Files
+named <code>README.md</code> are handled in a special way by GitHub, and
+are perfect for this purpose.</p>
+<p>Create a template README using
+<code>usethis::use_readme_rmd()</code>, and then edit so that someone
+who happens across the repo will know what the package does and how it
+works. I also like to include instructions for installing from GitHub
+that can be copy-and-pasted, so folks don’t have to track down your user
+and repo names.</p>
+<p>After making edits, knit the README, commit, push to remote, and
+check out the GitHub repo!</p>
+</div>
+</div>
+<div id="other-materials" class="section level2">
+<h2>Other materials</h2>
+<p>Writing packages is a major activity for folks who use R. It seems
+intimidating at first, and really understanding everything can be a lot
+of work. Thankfully lots of people have tried to make things easy and
+clear.</p>
+<ul>
+<li>Hilary Parker’s <a
+href="https://hilaryparker.com/2014/04/29/writing-an-r-package-from-scratch/">blog
+post</a> on writing a blog post from scratch makes it clear how easy
+writing a package can be – this is usually where I start new
+packages!</li>
+<li>Jeff Leek’s <a href="https://github.com/jtleek/rpackages">package
+development guide</a> has a lot of great tips about design, but isn’t
+really a how-to</li>
+<li>Jenny Bryan has, not surprisingly, some <a
+href="http://stat545.com/packages00_index.html">slides</a>, a short <a
+href="http://stat545.com/cm109-110-notes_and_exercises.html">illustrated
+example</a>, and a longer <a
+href="http://stat545.com/packages06_foofactors-package.html">illustrated
+example</a>, all of which are excellent</li>
+<li>Hadley Wickham has a whole book on R packages; for now, the most
+relevant chapters are the <a
+href="http://r-pkgs.had.co.nz/intro.html">intro</a> and <a
+href="http://r-pkgs.had.co.nz/package.html">package overview</a>; the
+chapters on <a href="http://r-pkgs.had.co.nz/r.html">R code</a>, the <a
+href="http://r-pkgs.had.co.nz/description.html">DESCRIPTION</a>, and the
+<a href="http://r-pkgs.had.co.nz/man.html">help pages</a> may also be
+useful.</li>
+<li>The <a
+href="https://www.tidyverse.org/articles/2017/11/usethis-1.0.0/"><code>usethis</code>
+package</a> should automate a lot of the package writing process,
+although I haven’t used it myself</li>
+<li>Finally, RStudio has a <a
+href="https://www.rstudio.com/wp-content/uploads/2015/03/devtools-cheatsheet.pdf"><code>devtools</code>
+cheatsheet</a></li>
+</ul>
+<p>The code that I produced working examples in lecture is <a
+href="https://github.com/p8105/example.package">here</a>.</p>
+</div>
+
+<br><br>
+<footer>
+  <img src="images/p8105_stickers.png" alt="stickers" style="width:30%">
+  <br>
+  <p class="copyright text-muted" align="center">Copyright &copy; 2019 Jeff Goldsmith</p>
+</footer>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

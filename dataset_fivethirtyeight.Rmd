@@ -1,0 +1,70 @@
+---
+title: "FiveThirtyEight: Hack Your Way to Scientific Glory"
+output:
+  html_document: 
+    toc: true
+    toc_float: true
+---
+
+
+The version of the data that we will use in this class can be found [here](./data/fivethirtyeight_datasets.zip).
+
+
+## Context
+
+There has recently been a lot of media coverage about a "crisis in science" related to results of scientific studies that can't be reproduced or studies that make headlines, only to later be retracted for a variety of reasons. [FiveThirtyEight](http://fivethirtyeight.com/) is a website originally founded by Nate Silver, a statistician who came to fame first through his work in baseball analytics and later as a political analyst and blogger, which focuses on analytic issues in politics, economics, and sports. In response to this so called crisis, [FiveThirtyEight](http://fivethirtyeight.com/) wrote a rebuttal piece pointing out that science isn't broken, but is actually just very hard to get right.  [Part one](https://fivethirtyeight.com/features/science-isnt-broken/#part1) of the three part series was about the problem of p-hacking, which occurs when researchers, knowingly or not, play around with the variables included and the form of the data until they find a significant association that supports their beliefs. [The post](https://fivethirtyeight.com/features/science-isnt-broken/#part1) includes an interactive tool where the reader can select the political party of interest and then can make a series of choices about both types and forms of variables to consider in the search for a significant association between political party and economic success. 
+
+The data posted here underlies this interactive graphic, and was obtained from the post's authors.
+
+
+## Data description
+
+There are 6 datasets in csv format.
+
+The file "cpi" contains 822 observations of 2 variables related to the consumer price index, which is used as a measure of inflation:
+
+- `DATE`: date of the observation
+- `VALUE`: the value of the consumer price index on the associated date
+
+The file "GDP" contains 273 observations of 2 variables related to the gross domestic product (GDP), a measure of economic production:
+
+- `DATE`: date of the observation
+- `VALUE`: the GDP on the associated date
+
+The file "pols-month" contains 822 observations of 9 variables related to the number of national politicians who are democratic or republican at any given time:
+
+- `mon`: date of the count
+- `prez_gop`: indicator of whether the president was republican on the associated date (1 = yes, 0 = no)
+- `gov_gop`: the number of republican governors on the associated date
+- `sen_gop`: the number of republican senators on the associated date
+- `rep_gop`: the number of republican representatives on the associated date
+- `prez_dem`: indicator of whether the president was democratic on the associated date (1 = yes, 0 = no)
+- `gov_dem`: the number of democratic governors on the associated date
+- `sen_dem`: the number of democratic senators on the associated date
+- `rep_dem`: the number of democratic representatives on the associated date
+
+The file "recessions" contains 11 observations of 2 variables, representing the dates of 11 individual recessions. Each row of the dataset has a date for the start of a recession and a date for the end of the recession:
+
+- `start`: start date of a recession
+- `end`: end date of a recession
+
+The file "snp" contains 787 observations of 2 variables related to Standard & Poor's stock market index (S&P), often used as a representative measure of stock market as a whole:
+
+- `date`: the date of the observation
+- `close`: the closing values of the S&P stock index on the associated date
+
+The file "unemployment" contains 68 observations of 13 variables:
+
+- `Year`: the year of the measurements on that row
+- `Jan`: percentage of unemployment in January of the associated year
+- `Feb`: percentage of unemployment in February of the associated year
+- `Mar`: percentage of unemployment in March of the associated year
+- `Apr`: percentage of unemployment in April of the associated year
+- `May`: percentage of unemployment in May of the associated year
+- `Jun`: percentage of unemployment in June of the associated year
+- `Jul`: percentage of unemployment in July of the associated year
+- `Aug`: percentage of unemployment in August of the associated year
+- `Sep`: percentage of unemployment in September of the associated year
+- `Oct`: percentage of unemployment in October of the associated year
+- `Nov`: percentage of unemployment in November of the associated year
+- `Dec`: percentage of unemployment in December of the associated year

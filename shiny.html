@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Shiny</title>
+
+<script src="site_libs/header-attrs-2.24/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" />
+<script defer src="https://use.fontawesome.com/releases/v5.0.3/js/all.js"></script>
+<script defer src="https://use.fontawesome.com/releases/v5.0.0/js/v4-shims.js"></script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-151578452-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-151578452-1');
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">P8105</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="schedule.html">Schedule</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Topics
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="topic_what_is_data_science.html">What is Data Science?</a>
+    </li>
+    <li>
+      <a href="topic_building_blocks.html">Building Blocks</a>
+    </li>
+    <li>
+      <a href="topic_data_wrangling_i.html">Data Wrangling I</a>
+    </li>
+    <li>
+      <a href="topic_visualization_and_eda.html">Visualization and EDA</a>
+    </li>
+    <li>
+      <a href="topic_data_wrangling_ii.html">Data Wrangling II</a>
+    </li>
+    <li>
+      <a href="topic_interactivity.html">Interactivity</a>
+    </li>
+    <li>
+      <a href="topic_iteration.html">Iteration</a>
+    </li>
+    <li>
+      <a href="topic_linear_models.html">Linear Models</a>
+    </li>
+    <li>
+      <a href="topic_other_material.html">Other Materials</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Datasets
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="dataset_airbnb.html">Airbnb</a>
+    </li>
+    <li>
+      <a href="dataset_brfss.html">BRFSS</a>
+    </li>
+    <li>
+      <a href="dataset_fivethirtyeight.html">FiveThirtyEight</a>
+    </li>
+    <li>
+      <a href="dataset_instacart.html">Instacart</a>
+    </li>
+    <li>
+      <a href="dataset_mr_trash_wheel.html">Mr. Trash Wheel</a>
+    </li>
+    <li>
+      <a href="dataset_noaa.html">NOAA</a>
+    </li>
+    <li>
+      <a href="dataset_restaurant_inspections.html">NYC Restaurant Inspections</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="homework_and_projects.html">Homework and Projects</a>
+</li>
+<li>
+  <a href="course_communication.html">Communication</a>
+</li>
+<li>
+  <a href="https://github.com/P8105/p8105.github.io">
+    <span class="fa fa-github"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore"><code>Shiny</code></h1>
+
+</div>
+
+
+<p><code>Shiny</code> is RStudio’s framework for creating interactive
+graphics and web-like applications. There are several ways to use
+<code>Shiny</code>, and we’re going to focus on how to use it in
+conjunction with <code>flexdashboard</code> to make interactive
+dashboards within R Markdown.</p>
+<p>This page is related to content in <a
+href="plotly_and_dashboards.html">plotly and dashboards</a>.</p>
+<div id="some-slides" class="section level2">
+<h2>Some slides</h2>
+<script async class="speakerdeck-embed" data-id="c1b6fe0d9dd44fa494b5004c839798c2" data-ratio="1.77777777777778" src="//speakerdeck.com/assets/embed.js"></script>
+<div style="margin-bottom:5px">
+<strong>
+<a href="https://speakerdeck.com/jeffgoldsmith/p8105-shiny" title="Shiny" target="_blank">Shiny</a>
+</strong> from
+<strong><a href="https://speakerdeck.com/jeffgoldsmith" target="_blank">Jeff
+Goldsmith</a></strong>.
+</div>
+<p><br></p>
+</div>
+<div id="example" class="section level2">
+<h2>Example</h2>
+<p>As always, I’ll work on today’s example in a GitHub repo + local
+directory / R Project. <a
+href="resources/shiny_dashboard_template.Rmd">This template</a> will be
+the starting point for the <code>flexdashboard</code> we’ll be creating
+today; create a new .Rmd file with this structure and put it in your
+directory.</p>
+<pre><code>---
+title: &quot;Shiny Dashboard&quot;
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+```
+
+Column {.sidebar}
+-----------------------------------------------------------------------
+
+```{r}
+
+```
+
+Column {data-width=650}
+-----------------------------------------------------------------------
+
+### Chart A
+
+```{r}
+
+```
+
+Column {data-width=350}
+-----------------------------------------------------------------------
+
+### Chart B
+
+```{r}
+
+```
+
+### Chart C
+
+```{r}
+
+```</code></pre>
+<p>This is very similar to the usual <code>flexdashboard</code>
+template, with some small changes. First, we’ve added
+<code>runtime: shiny</code> to the YAML header. Second, we are using
+slightly different layout because we have a sidebar column which will
+hold our input widgets.</p>
+<p>I’ll add the following libraries to the template, but we won’t need
+much else.</p>
+<pre class="r"><code>library(tidyverse)
+library(viridis)
+## Loading required package: viridisLite
+library(p8105.datasets)
+
+library(plotly)
+## 
+## Attaching package: &#39;plotly&#39;
+## The following object is masked from &#39;package:ggplot2&#39;:
+## 
+##     last_plot
+## The following object is masked from &#39;package:stats&#39;:
+## 
+##     filter
+## The following object is masked from &#39;package:graphics&#39;:
+## 
+##     layout</code></pre>
+<p>As in <a href="plotly_and_dashboards.html">plotly and dashboards</a>,
+we’re going to focus on the <a href="dataset_airbnb.html">Airbnb</a>
+data. Our goal is to make a dashboard similar to the one produced there,
+but with interactive elements in place of hard-coded data manipulation
+choices.</p>
+<div id="data-import" class="section level3">
+<h3>Data import</h3>
+<p>The code below loads and cleans the data, and selects only a few of
+the variables.</p>
+<pre class="r"><code>data(&quot;nyc_airbnb&quot;)
+
+nyc_airbnb = 
+  nyc_airbnb |&gt; 
+  mutate(rating = review_scores_location / 2) |&gt;
+  rename(latitude = lat, longitude = long) |&gt;
+  select(
+    boro = neighbourhood_group, neighbourhood, rating, price, room_type,
+    latitude, longitude) |&gt;
+  drop_na(rating)</code></pre>
+<p>Previously, we chose to focus on Manhattan rentals in a certain price
+range, and included those choices in our data manipulation. Now, we’re
+going to filter the dataset interactively based on user input, and use
+the resulting dataset as the basis for our plots.</p>
+</div>
+<div id="input-widgets" class="section level3">
+<h3>Input widgets</h3>
+<p>We’ll place code for widgets in the sidebar, but this is a stylistic
+choice and they could be placed elsewhere in the dashboard.</p>
+<p>The <code>selectInput</code> widget creates a drop-down menu with
+choices for the user to select from. By adding the code in the chunk
+below to the sidebar panel in the dashboard, we can obtain user input
+regarding the borough of interest.</p>
+<pre class="r"><code>boros = nyc_airbnb |&gt; distinct(boro) |&gt; pull()
+
+# selectInput widget
+selectInput(
+  &quot;boro_choice&quot;, 
+  label = h3(&quot;Select boro&quot;),
+  choices = boros, selected = &quot;Manhattan&quot;)</code></pre>
+<p>Now a user can select each of the different boros in New York,
+although it’s not clear yet where this input goes. In the background,
+Shiny is creating an object called <code>input</code> of class
+<code>reactivevalues</code> – it’s not critical that you know much about
+this, but it’s something you can treat like a named list and use inside
+<code>render</code> functions. The “named” part matters, too – your
+input widget names are how you access elements of the <code>input</code>
+object.</p>
+<p>Try adding the code below to one of the panels (later we’ll use these
+for plots, but for now it’s helpful to get a sense for how Shiny
+works).</p>
+<pre class="r"><code>renderPrint({ 
+  input[[&quot;boro_choice&quot;]]
+})</code></pre>
+<p>This produces a string containing the selected borough, and updates
+when a user manipulates the input widget.</p>
+<p>The <code>sliderInput</code> function produces a slider input widget.
+We’ll use this to get a user-specified price range, but if you provide
+only a single initial value it will produce a “regular” slider. Add this
+slider input to the sidebar, and then modify your
+<code>renderPrint</code> code chunk to examine the value of
+<code>input[["price_range"]]</code>.</p>
+<pre class="r"><code>max_price = 1000
+min_price = nyc_airbnb |&gt; distinct(price) |&gt; min()
+  
+# sliderInput widget
+sliderInput(
+  &quot;price_range&quot;, 
+  label = h3(&quot;Choose price range&quot;), 
+  min = min_price, max = max_price, value = c(100, 400))</code></pre>
+<p>The last input widget we’ll look at is <code>radioButtons</code>,
+which is helpful for getting users to select among several options. As
+with the preceeding inputs, add a chunk containing the code below to the
+sidebar and then update the <code>renderPrint</code> function to inspect
+the behavior of this widget.</p>
+<pre class="r"><code>room_choice = nyc_airbnb |&gt; distinct(room_type) |&gt; pull()
+
+# radioButtons widget
+radioButtons(
+  &quot;room_choice&quot;, 
+  label = h3(&quot;Choose room type&quot;),
+  choices = room_choice, selected = &quot;Entire home/apt&quot;)</code></pre>
+<p>For other types of widgets (and there are lots!) check out the <a
+href="https://shiny.rstudio.com/gallery/widget-gallery.html">widget
+gallery</a>.</p>
+</div>
+<div id="reactive-plots" class="section level3">
+<h3>Reactive plots</h3>
+<p>In <a href="plotly_and_dashboards.html">plotly and dashboards</a>, we
+made plots showing rental locations, number of rentals in each
+neighborhood, and the price range of rentals in some neighborhoods.
+We’re going to make similar plots now, but we want these to update based
+on user inputs.</p>
+<p>We’ll start with the <code>plot_ly</code> scatterplot showing rental
+location and prices. As a first step, replace the
+<code>renderText</code> code in your dashboard with the
+<code>renderPlotly</code> code below.</p>
+<pre class="r"><code>renderPlotly({ 
+  nyc_airbnb |&gt;
+  mutate(text_label = str_c(&quot;Price: $&quot;, price, &#39;\nRating: &#39;, rating)) |&gt; 
+  plot_ly(
+    x = ~longitude, y = ~latitude, type = &quot;scatter&quot;, mode = &quot;markers&quot;,
+    alpha = 0.5, color = ~price, text = ~text_label)
+})</code></pre>
+<p>The plot does appear, but we haven’t incorporated user input yet. To
+do that, we’ll add some data manipuation that uses the
+<code>input</code> object produced by the Shiny input widgets.</p>
+<pre class="r"><code>renderPlotly({
+  nyc_airbnb |&gt;
+  filter(
+    boro == input$boro_choice, 
+    price %in% input$price_range[1]:input$price_range[2],
+    room_type == input$room_choice) |&gt;
+  mutate(text_label = str_c(&quot;Price: $&quot;, price, &#39;\nRating: &#39;, rating)) |&gt; 
+  plot_ly(
+    x = ~longitude, y = ~latitude, type = &quot;scatter&quot;, mode = &quot;markers&quot;,
+    alpha = 0.5, color = ~price, text = ~text_label)
+})</code></pre>
+<p><strong><em>Learning Assessment:</em></strong></p>
+<p>Update the following boxplot code to react to user input and add it
+to your dashboard.</p>
+<pre class="r"><code>renderPlotly({
+  nyc_airbnb |&gt; 
+    count(neighbourhood) |&gt; 
+    mutate(neighbourhood = fct_reorder(neighbourhood, n)) |&gt; 
+    plot_ly(x = ~neighbourhood, y = ~n, color = ~neighbourhood, type = &quot;bar&quot;)
+})</code></pre>
+<details>
+<summary>
+Solution
+</summary>
+<p>The code chunk below, when added to the dashboard, will update the
+bar chart based on user input.</p>
+<pre class="r"><code>renderPlotly({
+  nyc_airbnb |&gt; 
+    filter(
+      boro == input$boro_choice, 
+      price %in% input$price_range[1]:input$price_range[2],
+      room_type == input$room_choice) |&gt;
+    count(neighbourhood) |&gt; 
+    mutate(neighbourhood = fct_reorder(neighbourhood, n)) |&gt; 
+    plot_ly(x = ~neighbourhood, y = ~n, color = ~neighbourhood, type = &quot;bar&quot;)
+})</code></pre>
+</details>
+<p>Lastly, the code provided below will produce a reactive boxplot
+showing price ranges in popular neighborhoods in the selected
+borough.</p>
+<pre class="r"><code>renderPlotly({ 
+  common_neighborhoods =
+    nyc_airbnb |&gt; 
+    filter(
+      boro == input$boro_choice,
+      price %in% input$price_range[1]:input$price_range[2],
+      room_type == input$room_choice) |&gt;
+    count(neighbourhood, sort = TRUE) |&gt; 
+    top_n(8) |&gt; 
+    select(neighbourhood)
+
+  nyc_airbnb |&gt;
+    filter(
+      boro == input$boro_choice,
+      price %in% input$price_range[1]:input$price_range[2],
+      room_type == input$room_choice) |&gt;
+    inner_join(., common_neighborhoods, by = &quot;neighbourhood&quot;) |&gt; 
+    plot_ly(y = ~price, color = ~neighbourhood, type = &quot;box&quot;)
+})</code></pre>
+<p>Now you have a <code>flexdashboard</code> with Shiny elements!</p>
+</div>
+<div id="debugging-shiny-documents" class="section level3">
+<h3>Debugging Shiny documents</h3>
+<p>As you’ve probably noticed by now, debugging Shiny documents is a
+hassle. The code depends on an <code>input</code> object, so testing
+individual lines isn’t easy – I often have to create “placeholder”
+inputs when building plots and other outputs, and then make sure these
+plots react to changing user inputs. This was the approach in the Airbnb
+dashboard, where I started with “working” plots and then updated them to
+include <code>input</code> values. I also typically double check (via
+printing) that the <code>input</code> object itself behaves the way I’m
+expecting.</p>
+<p>All that said, though, it can be frustrating to make these “work”</p>
+</div>
+<div id="ab-testing-dashboard" class="section level3">
+<h3>A/B testing dashboard</h3>
+<p>One of my favorite data science products is Julia Silge’s <a
+href="https://juliasilge.shinyapps.io/power-app/">dashboard</a> looking
+at power in A/B tests, which is explained in the accompanying <a
+href="https://juliasilge.com/blog/ab-testing/">blog post</a>. I like
+this because it conveys real statistical concerns about power, sample
+size, and effect size in a user-friendly way. It’s also coded very
+nicely and made public for anyone to inspect, edit, or use.</p>
+<p>The code for the dashboard is printed below; create a new .Rmd file
+and copy this code to reproduce the dashboard yourself.</p>
+<pre><code>---
+title: &quot;How do we measure differences?&quot;
+runtime: shiny
+output: 
+  flexdashboard::flex_dashboard:
+    theme: cosmo
+    orientation: columns
+    vertical_layout: fill
+    source_code: embed
+---
+  
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(tidyverse)
+library(broom)
+```
+
+Column {.sidebar}
+-----------------------------------------------------------------------
+  
+How are sample size, effect size, false positive, and false negative rates related?
+  
+The power of a test ($P$, $1-\beta$) is the probability that a test will detect an effect, if an effect is really there. When your power is high, your false negative rate is low.
+
+The significance level of a test ($\alpha$) is the probability that a test will detect an effect, if an effect is really *not* there. When your significance level is low, your false positive rate is low.
+
+We would like to not be fooled too often by either false negatives or false positives, so we choose large enough sample sizes for the effect size we expect to see.
+
+#### Move the sliders to explore the relationships
+
+```{r}
+sliderInput(&quot;Power&quot;, &quot;Power threshold&quot;, min = 1, max = 99, 
+            value = 80, post = &quot;%&quot;)
+
+sliderInput(&quot;SigLevel&quot;, &quot;Significance level&quot;, min = 1, max = 20, 
+            value = 5, post = &quot;%&quot;)
+
+sliderInput(&quot;Baseline&quot;, &quot;Baseline conversion rate&quot;, min = 1, max = 50, 
+            value = 10, post = &quot;%&quot;)
+```
+
+The sample sizes here are per variation (A and B in an A/B test), not the test as a whole.
+
+
+Column 
+-----------------------------------------------------------------------
+  
+### Power calculation {data-height=800}
+  
+```{r}
+
+renderPlot({
+  seq(1000, 1e4, by = 1000) %&gt;%
+    map_df(~ power.prop.test(p1 = input$Baseline / 100,
+                             p2 = seq(input$Baseline / 100, input$Baseline * 1.5 / 100, 
+                                      by=0.001), 
+                             n = .x, 
+                             power = NULL, 
+                             sig.level = input$SigLevel / 100) %&gt;%
+             tidy()) %&gt;%
+    mutate(effect = (p2 / p1 - 1)) %&gt;%
+    ggplot(aes(effect, power, color = n, group = n)) + 
+    geom_hline(yintercept = input$Power / 100, linetype = 2, color = &quot;gray50&quot;, alpha = 0.5, size = 1.5) +
+    geom_line(size = 1.5, alpha = 0.7) +
+    theme_minimal(base_size = 18) +
+    scale_y_continuous(labels = scales::percent_format(),
+                       limits = c(0, NA)) +
+    scale_x_continuous(labels = scales::percent_format()) +
+    scale_color_gradient(high = &quot;#0077CC&quot;, low = &quot;#B8E0C5&quot;,
+                         labels = scales::comma_format()) +
+    labs(x = &quot;Effect size (relative % change in rate)&quot;, y = &quot;Power&quot;, color = &quot;Sample size&quot;) 
+})
+```
+
+### With those parameters, you can measure... {data-height=200}
+
+```{r}
+renderTable({
+  seq(1000, 1e4, by = 1000) %&gt;%
+    map_df(~ power.prop.test(p1 = input$Baseline / 100,
+                             p2 = NULL, 
+                             n = .x, 
+                             power = input$Power / 100, 
+                             sig.level = input$SigLevel / 100) %&gt;%
+             tidy()) %&gt;%
+    mutate(effect = scales::percent(p2 / p1 - 1),
+           n = scales::comma(n)) %&gt;% 
+    select(`A relative % change of` = effect, 
+           `With a sample size in each group of` = n)
+})
+```</code></pre>
+<p>There are a few user inputs controlling the desired power level,
+alpha level, and the baseline conversion rate (which is the probability
+of “success” in the reference group). Given these inputs, code chunks
+compute power for given sample sizes over a dense grid on effect sizes
+using <code>purrr</code> functions, <code>power.prop.test</code>, and
+<code>broom::tidy</code>; the results are plotted using
+<code>ggplot</code> or printed as a table.</p>
+</div>
+<div id="hosting-shiny-documents" class="section level3">
+<h3>Hosting Shiny documents</h3>
+<p>Unfortunately, you can’t email Shiny-based HTML files like you can a
+static HTML file generated by R Markdown. This is because Shiny-based
+documents need to run <code>R</code> locally. However, you can host them
+through <a href="https://www.shinyapps.io/">Shinyapps.io</a>. A slightly
+fancier version of the Shiny-based Airbnb <code>flexdashboard</code> for
+this class is hosted <a
+href="https://julia-wrobel.shinyapps.io/airbnb_dashboard/">here</a>, and
+Julia Silge’s A/B testing dashboard is hosted on Shinyapps.io as
+well.</p>
+<p>Shinyapps.io has a free user level and will host your app as long as
+it’s relatively small and has limited usage. Deploying an app to
+Shinyapps.io requires you to create an account and connect it to
+RStudio, but it’s not too bad – this <a
+href="https://shiny.rstudio.com/articles/shinyapps.html">walkthrough</a>
+will help.</p>
+</div>
+<div id="shiny-apps" class="section level3">
+<h3>Shiny apps</h3>
+<p>So far we’ve focused on adding Shiny to a <code>flexdashboard</code>.
+We refer to our completed dashboard as a <em>Shiny document</em>.
+However, there other ways to use Shiny, and the most common is to make a
+Shiny <em>application</em>, or <em>app</em>. So you know how these work,
+we’re going to make a super-simple app; if you are interested in making
+a more complicated <em>Shiny app</em>, check out the resources included
+below.</p>
+<p>Shiny apps use <strong>.R</strong> files, rather than
+<strong>.Rmd</strong>. You can initialize a Shiny app from RStudio using
+File &gt; New File &gt; Shiny Web App. This will create a template app
+consisting of a <code>ui</code> object and a <code>server</code> object;
+in some cases these are stored in separate <code>ui.R</code> and
+<code>server.R</code> files, but that’s not necessary. The
+<code>ui</code> object controls the app layout, includes the input
+widgets, and displays any outputs. The <code>server</code> object holds
+the code that performs computations on <code>input</code> elements and
+produces an <code>output</code> object.</p>
+<p>Given <code>ui</code> and <code>server</code>, the command</p>
+<pre class="r"><code>shinyApp(ui = ui, server = server)</code></pre>
+<p>will run the app.</p>
+<p>Shiny apps can be quite flexible, if a little harder to get used to
+that Shiny documents, and can be hosted online through Shinyapps.io as
+well.</p>
+</div>
+</div>
+<div id="other-materials" class="section level2">
+<h2>Other materials</h2>
+<ul>
+<li>For more on using flexdashboards with Shiny, here’s a <a
+href="https://pkgs.rstudio.com/flexdashboard/articles/shiny.html">tutorial</a></li>
+<li>There are also several <a
+href="https://pkgs.rstudio.com/flexdashboard/articles/examples.html">examples</a>
+of people making these types flexdashboards, many which incorporate
+Shiny</li>
+<li>This guide (linked above) will help in hosting your shiny document
+or app online through <a
+href="https://shiny.rstudio.com/articles/shinyapps.html">shinyapps.io</a></li>
+<li>For more on making Shiny apps, check out R Studio’s <a
+href="https://shiny.rstudio.com/tutorial/">tutorial</a>, or <a
+href="https://deanattali.com/blog/building-shiny-apps-tutorial/">this
+one</a></li>
+<li>This <a href="https://shiny.rstudio.com/gallery/">gallery</a> of
+Shiny apps might be a useful inspiration!</li>
+</ul>
+<p>The code that I produced working examples in lecture is <a
+href="https://github.com/P8105/extra_topics">here</a>.</p>
+</div>
+
+<br><br>
+<footer>
+  <img src="images/p8105_stickers.png" alt="stickers" style="width:30%">
+  <br>
+  <p class="copyright text-muted" align="center">Copyright &copy; 2019 Jeff Goldsmith</p>
+</footer>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

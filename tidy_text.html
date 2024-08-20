@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Tidy text</title>
+
+<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" />
+<script defer src="https://use.fontawesome.com/releases/v5.0.3/js/all.js"></script>
+<script defer src="https://use.fontawesome.com/releases/v5.0.0/js/v4-shims.js"></script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-151578452-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-151578452-1');
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">P8105</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="schedule.html">Schedule</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Topics
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="topic_what_is_data_science.html">What is Data Science?</a>
+    </li>
+    <li>
+      <a href="topic_building_blocks.html">Building Blocks</a>
+    </li>
+    <li>
+      <a href="topic_data_wrangling_i.html">Data Wrangling I</a>
+    </li>
+    <li>
+      <a href="topic_visualization_and_eda.html">Visualization and EDA</a>
+    </li>
+    <li>
+      <a href="topic_data_wrangling_ii.html">Data Wrangling II</a>
+    </li>
+    <li>
+      <a href="topic_interactivity.html">Interactivity</a>
+    </li>
+    <li>
+      <a href="topic_iteration.html">Iteration</a>
+    </li>
+    <li>
+      <a href="topic_linear_models.html">Linear Models</a>
+    </li>
+    <li>
+      <a href="topic_other_material.html">Other Materials</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Datasets
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="dataset_airbnb.html">Airbnb</a>
+    </li>
+    <li>
+      <a href="dataset_brfss.html">BRFSS</a>
+    </li>
+    <li>
+      <a href="dataset_fivethirtyeight.html">FiveThirtyEight</a>
+    </li>
+    <li>
+      <a href="dataset_instacart.html">Instacart</a>
+    </li>
+    <li>
+      <a href="dataset_mr_trash_wheel.html">Mr. Trash Wheel</a>
+    </li>
+    <li>
+      <a href="dataset_noaa.html">NOAA</a>
+    </li>
+    <li>
+      <a href="dataset_restaurant_inspections.html">NYC Restaurant Inspections</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="homework_and_projects.html">Homework and Projects</a>
+</li>
+<li>
+  <a href="course_communication.html">Communication</a>
+</li>
+<li>
+  <a href="https://github.com/P8105/p8105.github.io">
+    <span class="fa fa-github"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Tidy text</h1>
+
+</div>
+
+
+<p>This is a bit of a diversion for a public-health-focused course in data science, but it’s fun, related to web data, strings, and factors, and emphasizes tools in data wrangling. It’s most closely related to content in the <a href="topic_data_wrangling_ii.html">Data Wrangling II</a> topic.</p>
+<div id="overview" class="section level2 tabset tabset-pills">
+<h2 class="tabset tabset-pills">Overview</h2>
+<div id="learning-objectives" class="section level3">
+<h3>Learning Objectives</h3>
+<p>Use <code>tidytext</code> to organize text data, and to conduct frequency and sentiment analyses.</p>
+</div>
+<div id="slide-deck" class="section level3">
+<h3>Slide Deck</h3>
+<div class="vid_container">
+<p><iframe 
+    src="https://speakerdeck.com/player/ee17524f046c49a58cec601fb98bb72d" 
+    allowfullscreen 
+    frameborder="0"
+    class="video"> </iframe></p>
+</div>
+<div style="margin-bottom:5px">
+<strong> <a href="https://speakerdeck.com/jeffgoldsmith/p8105-tidy-text" title="Tidy Text" target="_blank">Tidy Text</a> </strong> from <strong><a href="https://speakerdeck.com/jeffgoldsmith" target="_blank">Jeff Goldsmith</a></strong>.
+</div>
+<p><br></p>
+<hr />
+</div>
+<div id="video-lecture" class="section level3">
+<h3>Video Lecture</h3>
+<div class="vid_container">
+<p><iframe 
+    src="https://www.youtube.com/embed/Udp2WlvuWHo"
+    frameborder="0" allowfullscreen class="video"> </iframe></p>
+</div>
+<hr />
+</div>
+</div>
+<div id="example" class="section level2">
+<h2>Example</h2>
+<p>I’ll write code for today’s content in a new R Markdown document called <code>tidy_text.Rmd</code>, and put it in the extra topics directory / GitHub repo. I’m going to load the <code>tidyverse</code> as usual, as well as <code>tidytext</code> and <code>rvest</code>.</p>
+<pre class="r"><code>library(tidyverse)
+library(tidytext)
+
+library(rvest)</code></pre>
+<div id="data" class="section level3">
+<h3>Data</h3>
+<p>We’re sticking with “Napoleon Dynamite reviews”! First, I’ll re-use code from <a href="iteration_and_listcols.html">iteration and listcols</a> to scrape the 1000 most recent reviews on Amazon (and cache the result).</p>
+<pre class="r"><code>read_page_reviews &lt;- function(url) {
+  
+  html = read_html(url)
+  
+  review_titles = 
+    html %&gt;%
+    html_nodes(&quot;.a-text-bold span&quot;) %&gt;%
+    html_text()
+  
+  review_stars = 
+    html %&gt;%
+    html_nodes(&quot;#cm_cr-review_list .review-rating&quot;) %&gt;%
+    html_text() %&gt;%
+    str_extract(&quot;^\\d&quot;) %&gt;%
+    as.numeric()
+  
+  review_text = 
+    html %&gt;%
+    html_nodes(&quot;.review-text-content span&quot;) %&gt;%
+    html_text() %&gt;% 
+    str_replace_all(&quot;\n&quot;, &quot;&quot;) %&gt;% 
+    str_trim()
+  
+  tibble(
+    title = review_titles,
+    stars = review_stars,
+    text = review_text
+  )
+}
+
+url_base = &quot;https://www.amazon.com/product-reviews/B00005JNBQ/ref=cm_cr_arp_d_viewopt_rvwer?ie=UTF8&amp;reviewerType=avp_only_reviews&amp;sortBy=recent&amp;pageNumber=&quot;
+
+dynamite_reviews = 
+  tibble(
+    page = 3:100,
+    urls = str_c(url_base, page)) %&gt;% 
+  mutate(reviews = map(urls, read_page_reviews)) %&gt;% 
+  unnest(reviews) %&gt;%
+  mutate(review_num = row_number()) %&gt;% 
+  relocate(page, review_num)</code></pre>
+<p>The output of the code above is a successfully scraped dataset with 6 and 980 rows – one row for each review. For each review we get the title of that review, the number of stars it received, and text that describers the users feelings about the movie.</p>
+</div>
+<div id="words-and-wordcounts" class="section level3">
+<h3>Words and wordcounts</h3>
+<p>To illustrate tidy text and text analysis, we’ll focus on the reviews directly, which are stored as strings in <code>text</code>. To begin our analysis, we’ll un-nest the tokens (i.e. words) in each row; the result is a tidy dataset in which each word is contained within a separate row.</p>
+<pre class="r"><code>dynamite_words = 
+  dynamite_reviews %&gt;% 
+  unnest_tokens(word, text)</code></pre>
+<p>There are lots of words here that are uninformative. We’ll remove “stop words” using <code>anti_join</code>; in other settings the words you want to remove might be different.</p>
+<pre class="r"><code>data(stop_words)
+
+dynamite_words = 
+  anti_join(dynamite_words, stop_words)</code></pre>
+<pre><code>## Joining, by = &quot;word&quot;</code></pre>
+<p>Great! Let’s take a look at the most commonly used (informative) words in this dataset.</p>
+<pre class="r"><code>dynamite_words %&gt;% 
+  count(word, sort = TRUE) %&gt;% 
+  top_n(10) %&gt;% 
+  mutate(word = fct_reorder(word, n)) %&gt;% 
+  ggplot(aes(x = word, y = n)) + 
+  geom_bar(stat = &quot;identity&quot;, fill = &quot;blue&quot;, alpha = .6) + 
+  coord_flip()</code></pre>
+<pre><code>## Selecting by n</code></pre>
+<p><img src="tidy_text_files/figure-html/unnamed-chunk-5-1.png" width="90%" /></p>
+</div>
+<div id="comparing-words-across-groups" class="section level3">
+<h3>Comparing words across groups</h3>
+<p>The next code chunk below produces a table of the most frequently used in one- and five-star reviews.</p>
+<pre class="r"><code>dynamite_words %&gt;%
+  filter(stars %in% c(1, 5)) %&gt;%
+  group_by(stars) %&gt;%
+  count(word) %&gt;% 
+  top_n(5) %&gt;%
+  knitr::kable()</code></pre>
+<pre><code>## Selecting by n</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="right">stars</th>
+<th align="left">word</th>
+<th align="right">n</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">1</td>
+<td align="left">boring</td>
+<td align="right">9</td>
+</tr>
+<tr class="even">
+<td align="right">1</td>
+<td align="left">film</td>
+<td align="right">10</td>
+</tr>
+<tr class="odd">
+<td align="right">1</td>
+<td align="left">funny</td>
+<td align="right">10</td>
+</tr>
+<tr class="even">
+<td align="right">1</td>
+<td align="left">movie</td>
+<td align="right">53</td>
+</tr>
+<tr class="odd">
+<td align="right">1</td>
+<td align="left">time</td>
+<td align="right">10</td>
+</tr>
+<tr class="even">
+<td align="right">1</td>
+<td align="left">watch</td>
+<td align="right">9</td>
+</tr>
+<tr class="odd">
+<td align="right">5</td>
+<td align="left">classic</td>
+<td align="right">98</td>
+</tr>
+<tr class="even">
+<td align="right">5</td>
+<td align="left">funny</td>
+<td align="right">117</td>
+</tr>
+<tr class="odd">
+<td align="right">5</td>
+<td align="left">love</td>
+<td align="right">120</td>
+</tr>
+<tr class="even">
+<td align="right">5</td>
+<td align="left">movie</td>
+<td align="right">439</td>
+</tr>
+<tr class="odd">
+<td align="right">5</td>
+<td align="left">time</td>
+<td align="right">99</td>
+</tr>
+</tbody>
+</table>
+<p>The table above gives the top 5 most frequently used words in 1-star and 5-star reviews. <em>Movie</em> is the most used word for both 1 and 5-star reviews, though other words, like <em>dumb</em> differentiate 1-star reviews from 5-star reviews, which have words like <em>love</em>.</p>
+<p>Word frequency might be misleading because there are 795 5-star reviews and only 76 1-star reviews.</p>
+<p>Let’s compare which words are more likely to come from a 1 versus 5 star ratings. We limit to words that appear at least 5 times and compute the approximate log odds ratio for each word.</p>
+<pre class="r"><code>word_ratios = 
+  dynamite_words %&gt;%
+  filter(stars %in% c(1, 5)) %&gt;% 
+  count(word, stars) %&gt;%
+  group_by(word) %&gt;% 
+  filter(sum(n) &gt;= 5) %&gt;%
+  ungroup() %&gt;%
+  pivot_wider(
+    names_from = stars, 
+    values_from = n,
+    names_prefix = &quot;stars_&quot;,
+    values_fill = 0) %&gt;%
+  mutate(
+    stars_1_odds = (stars_1 + 1) / (sum(stars_1) + 1),
+    stars_5_odds = (stars_5 + 1) / (sum(stars_5) + 1),
+    log_OR = log(stars_5_odds / stars_1_odds)
+  ) %&gt;%
+  arrange(desc(log_OR)) </code></pre>
+<p>Next, let’s plot the top 10 most distinctive words (that is, words that appear much more frequently in one group than the other) below.</p>
+<pre class="r"><code>word_ratios %&gt;% 
+  mutate(pos_log_OR = ifelse(log_OR &gt; 0, &quot;5 star &gt; 1 star&quot;, &quot;1 star &gt; 5 star&quot;)) %&gt;%
+  group_by(pos_log_OR) %&gt;%
+  top_n(10, abs(log_OR)) %&gt;%
+  ungroup() %&gt;%
+  mutate(word = fct_reorder(word, log_OR)) %&gt;%
+  ggplot(aes(word, log_OR, fill = pos_log_OR)) +
+  geom_col() +
+  coord_flip() +
+  ylab(&quot;log odds ratio (5/1)&quot;) +
+  scale_fill_discrete(name = &quot;&quot;)</code></pre>
+<p><img src="tidy_text_files/figure-html/unnamed-chunk-7-1.png" width="90%" /></p>
+<p>Words like “classic”, “awesome”, and “love” have high relative frequency in the 5-star reviews and “boring”, “dumb”, and “bad” have high relative frequency in the 1-star reviews. This seems to be a polarizing film.</p>
+</div>
+<div id="sentiment-analysis" class="section level3">
+<h3>Sentiment analysis</h3>
+<p>Finally, let’s score the sentiment in each word. We’ll use the “bing” (like <a href="https://www.cs.uic.edu/~liub/FBS/sentiment-analysis.html">Bing Liu</a>, not like <a href="https://www.bing.com">bing.com</a>) sentiment lexicon, which simply categorizes each word as having a positive or negative sentiment.</p>
+<pre class="r"><code>bing_sentiments = get_sentiments(&quot;bing&quot;)</code></pre>
+<p>Note this is might not always be appropriate – this scores <code>cold</code> as <code>negative</code> which might not be accurate for e.g. food inspections – but we’ll use it anyway.</p>
+<p>We need to combine this lexicon with our tidy dataset containing words from each inspection. Note that only words that are in the sentiment lexicon will be retained, as the rest of the words are not considered meaningful. We’ll also count the number of positive and negative words in each review, and create a score that is the difference between the number of positive words and negative words.</p>
+<pre class="r"><code>dynamite_sentiments = 
+  dynamite_words %&gt;% 
+  inner_join(., bing_sentiments) %&gt;% 
+  count(review_num, sentiment) %&gt;% 
+  pivot_wider(
+    names_from = sentiment, 
+    values_from = n, 
+    values_fill = 0) %&gt;% 
+  mutate(review_sentiment = positive - negative) %&gt;% 
+  select(review_num, review_sentiment)</code></pre>
+<pre><code>## Joining, by = &quot;word&quot;</code></pre>
+<p>We now have sentiment scores for each inspection. We’ll combine these with our original dataset, which had inspections in each row rather than words in each row – the data tidied for text analysis aren’t really suitable for our current needs.</p>
+<pre class="r"><code>dynamite_sentiments = 
+  right_join(
+    dynamite_reviews, dynamite_sentiments, 
+    by = &quot;review_num&quot;)</code></pre>
+<p>Finally, let’s make a plot showing inspection sentiments and stars.</p>
+<pre class="r"><code>dynamite_sentiments %&gt;% 
+  mutate(
+    review_num = factor(review_num),
+    review_num = fct_reorder(review_num, review_sentiment, .desc = TRUE)) %&gt;% 
+  ggplot(aes(x = review_num, y = review_sentiment, fill = stars, color = stars)) + 
+  geom_bar(stat = &quot;identity&quot;) + 
+  theme(
+    axis.title.x=element_blank(),
+    axis.text.x=element_blank(),
+    axis.ticks.x=element_blank())</code></pre>
+<p><img src="tidy_text_files/figure-html/sentiment_plot-1.png" width="90%" /></p>
+<p>Sentiment seems to be at least somewhat associated with star rating in that more positive sentiments are more yellow-green (4-5 stars) and more negative sentiments are more blue-purple.</p>
+<p>Here is the text from the most positive review:</p>
+<pre class="r"><code>dynamite_sentiments %&gt;%
+  filter(review_sentiment == max(review_sentiment)) %&gt;% 
+  pull(text)</code></pre>
+<pre><code>## [1] &quot;love love love love love. We watch this twice a week and even had a Napoleon Dynamite party complete with corn dogs and tater tots. FUN!!&quot;</code></pre>
+<p><img src="images/napoleon_1.gif" style="width:50%; border:5px solid"></p>
+<p>And here is the text from the most negative (1-star) review:</p>
+<pre class="r"><code>dynamite_sentiments %&gt;%
+  filter(review_sentiment == min(review_sentiment), stars == 1) %&gt;% 
+  pull(text)</code></pre>
+<pre><code>## character(0)</code></pre>
+<p><img src="images/napoleon_2.gif" style="width:50%; border:5px solid"></p>
+</div>
+</div>
+<div id="other-materials" class="section level2">
+<h2>Other materials</h2>
+<ul>
+<li>The framework we used is explained in detail in the <a href="http://tidytextmining.com">Tidy Text book</a></li>
+<li>One of the book’s authors, Julia Silge, has a <a href="https://www.youtube.com/watch?v=0poJP8WQxew">nice video</a> talking about the work</li>
+<li>The other of the book’s authors, Dave Robinson, used the approach to examine Donald Trump’s tweets in this this <a href="http://varianceexplained.org/r/trump-tweets/">blog post</a></li>
+</ul>
+<p>The code that I produced working examples in lecture is <a href="https://github.com/p8105/tidytext">here</a>.</p>
+</div>
+
+<br><br>
+<footer>
+  <img src="images/p8105_stickers.png" alt="stickers" style="width:30%">
+  <br>
+  <p class="copyright text-muted" align="center">Copyright &copy; 2019 Jeff Goldsmith</p>
+</footer>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,11 @@
+---
+title: "Policy on LLMs"
+output:
+  html_document
+---
+
+The following course policy on the use of Large Language Models (LLMs) applies to all assessments in the course.
+
+LLMs, including ChatGPT and other examples, are powerful tools. They work by aggregating huge amounts of public data, including examples of code, to produce often accurate predictions in response to queries. It's unclear how advanced this technology will become, but already LLMs have been used to debug, improve, or even draft code. 
+
+For this class, you are allowed or encouraged to use LLMs as a learning tool -- to get answers regarding why code doesn't work and to learn from that -- but not to write new code. This policy reflects the course's educational goals, as well as an expectation that *even if* ChatGPT can write code, fully leveraging this tool requires a good deal of baseline knowledge. To develop a professional skillset that can't be easily automated, it is necessary to have foundational understanding of what is possible and how it can be achieved. 

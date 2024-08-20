@@ -1,0 +1,1209 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Iteration and List Columns</title>
+
+<script src="site_libs/header-attrs-2.24/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" />
+<script defer src="https://use.fontawesome.com/releases/v5.0.3/js/all.js"></script>
+<script defer src="https://use.fontawesome.com/releases/v5.0.0/js/v4-shims.js"></script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-151578452-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-151578452-1');
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">P8105</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="schedule.html">Schedule</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Topics
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="topic_what_is_data_science.html">What is Data Science?</a>
+    </li>
+    <li>
+      <a href="topic_building_blocks.html">Building Blocks</a>
+    </li>
+    <li>
+      <a href="topic_data_wrangling_i.html">Data Wrangling I</a>
+    </li>
+    <li>
+      <a href="topic_visualization_and_eda.html">Visualization and EDA</a>
+    </li>
+    <li>
+      <a href="topic_data_wrangling_ii.html">Data Wrangling II</a>
+    </li>
+    <li>
+      <a href="topic_interactivity.html">Interactivity</a>
+    </li>
+    <li>
+      <a href="topic_iteration.html">Iteration</a>
+    </li>
+    <li>
+      <a href="topic_linear_models.html">Linear Models</a>
+    </li>
+    <li>
+      <a href="topic_other_material.html">Other Materials</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Datasets
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="dataset_airbnb.html">Airbnb</a>
+    </li>
+    <li>
+      <a href="dataset_brfss.html">BRFSS</a>
+    </li>
+    <li>
+      <a href="dataset_fivethirtyeight.html">FiveThirtyEight</a>
+    </li>
+    <li>
+      <a href="dataset_instacart.html">Instacart</a>
+    </li>
+    <li>
+      <a href="dataset_mr_trash_wheel.html">Mr. Trash Wheel</a>
+    </li>
+    <li>
+      <a href="dataset_noaa.html">NOAA</a>
+    </li>
+    <li>
+      <a href="dataset_restaurant_inspections.html">NYC Restaurant Inspections</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="homework_and_projects.html">Homework and Projects</a>
+</li>
+<li>
+  <a href="course_communication.html">Communication</a>
+</li>
+<li>
+  <a href="https://github.com/P8105/p8105.github.io">
+    <span class="fa fa-github"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Iteration and List Columns</h1>
+
+</div>
+
+
+<p>We’ve noted that functions are helpful when you repeat code more than
+twice; we’ve also noted that a lot of statistical methods involve doing
+the same thing a large number of times. Putting those together motivates
+a careful approach to iteratation.</p>
+<p>Meanwhile, R’s data structures, especially data frames, are
+surprisingly flexible. This is useful when the “observations” you want
+to store become more complex than single values; for example, each row
+many contain a few scalar observations as well a complete data set. In
+these cases, <em>list columns</em> are an appropriate column type, and
+<code>map</code> functions provide a way to interact with those
+columns.</p>
+<p>This is the second module in the <a
+href="topic_iteration.html">Iteration</a> topic.</p>
+<div id="overview" class="section level2 tabset tabset-pills">
+<h2 class="tabset tabset-pills">Overview</h2>
+<div id="learning-objectives" class="section level3">
+<h3>Learning Objectives</h3>
+<p>There are stops along the way, but our goal is to use map functions
+and iterate over listcolumns in data frames.</p>
+</div>
+<div id="slide-deck" class="section level3">
+<h3>Slide Deck</h3>
+<div class="vid_container">
+<p><iframe 
+    src="https://speakerdeck.com/player/f0d309fcbf2c4d5d9d121eee4a6144ee" 
+    allowfullscreen 
+    frameborder="0"
+    class="video"> </iframe></p>
+</div>
+<div style="margin-bottom:5px">
+<strong>
+<a href="https://speakerdeck.com/jeffgoldsmith/p8105-iteration-and-listcols" title="Iteration and List Columns" target="_blank">Iteration
+and List Columns</a> </strong> from
+<strong><a href="https://speakerdeck.com/jeffgoldsmith" target="_blank">Jeff
+Goldsmith</a></strong>.
+</div>
+<p><br></p>
+<hr />
+</div>
+<div id="video-lecture" class="section level3">
+<h3>Video Lecture</h3>
+<div class="vid_container">
+<p><iframe 
+    src="https://www.youtube.com/embed/61PbKHQWh6A"
+    frameborder="0" allowfullscreen class="video"> </iframe></p>
+</div>
+<hr />
+</div>
+</div>
+<div id="example" class="section level2">
+<h2>Example</h2>
+<p>I’ll write code for today’s content in a new R Markdown document
+called <code>iteration_and_listcols.Rmd</code> in the
+<code>iteration</code> repo / directory I started last time. The code
+chunk below loads the <code>tidyverse</code> and sets a seed for
+reproducibility.</p>
+<pre class="r"><code>library(tidyverse)
+library(rvest)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;rvest&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:readr&#39;:
+## 
+##     guess_encoding</code></pre>
+<pre class="r"><code>set.seed(1)</code></pre>
+<p>Things are gonna get a little weird…</p>
+<div id="lists" class="section level3">
+<h3>Lists</h3>
+<p>We need a brief digression about lists before we do anything.</p>
+<p>In R, vectors are limited to a single data class – all elements are
+characters, or all numeric, or all logical. Trying to join the following
+vectors will result in <strong>coersion</strong>, as would creating
+vectors of mixed types.</p>
+<pre class="r"><code>vec_numeric = 5:8
+vec_char = c(&quot;My&quot;, &quot;name&quot;, &quot;is&quot;, &quot;Jeff&quot;)
+vec_logical = c(TRUE, TRUE, TRUE, FALSE)</code></pre>
+<p>Lists provide a way to store anything you want. This flexibility is
+great, but is offset by a certain … clunkiness. Lists contain indexed
+elements, and the indexed elements themselves be scalars, vectors, or
+other things entirely.</p>
+<pre class="r"><code>l = list(
+  vec_numeric = 5:8,
+  mat         = matrix(1:8, 2, 4),
+  vec_logical = c(TRUE, FALSE),
+  summary     = summary(rnorm(1000)))
+l</code></pre>
+<pre><code>## $vec_numeric
+## [1] 5 6 7 8
+## 
+## $mat
+##      [,1] [,2] [,3] [,4]
+## [1,]    1    3    5    7
+## [2,]    2    4    6    8
+## 
+## $vec_logical
+## [1]  TRUE FALSE
+## 
+## $summary
+##     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+## -3.00805 -0.69737 -0.03532 -0.01165  0.68843  3.81028</code></pre>
+<p>Lists can be accessed using names or indices, and the things in lists
+can be accessed in the way you would usually access an object of that
+type.</p>
+<pre class="r"><code>l$vec_numeric</code></pre>
+<pre><code>## [1] 5 6 7 8</code></pre>
+<pre class="r"><code>l[[1]]</code></pre>
+<pre><code>## [1] 5 6 7 8</code></pre>
+<pre class="r"><code>l[[1]][1:3]</code></pre>
+<pre><code>## [1] 5 6 7</code></pre>
+<p>Lists seem bizarre but are really useful. Right now, we’ll use them
+to hold general inputs and outputs of iterative processes. Even more
+importantly, we’ll see that data frames are actually a very specific
+kind of list – one comprised of vectors of the same length – which is
+why they can store variables of different types.</p>
+</div>
+<div id="for-loops" class="section level3">
+<h3><code>for</code> loops</h3>
+<p>For this example, I’m going to start with the list defined below.</p>
+<pre class="r"><code>list_norms = 
+  list(
+    a = rnorm(20, 3, 1),
+    b = rnorm(20, 0, 5),
+    c = rnorm(20, 10, .2),
+    d = rnorm(20, -3, 1)
+  )
+
+is.list(list_norms)</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<p>I’d like to apply my simple <code>mean_and_sd</code> function from <a
+href="writing_functions.html">writing functions</a> to each element of
+this list For completeness, that function is below.</p>
+<pre class="r"><code>mean_and_sd = function(x) {
+  
+  if (!is.numeric(x)) {
+    stop(&quot;Argument x should be numeric&quot;)
+  } else if (length(x) == 1) {
+    stop(&quot;Cannot be computed for length 1 vectors&quot;)
+  }
+  
+  mean_x = mean(x)
+  sd_x = sd(x)
+
+  tibble(
+    mean = mean_x, 
+    sd = sd_x
+  )
+}</code></pre>
+<p>We can apply the <code>mean_and_sd</code> function to each element of
+<code>list_norms</code> using the lines below.</p>
+<pre class="r"><code>mean_and_sd(list_norms[[1]])</code></pre>
+<pre><code>## # A tibble: 1 × 2
+##    mean    sd
+##   &lt;dbl&gt; &lt;dbl&gt;
+## 1  2.70  1.12</code></pre>
+<pre class="r"><code>mean_and_sd(list_norms[[2]])</code></pre>
+<pre><code>## # A tibble: 1 × 2
+##    mean    sd
+##   &lt;dbl&gt; &lt;dbl&gt;
+## 1 0.416  4.08</code></pre>
+<pre class="r"><code>mean_and_sd(list_norms[[3]])</code></pre>
+<pre><code>## # A tibble: 1 × 2
+##    mean    sd
+##   &lt;dbl&gt; &lt;dbl&gt;
+## 1  10.1 0.191</code></pre>
+<pre class="r"><code>mean_and_sd(list_norms[[4]])</code></pre>
+<pre><code>## # A tibble: 1 × 2
+##    mean    sd
+##   &lt;dbl&gt; &lt;dbl&gt;
+## 1 -3.43  1.18</code></pre>
+<p>But now we’ve broken our “don’t repeat code more than twice” rule!
+Specifically, we’ve applied the same function / operation to the
+elements of a list sequentially. This is exactly the kind of code
+repetition for loops address</p>
+<p>Below, I define an output list with the same number of entries as my
+target dataframe; a sequence to iterate over; and a for loop body that
+applies the <code>mean_and_sd</code> function for each sequence element
+and saves the result.</p>
+<pre class="r"><code>output = vector(&quot;list&quot;, length = 4)
+
+for (i in 1:4) {
+  output[[i]] = mean_and_sd(list_norms[[i]])
+}</code></pre>
+<p>This is already much cleaner than using four almost-identical lines
+of code, and will make life easier the larger our sequence gets.</p>
+<p>In this example, I bypassed a common first step in writing loops
+because I already had the function I wanted to repeat. Frequently,
+however, I’ll start with repeated code segements, then abstract the
+underlying process into a function, and then wrap things up in a for
+loop.</p>
+</div>
+<div id="map" class="section level3">
+<h3><code>map</code></h3>
+<p>A criticism of <code>for</code> loops is that there’s a lot of
+overhead – you have to define your output vector / list, there’s the
+<code>for</code> loop bookkeeping to do, etc – that distracts from the
+purpose of the code. In this case, we want to apply
+<code>mean_and_sd</code> to each element of <code>list_norms</code>, but
+we have to scan inside the for loop to figure that out.</p>
+<p>The <code>map</code> functions in <code>purrr</code> try to make the
+purpose of your code clear. Compare the loop above to the line
+below.</p>
+<pre class="r"><code>output = map(list_norms, mean_and_sd)</code></pre>
+<p>The first argument to <code>map</code> is the list (or vector, or
+data frame) we want to iterate over, and the second argument is the
+function we want to apply to each element. The line above will produce
+the same output as the previous loop, but is clearer and easier to
+understand (once you’re used to <code>map</code> …).</p>
+<p>This code (using <code>map</code>) is why we pointed out in <a
+href="writing_functions.html">writing functions</a> that functions can
+be passed as arguments to other functions. The second argument in
+<code>map(list_norms, mean_and_sd)</code> is a function we just wrote.
+To see how powerful this can be, suppose we wanted to apply a different
+function, say <code>median</code>, to each column of
+<code>list_norms</code>. The chunk below includes both the loop and the
+<code>map</code> approach.</p>
+<pre class="r"><code>output = vector(&quot;list&quot;, length = 4)
+
+for (i in 1:4) {
+  output[[i]] = median(list_norms[[i]])
+}
+
+output = map(list_norms, median)</code></pre>
+<p>Again, both options produce the same <code>output</code>, but the
+<code>map</code> places the focus squarely on the function you want to
+apply by removing much of the bookkeeping.</p>
+</div>
+<div id="map-variants" class="section level3">
+<h3><code>map</code> variants</h3>
+<p>There are some useful variants to the basic <code>map</code> function
+if you know what kind of output you’re going to produce. Below we use
+<code>map_dbl</code> because <code>median</code> outputs a single
+numeric value each time; the result is a vector instead of a list. Using
+the <code>.id</code> argument keeps the names of the elements in the
+input list.</p>
+<pre class="r"><code>output = map_dbl(list_norms, median, .id = &quot;input&quot;)</code></pre>
+<p>If we tried to use <code>map_int</code> or <code>map_lgl</code>, we’d
+get an error because the output of <code>median</code> isn’t a integer
+or a logical. This is a good way to help catch mistakes when they
+arise.</p>
+<p>Similarly, since we know <code>mean_and_sd</code> produces a data
+frame, we can use the output-specific <code>map_dfr</code>; this will
+produce a single data frame.</p>
+<pre class="r"><code>output = map_dfr(list_norms, mean_and_sd, .id = &quot;input&quot;)</code></pre>
+<p>The <code>map_df</code> variants can be helpful when your map
+statement is part of a longer chain of piped commands.</p>
+<p>Lastly, the variant <code>map2</code> (and <code>map2_dbl</code>,
+etc) is helpful when your function has two arguments. In these cases, I
+find it best to be specific about arguments using something like the
+following (more on anonymous functions shortly):</p>
+<pre class="r"><code>output = map2(input_1, input_2, \(x,y) func(arg_1 = x, arg_2 = y))</code></pre>
+</div>
+<div id="list-columns-and-operations" class="section level3">
+<h3>List columns and operations</h3>
+<pre class="r"><code>listcol_df = 
+  tibble(
+    name = c(&quot;a&quot;, &quot;b&quot;, &quot;c&quot;, &quot;d&quot;),
+    samp = list_norms
+  )</code></pre>
+<p>The <code>name</code> column is a character column – if you pull this
+column from the <code>listcol_df</code> data frame, the result is a
+character vector. Similarly, the <code>samp</code> column is a <em>list
+column</em> – on it’s own, it’s a list.</p>
+<pre class="r"><code>listcol_df |&gt; pull(name)</code></pre>
+<pre><code>## [1] &quot;a&quot; &quot;b&quot; &quot;c&quot; &quot;d&quot;</code></pre>
+<pre class="r"><code>listcol_df |&gt; pull(samp)</code></pre>
+<pre><code>## $a
+##  [1] 4.134965 4.111932 2.129222 3.210732 3.069396 1.337351 3.810840 1.087654
+##  [9] 1.753247 3.998154 2.459127 2.783624 1.378063 1.549036 3.350910 2.825453
+## [17] 2.408572 1.665973 1.902701 5.036104
+## 
+## $b
+##  [1] -1.63244797  3.87002606  3.92503200  3.81623040  1.47404380 -6.26177962
+##  [7] -5.04751876  3.75695597 -6.54176756  2.63770049 -2.66769787 -1.99188007
+## [13] -3.94784725 -1.15070568  4.38592421  2.26866589 -1.16232074  4.35002762
+## [19]  8.28001867 -0.03184464
+## 
+## $c
+##  [1] 10.094098 10.055644  9.804419  9.814683 10.383954 10.176256 10.148416
+##  [8] 10.029515 10.097078 10.030371 10.008400 10.044684  9.797907 10.480244
+## [15] 10.160392  9.949758 10.242578  9.874548 10.342232  9.921125
+## 
+## $d
+##  [1] -5.321491 -1.635881 -1.867771 -3.774316 -4.410375 -4.834528 -3.269014
+##  [8] -4.833929 -3.814468 -2.836428 -2.144481 -3.819963 -3.123603 -2.745052
+## [15] -1.281074 -3.958544 -4.604310 -4.845609 -2.444263 -3.060119</code></pre>
+<p>The list column really is a list, and will behave as such elsewhere
+in R. So, for example, you can examine the first list entry using usual
+list index procedures.</p>
+<pre class="r"><code>listcol_df$samp[[1]]</code></pre>
+<pre><code>##  [1] 4.134965 4.111932 2.129222 3.210732 3.069396 1.337351 3.810840 1.087654
+##  [9] 1.753247 3.998154 2.459127 2.783624 1.378063 1.549036 3.350910 2.825453
+## [17] 2.408572 1.665973 1.902701 5.036104</code></pre>
+<p>You will need to be able to manipulate list columns, but usual
+operations for columns that might appear in <code>mutate</code> (like
+<code>mean</code> or <code>recode</code>) often don’t apply to the
+entries in a list column. Instead, recognizing list columns as
+<strong><em>list</em></strong> columns motivates an approach for working
+with them.</p>
+<p>Let’s apply <code>mean_and_sd</code> to the first element of our list
+column.</p>
+<pre class="r"><code>mean_and_sd(listcol_df$samp[[1]])</code></pre>
+<pre><code>## # A tibble: 1 × 2
+##    mean    sd
+##   &lt;dbl&gt; &lt;dbl&gt;
+## 1  2.70  1.12</code></pre>
+<p>Great! Keeping in mind that <code>listcol_df$samp</code> is a
+<strong><em>list</em></strong>, we can apply <code>mean_and_sd</code>
+function to each element using <code>map</code>.</p>
+<pre class="r"><code>map(listcol_df$samp, mean_and_sd)</code></pre>
+<pre><code>## $a
+## # A tibble: 1 × 2
+##    mean    sd
+##   &lt;dbl&gt; &lt;dbl&gt;
+## 1  2.70  1.12
+## 
+## $b
+## # A tibble: 1 × 2
+##    mean    sd
+##   &lt;dbl&gt; &lt;dbl&gt;
+## 1 0.416  4.08
+## 
+## $c
+## # A tibble: 1 × 2
+##    mean    sd
+##   &lt;dbl&gt; &lt;dbl&gt;
+## 1  10.1 0.191
+## 
+## $d
+## # A tibble: 1 × 2
+##    mean    sd
+##   &lt;dbl&gt; &lt;dbl&gt;
+## 1 -3.43  1.18</code></pre>
+<p>The <code>map</code> function returns a <em>list</em>; we could store
+the results as a new <strong><em>list column</em></strong> … !!!</p>
+<p>We’ve been using <code>mutate</code> to define a new variable in a
+data frame, especially one that is a function of an existing variable.
+That’s exactly what we will keep doing.</p>
+<pre class="r"><code>listcol_df = 
+  listcol_df |&gt; 
+  mutate(summary = map(samp, mean_and_sd))
+
+listcol_df</code></pre>
+<pre><code>## # A tibble: 4 × 3
+##   name  samp         summary         
+##   &lt;chr&gt; &lt;named list&gt; &lt;named list&gt;    
+## 1 a     &lt;dbl [20]&gt;   &lt;tibble [1 × 2]&gt;
+## 2 b     &lt;dbl [20]&gt;   &lt;tibble [1 × 2]&gt;
+## 3 c     &lt;dbl [20]&gt;   &lt;tibble [1 × 2]&gt;
+## 4 d     &lt;dbl [20]&gt;   &lt;tibble [1 × 2]&gt;</code></pre>
+</div>
+<div id="revisiting-nsduh" class="section level3">
+<h3>Revisiting NSDUH</h3>
+<p>In <a href="reading_data_from_the_web.html">reading data from the
+web</a> and elsewhere, we wrote code that allowed us to import data
+tables from a recent NSDUH survey; in <a
+href="writing_functions.html">writing functions</a> we wrapped that code
+into a function called <code>nsduh_table</code> which, for a given
+<code>table_number</code>, produces a data frame containing state, age
+group, year, and percents. A similar function, which omits the argument
+<code>table_name</code>, is shown below.</p>
+<pre class="r"><code>nsduh_table &lt;- function(html, table_num) {
+  
+  table = 
+    html |&gt; 
+    html_table() |&gt; 
+    nth(table_num) |&gt;
+    slice(-1) |&gt; 
+    select(-contains(&quot;P Value&quot;)) |&gt;
+    pivot_longer(
+      -State,
+      names_to = &quot;age_year&quot;, 
+      values_to = &quot;percent&quot;) |&gt;
+    separate(age_year, into = c(&quot;age&quot;, &quot;year&quot;), sep = &quot;\\(&quot;) |&gt;
+    mutate(
+      year = str_replace(year, &quot;\\)&quot;, &quot;&quot;),
+      percent = str_replace(percent, &quot;[a-c]$&quot;, &quot;&quot;),
+      percent = as.numeric(percent)) |&gt;
+    filter(!(State %in% c(&quot;Total U.S.&quot;, &quot;Northeast&quot;, &quot;Midwest&quot;, &quot;South&quot;, &quot;West&quot;)))
+  
+  table
+}</code></pre>
+<p>We can use this function to import three tables using the next code
+chunk, which downloads and extracts the page HTML and then iterates over
+table numbers. The results are combined using <code>bind_rows()</code>.
+Note that, because this version of our function doesn’t include
+<code>table_name</code>, that information is lost for now.</p>
+<pre class="r"><code>nsduh_url = &quot;http://samhda.s3-us-gov-west-1.amazonaws.com/s3fs-public/field-uploads/2k15StateFiles/NSDUHsaeShortTermCHG2015.htm&quot;
+
+nsduh_html = read_html(nsduh_url)
+
+output = vector(&quot;list&quot;, 3)
+
+for (i in c(1, 4, 5)) {
+  output[[i]] = nsduh_table(nsduh_html, i)
+}
+
+nsduh_results = bind_rows(output)</code></pre>
+<p>We can also import these data using <code>map()</code>. Here I’m
+supplying the <code>html</code> argument after the name of the function
+that I’m iterating over.</p>
+<pre class="r"><code>nsduh_results = 
+  map(c(1, 4, 5), nsduh_table, html = nsduh_html) |&gt; 
+  bind_rows()</code></pre>
+<p>As with previous examples, using a for loop is pretty okay but the
+<code>map</code> call is clearer.</p>
+<p>We can also do this using data frames and list columns.</p>
+<pre class="r"><code>nsduh_results= 
+  tibble(
+    name = c(&quot;marj&quot;, &quot;cocaine&quot;, &quot;heroine&quot;),
+    number = c(1, 4, 5)) |&gt; 
+  mutate(table = map(number, \(num) nsduh_table(html = nsduh_html, num))) |&gt; 
+  unnest(cols = &quot;table&quot;)</code></pre>
+</div>
+<div id="operations-on-nested-data" class="section level3">
+<h3>Operations on nested data</h3>
+<p>Shifting gears a bit, let’s revisit the weather data from <a
+href="visualization.html">visualization</a> and elsewhere; these data
+consist of one year of observations from three monitoring stations. The
+code below pulls these data into R (using the <code>rnoaa</code>
+package, which interacts with the NOAA API).</p>
+<pre class="r"><code>weather_df = 
+  rnoaa::meteo_pull_monitors(
+    c(&quot;USW00094728&quot;, &quot;USW00022534&quot;, &quot;USS0023B17S&quot;),
+    var = c(&quot;PRCP&quot;, &quot;TMIN&quot;, &quot;TMAX&quot;), 
+    date_min = &quot;2021-01-01&quot;,
+    date_max = &quot;2022-12-31&quot;) |&gt;
+  mutate(
+    name = recode(
+      id, 
+      USW00094728 = &quot;CentralPark_NY&quot;, 
+      USW00022534 = &quot;Molokai_HI&quot;,
+      USS0023B17S = &quot;Waterhole_WA&quot;),
+    tmin = tmin / 10,
+    tmax = tmax / 10) |&gt;
+  select(name, id, everything())</code></pre>
+<pre><code>## Registered S3 method overwritten by &#39;hoardr&#39;:
+##   method           from
+##   print.cache_info httr</code></pre>
+<pre><code>## using cached file: /Users/jeffgoldsmith/Library/Caches/org.R-project.R/R/rnoaa/noaa_ghcnd/USW00094728.dly</code></pre>
+<pre><code>## date created (size, mb): 2023-09-19 15:41:55.07359 (8.524)</code></pre>
+<pre><code>## file min/max dates: 1869-01-01 / 2023-09-30</code></pre>
+<pre><code>## using cached file: /Users/jeffgoldsmith/Library/Caches/org.R-project.R/R/rnoaa/noaa_ghcnd/USW00022534.dly</code></pre>
+<pre><code>## date created (size, mb): 2023-09-25 10:06:23.827176 (3.83)</code></pre>
+<pre><code>## file min/max dates: 1949-10-01 / 2023-09-30</code></pre>
+<pre><code>## using cached file: /Users/jeffgoldsmith/Library/Caches/org.R-project.R/R/rnoaa/noaa_ghcnd/USS0023B17S.dly</code></pre>
+<pre><code>## date created (size, mb): 2023-09-19 15:42:03.139582 (0.994)</code></pre>
+<pre><code>## file min/max dates: 1999-09-01 / 2023-09-30</code></pre>
+<p>The station name and id are constant across the year’s temperature
+and precipitation data. For that reason, we can reorganize these data
+into a new data frame with a single row for each station. Weather data
+will be separated into three station-specific data frames, each of which
+is the data “observation” for the respective station.</p>
+<pre class="r"><code>weather_nest = 
+  nest(weather_df, data = date:tmin)
+
+weather_nest</code></pre>
+<pre><code>## # A tibble: 3 × 3
+##   name           id          data              
+##   &lt;chr&gt;          &lt;chr&gt;       &lt;list&gt;            
+## 1 CentralPark_NY USW00094728 &lt;tibble [730 × 4]&gt;
+## 2 Molokai_HI     USW00022534 &lt;tibble [730 × 4]&gt;
+## 3 Waterhole_WA   USS0023B17S &lt;tibble [730 × 4]&gt;</code></pre>
+<p>This is a different way of producing a list column. The result is a
+lot like <code>listcol_df</code>, in that the columns in
+<code>weather_nest</code> are a vector and a list.</p>
+<pre class="r"><code>weather_nest |&gt; pull(name)</code></pre>
+<pre><code>## [1] &quot;CentralPark_NY&quot; &quot;Molokai_HI&quot;     &quot;Waterhole_WA&quot;</code></pre>
+<pre class="r"><code>weather_nest |&gt; pull(data)</code></pre>
+<pre><code>## [[1]]
+## # A tibble: 730 × 4
+##    date        prcp  tmax  tmin
+##    &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+##  1 2021-01-01   157   4.4   0.6
+##  2 2021-01-02    13  10.6   2.2
+##  3 2021-01-03    56   3.3   1.1
+##  4 2021-01-04     5   6.1   1.7
+##  5 2021-01-05     0   5.6   2.2
+##  6 2021-01-06     0   5     1.1
+##  7 2021-01-07     0   5    -1  
+##  8 2021-01-08     0   2.8  -2.7
+##  9 2021-01-09     0   2.8  -4.3
+## 10 2021-01-10     0   5    -1.6
+## # ℹ 720 more rows
+## 
+## [[2]]
+## # A tibble: 730 × 4
+##    date        prcp  tmax  tmin
+##    &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+##  1 2021-01-01     0  27.8  22.2
+##  2 2021-01-02     0  28.3  23.9
+##  3 2021-01-03     0  28.3  23.3
+##  4 2021-01-04     0  30    18.9
+##  5 2021-01-05     0  28.9  21.7
+##  6 2021-01-06     0  27.8  20  
+##  7 2021-01-07     0  29.4  21.7
+##  8 2021-01-08     0  28.3  18.3
+##  9 2021-01-09     0  27.8  18.9
+## 10 2021-01-10     0  28.3  18.9
+## # ℹ 720 more rows
+## 
+## [[3]]
+## # A tibble: 730 × 4
+##    date        prcp  tmax  tmin
+##    &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+##  1 2021-01-01   254   3.2   0  
+##  2 2021-01-02   152   0.9  -3.2
+##  3 2021-01-03     0   0.2  -4.2
+##  4 2021-01-04   559   0.9  -3.2
+##  5 2021-01-05    25   0.5  -3.3
+##  6 2021-01-06    51   0.8  -4.8
+##  7 2021-01-07     0   0.2  -5.8
+##  8 2021-01-08    25   0.5  -8.3
+##  9 2021-01-09     0   0.1  -7.7
+## 10 2021-01-10   203   0.9  -0.1
+## # ℹ 720 more rows</code></pre>
+<p>Of course, if you can <code>nest</code> data you should be able to
+<code>unnest</code> it as well, and you can (with the caveat that you’re
+unnesting a list column that contains a data frame).</p>
+<pre class="r"><code>unnest(weather_nest, cols = data)</code></pre>
+<pre><code>## # A tibble: 2,190 × 6
+##    name           id          date        prcp  tmax  tmin
+##    &lt;chr&gt;          &lt;chr&gt;       &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+##  1 CentralPark_NY USW00094728 2021-01-01   157   4.4   0.6
+##  2 CentralPark_NY USW00094728 2021-01-02    13  10.6   2.2
+##  3 CentralPark_NY USW00094728 2021-01-03    56   3.3   1.1
+##  4 CentralPark_NY USW00094728 2021-01-04     5   6.1   1.7
+##  5 CentralPark_NY USW00094728 2021-01-05     0   5.6   2.2
+##  6 CentralPark_NY USW00094728 2021-01-06     0   5     1.1
+##  7 CentralPark_NY USW00094728 2021-01-07     0   5    -1  
+##  8 CentralPark_NY USW00094728 2021-01-08     0   2.8  -2.7
+##  9 CentralPark_NY USW00094728 2021-01-09     0   2.8  -4.3
+## 10 CentralPark_NY USW00094728 2021-01-10     0   5    -1.6
+## # ℹ 2,180 more rows</code></pre>
+<p>Nesting columns can help with data organization and comprehension by
+masking complexity you’re less concerned about right now and clarifying
+the things you are concerned about. In the weather data, it can be
+helpful to think of stations as the basic unit of observation, and daily
+weather recordings as a more granular level of observation. Nesting can
+also simplify the use of analytic approaches across levels of a higher
+variable.</p>
+<p>Suppose we want to fit the simple linear regression relating
+<code>tmax</code> to <code>tmin</code> for each station-specific data
+frame. First I’ll write a quick function that takes a data frame as the
+sole argument to fit this model.</p>
+<pre class="r"><code>weather_lm = function(df) {
+  lm(tmax ~ tmin, data = df)
+}</code></pre>
+<p>Let’s make sure this works on a single data frame.</p>
+<pre class="r"><code>weather_lm(weather_nest$data[[1]])</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = tmax ~ tmin, data = df)
+## 
+## Coefficients:
+## (Intercept)         tmin  
+##       7.514        1.034</code></pre>
+<p>Since <code>weather$data</code> is a <strong><em>list</em></strong>,
+we can apply our <code>weather_lm</code> function to each data frame
+using <code>map</code>.</p>
+<pre class="r"><code>map(weather_nest$data, weather_lm)</code></pre>
+<pre><code>## [[1]]
+## 
+## Call:
+## lm(formula = tmax ~ tmin, data = df)
+## 
+## Coefficients:
+## (Intercept)         tmin  
+##       7.514        1.034  
+## 
+## 
+## [[2]]
+## 
+## Call:
+## lm(formula = tmax ~ tmin, data = df)
+## 
+## Coefficients:
+## (Intercept)         tmin  
+##     21.7547       0.3222  
+## 
+## 
+## [[3]]
+## 
+## Call:
+## lm(formula = tmax ~ tmin, data = df)
+## 
+## Coefficients:
+## (Intercept)         tmin  
+##       7.532        1.137</code></pre>
+<p>As an aside, you can avoid the creation of a dedicated function using
+<code>map</code>’s syntax for “anonymous” (i.e. not named and saved)
+functions. This is helpful for really short operations – here, rather
+than writing a separate (named) function that takes the argument
+<code>df</code> and returns a regression of <code>tmax</code> on
+<code>tmin</code>, I can use <code>\(df)</code> to indicate that same
+function. If you have a one-line function, this is a good option;
+otherwise creating a named function is probably better.</p>
+<pre class="r"><code>map(weather_nest$data, \(df) lm(tmax ~ tmin, data = df))</code></pre>
+<pre><code>## [[1]]
+## 
+## Call:
+## lm(formula = tmax ~ tmin, data = df)
+## 
+## Coefficients:
+## (Intercept)         tmin  
+##       7.514        1.034  
+## 
+## 
+## [[2]]
+## 
+## Call:
+## lm(formula = tmax ~ tmin, data = df)
+## 
+## Coefficients:
+## (Intercept)         tmin  
+##     21.7547       0.3222  
+## 
+## 
+## [[3]]
+## 
+## Call:
+## lm(formula = tmax ~ tmin, data = df)
+## 
+## Coefficients:
+## (Intercept)         tmin  
+##       7.532        1.137</code></pre>
+<p>Let’s use <code>mutate</code> to fit this model, and to store the
+result in the same dataframe.</p>
+<pre class="r"><code>weather_nest = 
+  weather_nest |&gt; 
+  mutate(models = map(data, weather_lm))
+
+weather_nest</code></pre>
+<pre><code>## # A tibble: 3 × 4
+##   name           id          data               models
+##   &lt;chr&gt;          &lt;chr&gt;       &lt;list&gt;             &lt;list&gt;
+## 1 CentralPark_NY USW00094728 &lt;tibble [730 × 4]&gt; &lt;lm&gt;  
+## 2 Molokai_HI     USW00022534 &lt;tibble [730 × 4]&gt; &lt;lm&gt;  
+## 3 Waterhole_WA   USS0023B17S &lt;tibble [730 × 4]&gt; &lt;lm&gt;</code></pre>
+<p>This is great! We now have a data frame that has rows for each
+station; columns contain weather datasets and fitted models. This makes
+it very easy to keep track of models across stations, and to perform
+additional analyses.</p>
+<p>This is, for sure, a fairly complex bit of code, but in just a few
+lines we’re able to fit separate linear models to each of our stations.
+And, once you get used to list columns, <code>map</code>, and the rest
+of it, these lines of code are pretty clear and can be extended to
+larger datasets with more complex structures.</p>
+</div>
+</div>
+<div id="other-materials" class="section level2">
+<h2>Other materials</h2>
+<p>Iteration can be tricky – the readings below will help as you work
+through this!</p>
+<ul>
+<li>The chapter on <a
+href="http://r4ds.had.co.nz/iteration.html">iteration</a> in R for Data
+Science has a useful treatment of iteration using loops and
+<code>map</code></li>
+<li>Jenny Bryan’s <a
+href="https://jennybc.github.io/purrr-tutorial/"><code>purrr</code>
+tutorial</a> has a lot of useful information and examples</li>
+<li>R Programming for Data Science has information on <a
+href="https://bookdown.org/rdpeng/rprogdatascience/control-structures.html#for-loops">loops</a>
+and <a
+href="https://bookdown.org/rdpeng/rprogdatascience/loop-functions.html">loop
+functions</a>; given Roger Peng’s tendency towards base R he focuses on
+<code>lapply</code> and others instead of <code>map</code></li>
+<li>This <a
+href="https://stackoverflow.com/questions/45101045/why-use-purrrmap-instead-of-lapply">question
+and response</a> on stack overflow explains why one might prefer
+<code>map</code> to <code>lapply</code></li>
+</ul>
+<p>List columns take some getting used to; there are some materials to
+help with that.</p>
+<ul>
+<li>R for Data Science has a chapter on <a
+href="http://r4ds.had.co.nz/many-models.html">fitting many
+models</a></li>
+<li>Jenny Bryan’s <a
+href="https://jennybc.github.io/purrr-tutorial/">purrr tutorial</a> has
+useful list-column examples</li>
+<li>The <a
+href="https://github.com/tidyverse/dplyr/blob/master/data-raw/starwars.R">R
+file</a> used to create the <code>starwars</code> dataset (in the
+<code>tidyverse</code>) using the <a href="https://swapi.co">Star Wars
+API</a> processes list output (from the API) using several
+<code>map</code> variants</li>
+</ul>
+<p>The code that I produced working examples in lecture is <a
+href="https://github.com/p8105/iteration">here</a>.</p>
+</div>
+
+<br><br>
+<footer>
+  <img src="images/p8105_stickers.png" alt="stickers" style="width:30%">
+  <br>
+  <p class="copyright text-muted" align="center">Copyright &copy; 2019 Jeff Goldsmith</p>
+</footer>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,12 @@
+---
+title: "What is Data Science?"
+---
+
+Almost unheard of five years ago, "data science" has become ubiquitous in media, industry, and academia. Because this is a course in data science, we will spend some time understand various meanings of the term, how we'll use it in this class, and how you can learn data science.
+
+The topic is made up of the following components. We'll check out Part I as the course begins, and revisit over the course of the semester.
+
+* What is Data Science? [Part I](what_is_ds_i.html)
+* What is Data Science? [Part II](what_is_ds_ii.html)
+
+This paper on [good enough practices](http://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1005510) for scientific computing gives an idea of what we want to achieve in this course, and why we want to achieve it. 

@@ -1,0 +1,17 @@
+---
+title: "Policy on collaboration"
+output:
+  html_document
+---
+
+The following course policy on collaboration applies to homework assignments. The midterm, in contrast, is expected to be completed wholly independently and without collaboration of any sort.
+
+The goal of this course is for students to learn the tools, approaches, and perspectives necessary to be a data scientist. We recognize that learning rarely happens in isolation, and encourage students to collaborate in a way that improves their understanding of material. Several course resources, including the discussion board and Slack channels, exist to encourage peer-to-peer engagement. 
+
+The assessment of student performance is important in any course: these assessments make it possible to measure each student's understanding of the course material. For assessments to be fair, submitted work must reflect the submitter's efforts.
+
+These points -- encouraging collaboration but requiring independent work -- might appear to be in conflict but are not. You are encouraged to discuss lecture material; review examples; outline approaches to homework problems; and even help debug code. You are not allowed to copy code or text, either "digitally" (from an electronic file) or "manually" (by transcribing another student's work, or looking over his or her shoulder). 
+
+If you are unsure if something is allowed, feel free to [email Jeff](mailto:jeff.goldsmith@columbia.edu) (generally, if you're not sure if something is allowed, it probably isn't).
+
+If you don't know how to proceed on a homework assignment in a way that is consistent with this policy, we strongly encourage you to attend an office hour or email a member of the teaching team.

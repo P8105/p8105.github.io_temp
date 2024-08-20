@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Bootstrapping</title>
+
+<script src="site_libs/header-attrs-2.24/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" />
+<script defer src="https://use.fontawesome.com/releases/v5.0.3/js/all.js"></script>
+<script defer src="https://use.fontawesome.com/releases/v5.0.0/js/v4-shims.js"></script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-151578452-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-151578452-1');
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">P8105</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="schedule.html">Schedule</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Topics
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="topic_what_is_data_science.html">What is Data Science?</a>
+    </li>
+    <li>
+      <a href="topic_building_blocks.html">Building Blocks</a>
+    </li>
+    <li>
+      <a href="topic_data_wrangling_i.html">Data Wrangling I</a>
+    </li>
+    <li>
+      <a href="topic_visualization_and_eda.html">Visualization and EDA</a>
+    </li>
+    <li>
+      <a href="topic_data_wrangling_ii.html">Data Wrangling II</a>
+    </li>
+    <li>
+      <a href="topic_interactivity.html">Interactivity</a>
+    </li>
+    <li>
+      <a href="topic_iteration.html">Iteration</a>
+    </li>
+    <li>
+      <a href="topic_linear_models.html">Linear Models</a>
+    </li>
+    <li>
+      <a href="topic_other_material.html">Other Materials</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Datasets
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="dataset_airbnb.html">Airbnb</a>
+    </li>
+    <li>
+      <a href="dataset_brfss.html">BRFSS</a>
+    </li>
+    <li>
+      <a href="dataset_fivethirtyeight.html">FiveThirtyEight</a>
+    </li>
+    <li>
+      <a href="dataset_instacart.html">Instacart</a>
+    </li>
+    <li>
+      <a href="dataset_mr_trash_wheel.html">Mr. Trash Wheel</a>
+    </li>
+    <li>
+      <a href="dataset_noaa.html">NOAA</a>
+    </li>
+    <li>
+      <a href="dataset_restaurant_inspections.html">NYC Restaurant Inspections</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="homework_and_projects.html">Homework and Projects</a>
+</li>
+<li>
+  <a href="course_communication.html">Communication</a>
+</li>
+<li>
+  <a href="https://github.com/P8105/p8105.github.io">
+    <span class="fa fa-github"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Bootstrapping</h1>
+
+</div>
+
+
+<p>Bootstrapping is a popular resampling-based approach to statistical
+inference, and is helpful when usual statistical methods are intractable
+or inappropriate. The idea is to draw repeated samples from your
+original sample <em>with replacement</em>, thereby approximating the
+repeated sampling framework. Using list columns to store bootstrap
+samples is natural and provides a “tidy” approach to resampling-based
+inference.</p>
+<p>This is the third module in the <a
+href="topic_linear_models.html">Linear Models</a> topic.</p>
+<div id="overview" class="section level2 tabset tabset-pills">
+<h2 class="tabset tabset-pills">Overview</h2>
+<div id="learning-objectives" class="section level3">
+<h3>Learning Objectives</h3>
+<p>Implement the bootstrap to obtain inference in non-standard cases
+using tools for iteration.</p>
+</div>
+<div id="slide-deck" class="section level3">
+<h3>Slide Deck</h3>
+<div class="vid_container">
+<p><iframe 
+    src="https://speakerdeck.com/player/dd7f4987ef08497696bdc9a66902203a" 
+    allowfullscreen 
+    frameborder="0"
+    class="video"> </iframe></p>
+</div>
+<div style="margin-bottom:5px">
+<strong>
+<a href="https://speakerdeck.com/jeffgoldsmith/p8105-bootstrapping" title="Simulation and Bootstrapping" target="_blank">Bootstrapping</a>
+</strong> from
+<strong><a href="https://speakerdeck.com/jeffgoldsmith" target="_blank">Jeff
+Goldsmith</a></strong>.
+</div>
+<p><br></p>
+<hr />
+</div>
+<div id="video-lecture" class="section level3">
+<h3>Video Lecture</h3>
+<div class="vid_container">
+<p><iframe 
+    src="https://www.youtube.com/embed/jOoNgeIDGWo"
+    frameborder="0" allowfullscreen class="video"> </iframe></p>
+</div>
+<hr />
+</div>
+</div>
+<div id="example" class="section level2">
+<h2>Example</h2>
+<p>I’ll write code for today’s content in a new R Markdown document
+called <code>bootstrapping.Rmd</code> in the <code>linear_models</code>
+directory / repo. The code chunk below loads usual packages and sets a
+seed for reproducibility.</p>
+<pre class="r"><code>library(tidyverse)
+library(p8105.datasets)
+
+set.seed(1)</code></pre>
+<div id="bootstrapping" class="section level3">
+<h3>Bootstrapping</h3>
+<p>Bootstrapping is based on the idea of repeated sampling which
+underlies most approaches to statistical inference. Traditionally, the
+distribution of a sample statistic (sample mean, SLR coefficients, etc.)
+for repeated, random draws from a population has been established
+theoretically. These theoretical distributions make some assumptions
+about the underlying population from which samples are drawn, or depend
+on large sample sizes for asymptotic results.</p>
+<p>In cases where the assumptions aren’t met, or sample sizes aren’t
+large enough for asymptotics to kick in, it is still necessary to make
+inferences using the sample statistic. In these cases, drawing
+repeatedly from the original population would be great – one could
+simple draw a lot of samples and look at the empirical (rather than
+theoretical) distribution. But, as we said in <a
+href="iteration_and_simulation.html">iteration and simulation</a>,
+repeated sampling just doesn’t happen in the real world.</p>
+<p>Repeated sampling <em>can</em> happen on a computer though. To
+bootstrap, one draws repeated samples (with the same sample size) from
+the original sample <strong><em>with replacement</em></strong> to mimic
+the process of drawing repeated samples from the population. The
+bootstrap samples will differ from the original sample, and the sample
+statistic of interest (sample mean, SLR coefficients, etc.) can be
+computed for each bootstrap sample. Looking at the distribution of the
+statistic across samples gives a sense of the uncertainty in the
+estimate.</p>
+</div>
+<div id="bootstrapping-in-slr" class="section level3">
+<h3>Bootstrapping in SLR</h3>
+<p>Let’s create some simulated data. First I’ll generate <code>x</code>,
+then an <code>error</code> sampled from a normal distribution, and then
+a response <code>y</code>; this all gets stored in
+<code>sim_df_const</code>. Then I’ll modify this by multiplying the
+errors by a term that involves <code>x</code>, and create a new response
+variable <code>y</code>.</p>
+<pre class="r"><code>n_samp = 250
+
+sim_df_const = 
+  tibble(
+    x = rnorm(n_samp, 1, 1),
+    error = rnorm(n_samp, 0, 1),
+    y = 2 + 3 * x + error
+  )
+
+sim_df_nonconst = sim_df_const |&gt; 
+  mutate(
+  error = error * .75 * x,
+  y = 2 + 3 * x + error
+)</code></pre>
+<p>By generating data in this way, I’m creating one case in which the
+usual linear regression assumptions hold and one case in which they
+don’t. The plot below illustrates the differences between the
+dataset.</p>
+<pre class="r"><code>sim_df = 
+  bind_rows(const = sim_df_const, nonconst = sim_df_nonconst, .id = &quot;data_source&quot;) 
+
+sim_df |&gt; 
+  ggplot(aes(x = x, y = y)) + 
+  geom_point(alpha = .5) +
+  stat_smooth(method = &quot;lm&quot;) +
+  facet_grid(~data_source) </code></pre>
+<pre><code>## `geom_smooth()` using formula = &#39;y ~ x&#39;</code></pre>
+<p><img src="bootstrapping_files/figure-html/unnamed-chunk-4-1.png" width="90%" /></p>
+<p>These datasets have roughly the same overall variance, but the left
+panel shows data with constant variance and the right panel shows data
+with non-constant variance. For this reason, ordinary least squares
+should provide reasonable estimates in both cases, but inference is
+standard inference approaches may only be justified for the data on the
+left.</p>
+<p>The output below shows results from fitting simple linear regressions
+to both datasets.</p>
+<pre class="r"><code>lm(y ~ x, data = sim_df_const) |&gt; 
+  broom::tidy() |&gt; 
+  knitr::kable(digits = 3)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">estimate</th>
+<th align="right">std.error</th>
+<th align="right">statistic</th>
+<th align="right">p.value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">1.977</td>
+<td align="right">0.098</td>
+<td align="right">20.157</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">x</td>
+<td align="right">3.045</td>
+<td align="right">0.070</td>
+<td align="right">43.537</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>lm(y ~ x, data = sim_df_nonconst) |&gt; 
+  broom::tidy() |&gt; 
+  knitr::kable(digits = 3)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">estimate</th>
+<th align="right">std.error</th>
+<th align="right">statistic</th>
+<th align="right">p.value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">1.934</td>
+<td align="right">0.105</td>
+<td align="right">18.456</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">x</td>
+<td align="right">3.112</td>
+<td align="right">0.075</td>
+<td align="right">41.661</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
+<p>Despite the very different error structures, standard errors for
+coefficient estimates are similar in both cases!</p>
+<p>We’ll use the bootstrap to make inference for the data on the right.
+This is intended largely as an illustration for how to use the bootstrap
+in cases where the theoretical distribution is “unknown”, although for
+these data in particular weighted least squares could be more
+appropriate.</p>
+</div>
+<div id="drawing-one-bootstrap-sample" class="section level3">
+<h3>Drawing one bootstrap sample</h3>
+<p>Let’s write a quick function to generate our bootstrap samples. This
+function should have the data frame as the argument, and should return a
+sample from that dataframe drawn with replacement.</p>
+<pre class="r"><code>boot_sample = function(df) {
+  sample_frac(df, replace = TRUE)
+}</code></pre>
+<p>We should also do a quick check to see if this is working.</p>
+<pre class="r"><code>boot_sample(sim_df_nonconst) |&gt; 
+  ggplot(aes(x = x, y = y)) + 
+  geom_point(alpha = .5) +
+  stat_smooth(method = &quot;lm&quot;)</code></pre>
+<pre><code>## `geom_smooth()` using formula = &#39;y ~ x&#39;</code></pre>
+<p><img src="bootstrapping_files/figure-html/unnamed-chunk-7-1.png" width="90%" /></p>
+<p>That looks about right. In comparison with the original data, the
+bootstrap sample has the same characteristics but isn’t a perfect
+duplicate – some original data points appear more than once, others
+don’t appear at all.</p>
+</div>
+<div id="drawing-many-bootstrap-samples" class="section level3">
+<h3>Drawing many bootstrap samples</h3>
+<p>We’re going to draw repeated samples with replacement, and then
+analyze each of those samples separately. It would be really great to
+have a data structure that makes it possible to keep track of
+everything. Maybe a <strong><em>list column</em></strong>??!</p>
+<p>Let’s give that a try:</p>
+<pre class="r"><code>boot_straps = 
+  tibble(strap_number = 1:1000) |&gt; 
+  mutate(
+    strap_sample = map(strap_number, \(i) boot_sample(df = sim_df_nonconst))
+  )
+
+boot_straps</code></pre>
+<pre><code>## # A tibble: 1,000 × 2
+##    strap_number strap_sample      
+##           &lt;int&gt; &lt;list&gt;            
+##  1            1 &lt;tibble [250 × 3]&gt;
+##  2            2 &lt;tibble [250 × 3]&gt;
+##  3            3 &lt;tibble [250 × 3]&gt;
+##  4            4 &lt;tibble [250 × 3]&gt;
+##  5            5 &lt;tibble [250 × 3]&gt;
+##  6            6 &lt;tibble [250 × 3]&gt;
+##  7            7 &lt;tibble [250 × 3]&gt;
+##  8            8 &lt;tibble [250 × 3]&gt;
+##  9            9 &lt;tibble [250 × 3]&gt;
+## 10           10 &lt;tibble [250 × 3]&gt;
+## # ℹ 990 more rows</code></pre>
+<p>We can do a few of quick checks to make sure this has worked as
+intended. First we’ll look at a couple of bootstrap samples.</p>
+<pre class="r"><code>boot_straps |&gt; 
+  slice(1:3) |&gt; 
+  mutate(strap_sample = map(strap_sample, arrange, x)) |&gt; 
+  pull(strap_sample)</code></pre>
+<pre><code>## [[1]]
+## # A tibble: 250 × 3
+##         x   error       y
+##     &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
+##  1 -1.89   1.62   -2.04  
+##  2 -1.89   1.62   -2.04  
+##  3 -1.21  -0.781  -2.43  
+##  4 -1.21  -0.781  -2.43  
+##  5 -1.00   0.832  -0.169 
+##  6 -0.989 -1.97   -2.93  
+##  7 -0.914 -0.908  -1.65  
+##  8 -0.606 -0.106   0.0774
+##  9 -0.536  0.0227  0.413 
+## 10 -0.524 -0.536  -0.106 
+## # ℹ 240 more rows
+## 
+## [[2]]
+## # A tibble: 250 × 3
+##         x  error       y
+##     &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;
+##  1 -1.29   1.40  -0.454 
+##  2 -0.989 -1.97  -2.93  
+##  3 -0.914 -0.908 -1.65  
+##  4 -0.914 -0.908 -1.65  
+##  5 -0.805  0.292 -0.123 
+##  6 -0.805  0.292 -0.123 
+##  7 -0.665 -0.544 -0.539 
+##  8 -0.641 -0.416 -0.338 
+##  9 -0.606 -0.106  0.0774
+## 10 -0.606 -0.106  0.0774
+## # ℹ 240 more rows
+## 
+## [[3]]
+## # A tibble: 250 × 3
+##         x  error      y
+##     &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;
+##  1 -1.89   1.62  -2.04 
+##  2 -1.89   1.62  -2.04 
+##  3 -1.29   1.40  -0.454
+##  4 -1.29   1.40  -0.454
+##  5 -1.00   0.832 -0.169
+##  6 -0.914 -0.908 -1.65 
+##  7 -0.805  0.292 -0.123
+##  8 -0.665 -0.544 -0.539
+##  9 -0.665 -0.544 -0.539
+## 10 -0.665 -0.544 -0.539
+## # ℹ 240 more rows</code></pre>
+<p>Seems okay – some values are repeated, some don’t appear in both
+datasets. Next I’ll use <code>ggplot</code> to show some of these
+datasets, and to include a linear fit for each.</p>
+<pre class="r"><code>boot_straps |&gt; 
+  slice(1:3) |&gt; 
+  unnest(strap_sample) |&gt; 
+  ggplot(aes(x = x, y = y)) + 
+  geom_point(alpha = .5) +
+  stat_smooth(method = &quot;lm&quot;, se = FALSE) +
+  facet_grid(~strap_number) </code></pre>
+<pre><code>## `geom_smooth()` using formula = &#39;y ~ x&#39;</code></pre>
+<p><img src="bootstrapping_files/figure-html/unnamed-chunk-10-1.png" width="90%" /></p>
+<p>This shows some of the differences across bootstrap samples, and
+shows that the fitted regression lines aren’t the same for every
+bootstrap sample.</p>
+</div>
+<div id="analyzing-bootstrap-samples" class="section level3">
+<h3>Analyzing bootstrap samples</h3>
+<p>My goal, of course, isn’t to analyze bootstrap samples by plotting
+them – I’d like to get a sense of the variability in estimated
+intercepts and slopes across all my bootstrap samples.</p>
+<p>To do that, I’ll use the analytic pipeline we established when
+looking at nested datasets in <a href="linear_models.html">linear
+models</a>: fit the model; tidy the output; unnest and examine the
+results. The code chunk below uses this pipeline to look at bootstrap
+standard errors for the estimated regression coefficients.</p>
+<pre class="r"><code>bootstrap_results = 
+  boot_straps |&gt; 
+  mutate(
+    models = map(strap_sample, \(df) lm(y ~ x, data = df) ),
+    results = map(models, broom::tidy)) |&gt; 
+  select(-strap_sample, -models) |&gt; 
+  unnest(results) 
+
+bootstrap_results |&gt; 
+  group_by(term) |&gt; 
+  summarize(boot_se = sd(estimate)) |&gt; 
+  knitr::kable(digits = 3)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">boot_se</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">0.075</td>
+</tr>
+<tr class="even">
+<td align="left">x</td>
+<td align="right">0.101</td>
+</tr>
+</tbody>
+</table>
+<p>Comparing these to the results of ordinary least squares, the
+standard error for the intercept is much smaller and the standard error
+for the intercept is a bit larger. This is reasonable, given the
+non-constant variance in the data given smaller residuals around zero
+and larger residuals in the the tails of the <code>x</code>
+distribution.</p>
+<p>I can also use the estimates across bootstrap samples to construct a
+confidence interval. For a 95% CI, we might try to exclude the lower and
+upper 2.5% of the distribution of parameter estimates across “repeated”
+samples. The code below will do that.</p>
+<pre class="r"><code>bootstrap_results |&gt; 
+  group_by(term) |&gt; 
+  summarize(
+    ci_lower = quantile(estimate, 0.025), 
+    ci_upper = quantile(estimate, 0.975))</code></pre>
+<pre><code>## # A tibble: 2 × 3
+##   term        ci_lower ci_upper
+##   &lt;chr&gt;          &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept)     1.79     2.08
+## 2 x               2.91     3.31</code></pre>
+<p>For a simple linear regression, we can show the fitted lines for each
+bootstrap sample to build intuition for these results.</p>
+<pre class="r"><code>boot_straps |&gt; 
+  unnest(strap_sample) |&gt; 
+  ggplot(aes(x = x, y = y)) + 
+  geom_line(aes(group = strap_number), stat = &quot;smooth&quot;, method = &quot;lm&quot;, se = FALSE, alpha = .1, color = &quot;blue&quot;) +
+  geom_point(data = sim_df_nonconst, alpha = .5)</code></pre>
+<pre><code>## `geom_smooth()` using formula = &#39;y ~ x&#39;</code></pre>
+<p><img src="bootstrapping_files/figure-html/unnamed-chunk-13-1.png" width="90%" /></p>
+<p>In comparison to the standard error bands in our previous plot (which
+are based on OLS), the distribution of regression lines is narrower near
+<span class="math inline">\(x = 0\)</span> and wider at the ends of the
+<span class="math inline">\(x\)</span> distribution.</p>
+</div>
+<div id="bootstrap" class="section level3">
+<h3><code>bootstrap</code></h3>
+<p>Bootstrapping is common enough that it’s been automated, to some
+degree, in the <code>modelr::boostrap</code> function. This function
+makes it easy to draw bootstrap samples, and stores them in a
+mostly-helpful way – as a <code>resample</code> object that can be
+converted to and treated like a data frame. (This keeps you from having
+to actually store 1000 dataframes, and saves a lot of memory on your
+computer.)</p>
+<pre class="r"><code>boot_straps = 
+  sim_df_nonconst |&gt; 
+  modelr::bootstrap(n = 1000)
+
+boot_straps |&gt; pull(strap) |&gt; nth(1)</code></pre>
+<pre><code>## &lt;resample [250 x 3]&gt; 8, 132, 69, 225, 180, 122, 34, 170, 216, 122, ...</code></pre>
+<pre class="r"><code>boot_straps |&gt; pull(strap) |&gt; nth(1) |&gt; as_tibble()</code></pre>
+<pre><code>## # A tibble: 250 × 3
+##         x  error     y
+##     &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;
+##  1  1.74   0.747  7.96
+##  2  0.411  0.343  3.58
+##  3  1.15  -1.12   4.34
+##  4 -0.157 -0.159  1.37
+##  5  2.21  -1.13   7.50
+##  6  2.34   0.488  9.52
+##  7  0.946 -0.498  4.34
+##  8  1.21   1.55   7.17
+##  9  2.52   0.528 10.1 
+## 10  2.34   0.488  9.52
+## # ℹ 240 more rows</code></pre>
+<p>Let’s repeat our analysis pipeline using the <code>bootstrap</code>
+function instead of our own process for drawing samples with
+replacement.</p>
+<pre class="r"><code>sim_df_nonconst |&gt; 
+  modelr::bootstrap(n = 1000) |&gt; 
+  mutate(
+    models = map(strap, \(df) lm(y ~ x, data = df) ),
+    results = map(models, broom::tidy)) |&gt; 
+  select(-strap, -models) |&gt; 
+  unnest(results) |&gt; 
+  group_by(term) |&gt; 
+  summarize(boot_se = sd(estimate))</code></pre>
+<pre><code>## # A tibble: 2 × 2
+##   term        boot_se
+##   &lt;chr&gt;         &lt;dbl&gt;
+## 1 (Intercept)  0.0790
+## 2 x            0.104</code></pre>
+<p>The results are the same (up to resampling variability), and the code
+to get here is pretty clean.</p>
+<p>Also, check this out – to bootstrap the dataset with constant error
+variance, we only have to change the input dataframe!</p>
+<pre class="r"><code>sim_df_const |&gt; 
+  modelr::bootstrap(n = 1000) |&gt; 
+  mutate(
+    models = map(strap, \(df) lm(y ~ x, data = df)),
+    results = map(models, broom::tidy)) |&gt; 
+  select(-strap, -models) |&gt; 
+  unnest(results) |&gt; 
+  group_by(term) |&gt; 
+  summarize(boot_se = sd(estimate))</code></pre>
+<pre><code>## # A tibble: 2 × 2
+##   term        boot_se
+##   &lt;chr&gt;         &lt;dbl&gt;
+## 1 (Intercept)  0.101 
+## 2 x            0.0737</code></pre>
+<p>These results generally agree with the output of the OLS procedure,
+which is nice.</p>
+</div>
+<div id="airbnb-data" class="section level3">
+<h3>Airbnb data</h3>
+<p>As a final example, we’ll revisit the <a
+href="dataset_airbnb.html">Airbnb data</a>. The code chunk below loads
+and tidies the data.</p>
+<pre class="r"><code>data(&quot;nyc_airbnb&quot;)
+
+nyc_airbnb = 
+  nyc_airbnb |&gt; 
+  mutate(stars = review_scores_location / 2) |&gt; 
+  rename(
+    borough = neighbourhood_group,
+    neighborhood = neighbourhood) |&gt; 
+  filter(borough != &quot;Staten Island&quot;) |&gt; 
+  drop_na(price, stars) |&gt; 
+  select(price, stars, borough, neighborhood, room_type)</code></pre>
+<p>I’ll make a quick plot showing these data, with particular emphasis
+on the features I’m interested in analyzing: <code>price</code> as an
+outcome with <code>stars</code> and <code>room_type</code> as
+covariates.</p>
+<pre class="r"><code>nyc_airbnb |&gt; 
+  ggplot(aes(x = stars, y = price, color = room_type)) + 
+  geom_point() </code></pre>
+<p><img src="bootstrapping_files/figure-html/unnamed-chunk-18-1.png" width="90%" /></p>
+<p>In this plot (and in <a href="linear_models.html">linear models</a>,
+we noticed that some large outliers in price might affect estimates and
+inference for the association between star rating and price. Because
+estimates are likely to be sensitive to those outliers and “usual” rules
+for inference may not apply, the code chunk below uses the bootstrap to
+examine the distribution of regression coefficients under repeated
+sampling.</p>
+<pre class="r"><code>nyc_airbnb |&gt; 
+  filter(borough == &quot;Manhattan&quot;) |&gt; 
+  modelr::bootstrap(n = 1000) |&gt; 
+  mutate(
+    models = map(strap, \(df) lm(price ~ stars + room_type, data = df)),
+    results = map(models, broom::tidy)) |&gt; 
+  select(results) |&gt; 
+  unnest(results) |&gt; 
+  filter(term == &quot;stars&quot;) |&gt; 
+  ggplot(aes(x = estimate)) + geom_density()</code></pre>
+<p><img src="bootstrapping_files/figure-html/unnamed-chunk-19-1.png" width="90%" /></p>
+<p>This distribution has a heavy tail extending to low values and a bit
+of a “shoulder”, features that may be related to the frequency with
+which large outliers are included in the bootstrap sample.</p>
+</div>
+</div>
+<div id="other-materials" class="section level2">
+<h2>Other materials</h2>
+<p>List columns take some getting used to; there are some materials to
+help with that.</p>
+<ul>
+<li>R for Data Science has a chapter on <a
+href="http://r4ds.had.co.nz/many-models.html">fitting many
+models</a></li>
+<li>Jenny Bryan’s <a
+href="https://jennybc.github.io/purrr-tutorial/">purrr tutorial</a> has
+useful list-column examples</li>
+</ul>
+<p>Boostrapping and resampling are also new concepts; the materials
+below explore these using tidyverse approaches.</p>
+<ul>
+<li>The <a
+href="https://github.com/tidyverse/modelr"><code>modelr</code>
+package</a> has a page</li>
+<li>The bootsrapping <a
+href="https://cran.r-project.org/web/packages/broom/vignettes/bootstrapping.html">vignette</a>
+uses a framework similar to the one we used</li>
+</ul>
+<p>The code that I produced working examples in lecture is <a
+href="https://github.com/jeff-goldsmith/linear_models">here</a>.</p>
+</div>
+
+<br><br>
+<footer>
+  <img src="images/p8105_stickers.png" alt="stickers" style="width:30%">
+  <br>
+  <p class="copyright text-muted" align="center">Copyright &copy; 2019 Jeff Goldsmith</p>
+</footer>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

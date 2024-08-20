@@ -1,0 +1,32 @@
+---
+title: "Mr. Trash Wheel"
+output:
+  html_document: 
+    toc: true
+    toc_float: true
+---
+
+The version of the Mr. Trash Wheel data we'll use for this class is available  [here](./data/202207 Trash Wheel Collection Data.xlsx).
+
+**_UPDATE: A new version of the trash wheel data is [here](data/202309 Trash Wheel Collection Data.xlsx)._**
+
+## Context
+
+[Mr. Trash Wheel](https://www.mrtrashwheel.com) is "a [water-wheel vessel](https://en.wikipedia.org/wiki/Mr._Trash_Wheel) that removes trash from the Inner Harbor in Baltimore, Maryland." It (or he) sits at an intake into the Inner Harbor and intercepts litter and debris carried by the Jones Falls River toward the harbor. It has removed over a million pounds of litter since May 2014!
+
+Adam Lindquist, Director of the Healthy Harbor Initiative, describes the operation of the trash wheel and the data collection process below:
+
+> Trash collected by the Trash Wheel is immediately dumped into a dumpster sitting on a separate barge at the back of the device. Each time the dumpster fills it is removed by boat and replaced with an empty dumpster. The full dumpster is transported to a waste-to-energy plant with the trash is incinerated to make electricity for Maryland homes. 
+
+> The amount of trash the device receives is highly dependent on rainfall. When the City receives a large storm we can fill multiple dumpsters in a single day. If it doesn't rain, it may take days or weeks to fill a single dumpster.
+
+> Trash totals are estimated based on observations of what is going up a section of the conveyor belt at various times through the collection process. For example, the beginning of a storm brings more cigarette butts, while the middle of a storm brings more plastic bags. The tail end of a storm brings heavy logs.
+
+Mr. Trash Wheel is on [twitter](https://twitter.com/mrtrashwheel/).
+
+## Data description
+
+Data collected by Mr. Trash Wheel is publicly available as a .xlsx document.
+
+The Mr. Trash Wheel spreadsheet is largely self-explanatory, and includes information on the dumpter number, date of collection, amount of total litter and litter type. Additional spreadsheets for Professor Trash wheel and for precipitation amounts are also included in the document. 
+

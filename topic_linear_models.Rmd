@@ -1,0 +1,13 @@
+---
+title: "Linear models"
+---
+
+Regression, particularly linear regression models, is one of the most important tools for data science and statistics. Linear models are broadly understood, easy to interpret, and surprisingly flexible. We'll see how to fit and work with models in R; use cross-validation as a tool for model selection; and implement a bootstrap for inference. 
+
+This topic is made up of the following components:
+
+* [Linear models](linear_models.html)
+* [Cross Validation](cross_validation.html)
+* [Bootstrapping](bootstrapping.html)
+
+The code that I produced working examples in lecture is [here](https://github.com/P8105/linear_models).

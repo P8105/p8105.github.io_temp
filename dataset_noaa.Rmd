@@ -1,0 +1,58 @@
+---
+title: "NOAA"
+output:
+  html_document: 
+    toc: true
+    toc_float: true
+---
+
+These data were accessed  from the NOAA National Climatic Data Center, [http://doi.org/10.7289/V5D21VHZ](http://doi.org/10.7289/V5D21VHZ), on August 15, 2017.(Menne, M.J., I. Durre, B. Korzeniewski, S. McNeal, K. Thomas, X. Yin, S. Anthony, R. Ray, R.S. Vose, B.E.Gleason, and T.G. Houston, 2012: Global Historical Climatology Network - Daily (GHCN-Daily), Version 3.22.) 
+
+The version of the NOAA data that we will use in this class can be found [here](./data/nynoaadat.zip).
+
+
+## Context
+
+The National Oceanic and Atmospheric Association (NOAA) of the National Centers for Environmental Information (NCEI) provides public access to some weather data, including the GHCN (Global Historical Climatology Network)-Daily database of summary statistics from weather stations around the world. A detailed description of the data, including the following, can be found [here](https://www.ncdc.noaa.gov/ghcn-daily-description):
+
+> GHCN-Daily contains records from over 100,000 stations in 180 countries and territories. NCEI provides numerous daily variables, including maximum and minimum temperature, total daily precipitation, snowfall, and snow depth; however, about one half of the stations report precipitation only. Both the record length and period of record vary by station and cover intervals ranging from less than a year to more than 175 years.
+
+[Instructions](https://www1.ncdc.noaa.gov/pub/data/ghcn/daily/readme.txt) are also provided on how to access and download the data, and what variables the data contains.
+
+
+## Data description
+
+The data to be used for this class were acquired using functions from the `rnoaa` package. `rnoaa` is an R package available on CRAN that was constructed specifically to download and tidy data from NOAA. Details of the many functions available as part of this package can be found in the [package documention](https://cran.r-project.org/web/packages/rnoaa/rnoaa.pdf). Specifically, the function `ghcnd_stations()` acquires a list of all of the GHCND-Daily weather stations and the function `meteo_pull_monitors()` pulls weather data for one or many station IDs.
+
+The following code was used to acquire the five core variables for all New York state weather stations from January 1, 1981 through December 31, 2010. This code was run on a server computer due to the lengthy processing time required, and can serve as a guide for acquisition of additional GHCN-Daily data. Note that the data are acquired via ftp, so an internet connection is required.
+
+```
+library(dplyr)
+library(rnoaa)
+
+# Get a list of all NY station IDs
+stations <- ghcnd_stations()
+nystationids <-  stations %>% 
+  filter(state == "NY") %>% 
+  distinct(id)
+
+# Pull the desired weather data for all of these stations
+nydat <- meteo_pull_monitors(nystationids$id, 
+                             date_min = "1981-01-01", 
+                             date_max = "2010-12-31", 
+                             var = c("PRCP", "SNOW", "SNWD", "TMAX", "TMIN"))
+
+# Save the resulting data
+save(nystationids, nydat, file = "nynoaadat.RData")
+```
+The resulting R dataset `nydat` contains variables:
+
+- `id`: Weather station ID
+- `date`: Date of observation
+- `prcp`: Precipitation (tenths of mm)
+- `snow`: Snowfall (mm)
+- `snwd`: Snow depth (mm)
+- `tmax`: Maximum temperature (tenths of degrees C)
+- `tmin`: Minimum temperature (tenths of degrees C)
+
+Each weather station may collect only a subset of these variables, and therefore the resulting dataset contains extensive missing data.

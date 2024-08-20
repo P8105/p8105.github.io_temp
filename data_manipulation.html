@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Data Manipulation with dplyr</title>
+
+<script src="site_libs/header-attrs-2.24/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" />
+<script defer src="https://use.fontawesome.com/releases/v5.0.3/js/all.js"></script>
+<script defer src="https://use.fontawesome.com/releases/v5.0.0/js/v4-shims.js"></script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-151578452-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-151578452-1');
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">P8105</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="schedule.html">Schedule</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Topics
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="topic_what_is_data_science.html">What is Data Science?</a>
+    </li>
+    <li>
+      <a href="topic_building_blocks.html">Building Blocks</a>
+    </li>
+    <li>
+      <a href="topic_data_wrangling_i.html">Data Wrangling I</a>
+    </li>
+    <li>
+      <a href="topic_visualization_and_eda.html">Visualization and EDA</a>
+    </li>
+    <li>
+      <a href="topic_data_wrangling_ii.html">Data Wrangling II</a>
+    </li>
+    <li>
+      <a href="topic_interactivity.html">Interactivity</a>
+    </li>
+    <li>
+      <a href="topic_iteration.html">Iteration</a>
+    </li>
+    <li>
+      <a href="topic_linear_models.html">Linear Models</a>
+    </li>
+    <li>
+      <a href="topic_other_material.html">Other Materials</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Datasets
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="dataset_airbnb.html">Airbnb</a>
+    </li>
+    <li>
+      <a href="dataset_brfss.html">BRFSS</a>
+    </li>
+    <li>
+      <a href="dataset_fivethirtyeight.html">FiveThirtyEight</a>
+    </li>
+    <li>
+      <a href="dataset_instacart.html">Instacart</a>
+    </li>
+    <li>
+      <a href="dataset_mr_trash_wheel.html">Mr. Trash Wheel</a>
+    </li>
+    <li>
+      <a href="dataset_noaa.html">NOAA</a>
+    </li>
+    <li>
+      <a href="dataset_restaurant_inspections.html">NYC Restaurant Inspections</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="homework_and_projects.html">Homework and Projects</a>
+</li>
+<li>
+  <a href="course_communication.html">Communication</a>
+</li>
+<li>
+  <a href="https://github.com/P8105/p8105.github.io">
+    <span class="fa fa-github"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Data Manipulation with
+<code>dplyr</code></h1>
+
+</div>
+
+
+<p>Once you’ve imported data, you’re going to need to do some cleaning
+up.</p>
+<p>This is the secode module in the <a
+href="topic_data_wrangling_i.html">Data Wrangling I</a> topic.</p>
+<div id="overview" class="section level2 tabset tabset-pills">
+<h2 class="tabset tabset-pills">Overview</h2>
+<div id="learning-objectives" class="section level3">
+<h3>Learning Objectives</h3>
+<p>Clean and organize data using <code>dplyr</code> verbs and
+piping.</p>
+</div>
+<div id="slide-deck" class="section level3">
+<h3>Slide Deck</h3>
+<div class="vid_container">
+<p><iframe 
+    src="https://speakerdeck.com/player/3b324ada29974681999fe129bb08a3ce" 
+    allowfullscreen 
+    frameborder="0"
+    class="video"> </iframe></p>
+</div>
+<div style="margin-bottom:5px">
+<strong>
+<a href="https://speakerdeck.com/jeffgoldsmith/p8105-data-manipulation" title="Data Manipulation" target="_blank">Data
+Manipulation</a> </strong> from
+<strong><a href="https://speakerdeck.com/jeffgoldsmith" target="_blank">Jeff
+Goldsmith</a></strong>.
+</div>
+<p><br></p>
+<hr />
+</div>
+<div id="video-lecture" class="section level3">
+<h3>Video Lecture</h3>
+<div class="vid_container">
+<p><iframe 
+    src="https://www.youtube.com/embed/yXwy2YW4wHs"
+    frameborder="0" allowfullscreen class="video"> </iframe></p>
+</div>
+<hr />
+</div>
+</div>
+<div id="example" class="section level2">
+<h2>Example</h2>
+<p>For this example, I’ll start a new R Markdown file to the repo /
+project I started for the <a href="topic_data_wrangling_i.html">Data
+Wrangling I</a> topic; this will make it easy to load example data sets
+using the code I wrote in <a href="data_import.html">Data
+Import</a>.</p>
+<p>Once again we’re going to be using the <code>tidyverse</code>, so
+we’ll load that at the outset. We’re going to be looking at a lot of
+output, so I’ll print only three lines of each tibble by default.
+Lastly, we’ll focus on the data in <code>FAS_litters.csv</code> and
+<code>FAS_pups.csv</code>, so we’ll load those data and clean up the
+column names using what we learned in <a href="data_import.html">Data
+Import</a>.</p>
+<pre class="r"><code>library(tidyverse)
+## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+## ✔ dplyr     1.1.3     ✔ readr     2.1.4
+## ✔ forcats   1.0.0     ✔ stringr   1.5.0
+## ✔ ggplot2   3.4.3     ✔ tibble    3.2.1
+## ✔ lubridate 1.9.2     ✔ tidyr     1.3.0
+## ✔ purrr     1.0.2     
+## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+## ✖ dplyr::filter() masks stats::filter()
+## ✖ dplyr::lag()    masks stats::lag()
+## ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors
+
+options(tibble.print_min = 3)
+
+litters_data = read_csv(&quot;./data/FAS_litters.csv&quot;,
+  col_types = &quot;ccddiiii&quot;)
+litters_data = janitor::clean_names(litters_data)
+
+pups_data = read_csv(&quot;./data/FAS_pups.csv&quot;,
+  col_types = &quot;ciiiii&quot;)
+pups_data = janitor::clean_names(pups_data)</code></pre>
+<div id="select" class="section level3">
+<h3><code>select</code></h3>
+<p>For a given analysis, you may only need a subset of the columns in a
+data table; extracting only what you need can helpfully de-clutter,
+especially when you have large datasets. Select columns using
+<code>select</code>.</p>
+<p>You can specify the columns you want to keep by naming all of
+them:</p>
+<pre class="r"><code>select(litters_data, group, litter_number, gd0_weight, pups_born_alive)
+## # A tibble: 49 × 4
+##   group litter_number gd0_weight pups_born_alive
+##   &lt;chr&gt; &lt;chr&gt;              &lt;dbl&gt;           &lt;int&gt;
+## 1 Con7  #85                 19.7               3
+## 2 Con7  #1/2/95/2           27                 8
+## 3 Con7  #5/5/3/83/3-3       26                 6
+## # ℹ 46 more rows</code></pre>
+<p>You can specify the specify a range of columns to keep:</p>
+<pre class="r"><code>select(litters_data, group:gd_of_birth)
+## # A tibble: 49 × 5
+##   group litter_number gd0_weight gd18_weight gd_of_birth
+##   &lt;chr&gt; &lt;chr&gt;              &lt;dbl&gt;       &lt;dbl&gt;       &lt;int&gt;
+## 1 Con7  #85                 19.7        34.7          20
+## 2 Con7  #1/2/95/2           27          42            19
+## 3 Con7  #5/5/3/83/3-3       26          41.4          19
+## # ℹ 46 more rows</code></pre>
+<p>You can also specify columns you’d like to remove:</p>
+<pre class="r"><code>select(litters_data, -pups_survive)
+## # A tibble: 49 × 7
+##   group litter_number gd0_weight gd18_weight gd_of_birth pups_born_alive
+##   &lt;chr&gt; &lt;chr&gt;              &lt;dbl&gt;       &lt;dbl&gt;       &lt;int&gt;           &lt;int&gt;
+## 1 Con7  #85                 19.7        34.7          20               3
+## 2 Con7  #1/2/95/2           27          42            19               8
+## 3 Con7  #5/5/3/83/3-3       26          41.4          19               6
+## # ℹ 46 more rows
+## # ℹ 1 more variable: pups_dead_birth &lt;int&gt;</code></pre>
+<p>You can rename variables as part of this process:</p>
+<pre class="r"><code>select(litters_data, GROUP = group, LiTtEr_NuMbEr = litter_number)
+## # A tibble: 49 × 2
+##   GROUP LiTtEr_NuMbEr
+##   &lt;chr&gt; &lt;chr&gt;        
+## 1 Con7  #85          
+## 2 Con7  #1/2/95/2    
+## 3 Con7  #5/5/3/83/3-3
+## # ℹ 46 more rows</code></pre>
+<p>If all you want to do is rename something, you can use
+<code>rename</code> instead of <code>select</code>. This will rename the
+variables you care about, and keep everything else:</p>
+<pre class="r"><code>rename(litters_data, GROUP = group, LiTtEr_NuMbEr = litter_number)
+## # A tibble: 49 × 8
+##   GROUP LiTtEr_NuMbEr gd0_weight gd18_weight gd_of_birth pups_born_alive
+##   &lt;chr&gt; &lt;chr&gt;              &lt;dbl&gt;       &lt;dbl&gt;       &lt;int&gt;           &lt;int&gt;
+## 1 Con7  #85                 19.7        34.7          20               3
+## 2 Con7  #1/2/95/2           27          42            19               8
+## 3 Con7  #5/5/3/83/3-3       26          41.4          19               6
+## # ℹ 46 more rows
+## # ℹ 2 more variables: pups_dead_birth &lt;int&gt;, pups_survive &lt;int&gt;</code></pre>
+<p>There are some handy helper functions for <code>select</code>; read
+about all of them using <code>?select_helpers</code>. I use
+<code>starts_with()</code>, <code>ends_with()</code>, and
+<code>contains()</code> often, especially when there variables are named
+with suffixes or other standard patterns:</p>
+<pre class="r"><code>select(litters_data, starts_with(&quot;gd&quot;))
+## # A tibble: 49 × 3
+##   gd0_weight gd18_weight gd_of_birth
+##        &lt;dbl&gt;       &lt;dbl&gt;       &lt;int&gt;
+## 1       19.7        34.7          20
+## 2       27          42            19
+## 3       26          41.4          19
+## # ℹ 46 more rows</code></pre>
+<p>I also frequently use is <code>everything()</code>, which is handy
+for reorganizing columns without discarding anything:</p>
+<pre class="r"><code>select(litters_data, litter_number, pups_survive, everything())
+## # A tibble: 49 × 8
+##   litter_number pups_survive group gd0_weight gd18_weight gd_of_birth
+##   &lt;chr&gt;                &lt;int&gt; &lt;chr&gt;      &lt;dbl&gt;       &lt;dbl&gt;       &lt;int&gt;
+## 1 #85                      3 Con7        19.7        34.7          20
+## 2 #1/2/95/2                7 Con7        27          42            19
+## 3 #5/5/3/83/3-3            5 Con7        26          41.4          19
+## # ℹ 46 more rows
+## # ℹ 2 more variables: pups_born_alive &lt;int&gt;, pups_dead_birth &lt;int&gt;</code></pre>
+<p><code>relocate</code> does a similar thing (and is sort of like
+<code>rename</code> in that it’s handy but not critical):</p>
+<pre class="r"><code>relocate(litters_data, litter_number, pups_survive)
+## # A tibble: 49 × 8
+##   litter_number pups_survive group gd0_weight gd18_weight gd_of_birth
+##   &lt;chr&gt;                &lt;int&gt; &lt;chr&gt;      &lt;dbl&gt;       &lt;dbl&gt;       &lt;int&gt;
+## 1 #85                      3 Con7        19.7        34.7          20
+## 2 #1/2/95/2                7 Con7        27          42            19
+## 3 #5/5/3/83/3-3            5 Con7        26          41.4          19
+## # ℹ 46 more rows
+## # ℹ 2 more variables: pups_born_alive &lt;int&gt;, pups_dead_birth &lt;int&gt;</code></pre>
+<p>In larger datasets,</p>
+<p>Lastly, like other functions in <code>dplyr</code>,
+<code>select</code> will export a dataframe even if you only select one
+column. Mostly this is fine, but sometimes you want the vector stored in
+the column. To pull a single variable, use <code>pull</code>.</p>
+<p><strong><em>Learning Assessment:</em></strong> In the pups data,
+select the columns containing litter number, sex, and PD ears.</p>
+<details>
+<summary>
+Solution
+</summary>
+<p>The chunk below performs this action:</p>
+<pre class="r"><code>select(pups_data, litter_number, sex, pd_ears)
+## # A tibble: 313 × 3
+##   litter_number   sex pd_ears
+##   &lt;chr&gt;         &lt;int&gt;   &lt;int&gt;
+## 1 #85               1       4
+## 2 #85               1       4
+## 3 #1/2/95/2         1       5
+## # ℹ 310 more rows</code></pre>
+</details>
+</div>
+<div id="filter" class="section level3">
+<h3><code>filter</code></h3>
+<p>Some data tables will include rows you don’t need for your current
+analysis. Although you could remove specific row numbers using base R,
+you shouldn’t – this might break if the raw data are updated, and the
+thought process isn’t transparent. Instead, you should filter rows based
+on logical expressions using the <code>filter</code> function. Like
+<code>select</code>, the first argument to <code>filter</code> is the
+dataframe you’re filtering; all subsequent arguments are logical
+expressions.</p>
+<p>You will often filter using comparison operators (<code>&gt;</code>,
+<code>&gt;=</code>, <code>&lt;</code>, <code>&lt;=</code>,
+<code>==</code>, and <code>!=</code>). You may also use
+<code>%in%</code> to detect if values appear in a set, and
+<code>is.na()</code> to find missing values. The results of comparisons
+are logical – the statement is <code>TRUE</code> or <code>FALSE</code>
+depending on the values you compare – and can be combined with other
+comparisons using the logical operators <code>&amp;</code> and
+<code>|</code>, or negated using <code>!</code>.</p>
+<p>Some ways you might filter the litters data are:</p>
+<ul>
+<li><code>gd_of_birth == 20</code></li>
+<li><code>pups_born_alive &gt;= 2</code></li>
+<li><code>pups_survive != 4</code></li>
+<li><code>!(pups_survive == 4)</code></li>
+<li><code>group %in% c("Con7", "Con8")</code></li>
+<li><code>group == "Con7" &amp; gd_of_birth == 20</code></li>
+</ul>
+<p>A very common filtering step requires you to omit missing
+observations. You <em>can</em> do this with <code>filter</code>, but I
+recommend using <code>drop_na</code> from the <code>tidyr</code>
+package:</p>
+<ul>
+<li><code>drop_na(litters_data)</code> will remove any row with a
+missing value</li>
+<li><code>drop_na(litters_data, wt_increase)</code> will remove rows for
+which <code>wt_increase</code> is missing.</li>
+</ul>
+<p>Filtering can be helpful for limiting a dataset to only those
+observations needed for an analysis. However, I recommend against the
+creation of many data subsets (e.g. one for each group). This can
+clutter up your workspace, and we’ll see good tools for the analysis of
+subsets before long.</p>
+<p><strong><em>Learning Assessment:</em></strong> In the pups data:</p>
+<ul>
+<li>Filter to include only pups with sex 1</li>
+<li>Filter to include only pups with PD walk less than 11 and sex 2</li>
+</ul>
+<details>
+<summary>
+Solution
+</summary>
+<p>The chunk below performs these actions:</p>
+<pre class="r"><code>filter(pups_data, sex == 1)
+## # A tibble: 155 × 6
+##   litter_number   sex pd_ears pd_eyes pd_pivot pd_walk
+##   &lt;chr&gt;         &lt;int&gt;   &lt;int&gt;   &lt;int&gt;    &lt;int&gt;   &lt;int&gt;
+## 1 #85               1       4      13        7      11
+## 2 #85               1       4      13        7      12
+## 3 #1/2/95/2         1       5      13        7       9
+## # ℹ 152 more rows
+filter(pups_data, sex == 2, pd_walk &lt; 11)
+## # A tibble: 127 × 6
+##   litter_number   sex pd_ears pd_eyes pd_pivot pd_walk
+##   &lt;chr&gt;         &lt;int&gt;   &lt;int&gt;   &lt;int&gt;    &lt;int&gt;   &lt;int&gt;
+## 1 #1/2/95/2         2       4      13        7       9
+## 2 #1/2/95/2         2       4      13        7      10
+## 3 #1/2/95/2         2       5      13        8      10
+## # ℹ 124 more rows</code></pre>
+</details>
+</div>
+<div id="mutate" class="section level3">
+<h3><code>mutate</code></h3>
+<p>Sometimes you need to select columns; sometimes you need to change
+them or create new ones. You can do this using <code>mutate</code>.</p>
+<p>The example below creates a new variable measuring the difference
+between <code>gd18_weight</code> and <code>gd0_weight</code> and
+modifies the existing <code>group</code> variable.</p>
+<pre class="r"><code>mutate(litters_data,
+  wt_gain = gd18_weight - gd0_weight,
+  group = str_to_lower(group)
+)
+## # A tibble: 49 × 9
+##   group litter_number gd0_weight gd18_weight gd_of_birth pups_born_alive
+##   &lt;chr&gt; &lt;chr&gt;              &lt;dbl&gt;       &lt;dbl&gt;       &lt;int&gt;           &lt;int&gt;
+## 1 con7  #85                 19.7        34.7          20               3
+## 2 con7  #1/2/95/2           27          42            19               8
+## 3 con7  #5/5/3/83/3-3       26          41.4          19               6
+## # ℹ 46 more rows
+## # ℹ 3 more variables: pups_dead_birth &lt;int&gt;, pups_survive &lt;int&gt;, wt_gain &lt;dbl&gt;</code></pre>
+<p>A few things in this example are worth noting:</p>
+<ul>
+<li>Your new variables can be functions of old variables</li>
+<li>New variables appear at the end of the dataset in the order that
+they are created</li>
+<li>You can overwrite old variables</li>
+<li>You can create a new variable and immediately refer to (or change)
+it</li>
+</ul>
+<p>Creating a new variable that does exactly what you need can be a
+challenge; the more functions you know about, the easier this gets.</p>
+<p><strong><em>Learning Assessment:</em></strong> In the pups data:</p>
+<ul>
+<li>Create a variable that subtracts 7 from PD pivot</li>
+<li>Create a variable that is the sum of all the PD variables</li>
+</ul>
+<details>
+<summary>
+Solution
+</summary>
+<p>The chunk below performs these actions:</p>
+<pre class="r"><code>mutate(pups_data, pivot_minus7 = pd_pivot - 7)
+## # A tibble: 313 × 7
+##   litter_number   sex pd_ears pd_eyes pd_pivot pd_walk pivot_minus7
+##   &lt;chr&gt;         &lt;int&gt;   &lt;int&gt;   &lt;int&gt;    &lt;int&gt;   &lt;int&gt;        &lt;dbl&gt;
+## 1 #85               1       4      13        7      11            0
+## 2 #85               1       4      13        7      12            0
+## 3 #1/2/95/2         1       5      13        7       9            0
+## # ℹ 310 more rows
+mutate(pups_data, pd_sum = pd_ears + pd_eyes + pd_pivot + pd_walk)
+## # A tibble: 313 × 7
+##   litter_number   sex pd_ears pd_eyes pd_pivot pd_walk pd_sum
+##   &lt;chr&gt;         &lt;int&gt;   &lt;int&gt;   &lt;int&gt;    &lt;int&gt;   &lt;int&gt;  &lt;int&gt;
+## 1 #85               1       4      13        7      11     35
+## 2 #85               1       4      13        7      12     36
+## 3 #1/2/95/2         1       5      13        7       9     34
+## # ℹ 310 more rows</code></pre>
+</details>
+</div>
+<div id="arrange" class="section level3">
+<h3><code>arrange</code></h3>
+<p>In comparison to the preceding, arranging is pretty straightforward.
+You can arrange the rows in your data according to the values in one or
+more columns:</p>
+<pre class="r"><code>head(arrange(litters_data, group, pups_born_alive), 10)
+## # A tibble: 10 × 8
+##    group litter_number   gd0_weight gd18_weight gd_of_birth pups_born_alive
+##    &lt;chr&gt; &lt;chr&gt;                &lt;dbl&gt;       &lt;dbl&gt;       &lt;int&gt;           &lt;int&gt;
+##  1 Con7  #85                   19.7        34.7          20               3
+##  2 Con7  #5/4/2/95/2           28.5        44.1          19               5
+##  3 Con7  #5/5/3/83/3-3         26          41.4          19               6
+##  4 Con7  #4/2/95/3-3           NA          NA            20               6
+##  5 Con7  #2/2/95/3-2           NA          NA            20               6
+##  6 Con7  #1/2/95/2             27          42            19               8
+##  7 Con7  #1/5/3/83/3-3/2       NA          NA            20               9
+##  8 Con8  #2/2/95/2             NA          NA            19               5
+##  9 Con8  #1/6/2/2/95-2         NA          NA            20               7
+## 10 Con8  #3/6/2/2/95-3         NA          NA            20               7
+## # ℹ 2 more variables: pups_dead_birth &lt;int&gt;, pups_survive &lt;int&gt;</code></pre>
+</div>
+<div id="section" class="section level3">
+<h3><code>|&gt;</code></h3>
+<p>We’ve seen several commands you will use regularly for data
+manipulation and cleaning. You will rarely use them in isolation. For
+example, suppose you want to load the data, clean the column names,
+remove <code>pups_survive</code>, and create <code>wt_gain</code>. There
+are a couple of options for this kind of multi-step data
+manipulation:</p>
+<ul>
+<li>define intermediate datasets (or overwrite data at each stage)</li>
+<li>nest function calls</li>
+</ul>
+<p>The following is an example of the first option:</p>
+<pre class="r"><code>litters_data_raw = read_csv(&quot;./data/FAS_litters.csv&quot;,
+  col_types = &quot;ccddiiii&quot;)
+litters_data_clean_names = janitor::clean_names(litters_data_raw)
+litters_data_selected_cols = select(litters_data_clean_names, -pups_survive)
+litters_data_with_vars = 
+  mutate(
+    litters_data_selected_cols, 
+    wt_gain = gd18_weight - gd0_weight,
+    group = str_to_lower(group))
+litters_data_with_vars_without_missing = 
+  drop_na(litters_data_with_vars, wt_gain)
+litters_data_with_vars_without_missing
+## # A tibble: 31 × 8
+##   group litter_number gd0_weight gd18_weight gd_of_birth pups_born_alive
+##   &lt;chr&gt; &lt;chr&gt;              &lt;dbl&gt;       &lt;dbl&gt;       &lt;int&gt;           &lt;int&gt;
+## 1 con7  #85                 19.7        34.7          20               3
+## 2 con7  #1/2/95/2           27          42            19               8
+## 3 con7  #5/5/3/83/3-3       26          41.4          19               6
+## # ℹ 28 more rows
+## # ℹ 2 more variables: pups_dead_birth &lt;int&gt;, wt_gain &lt;dbl&gt;</code></pre>
+<p>Below, we try the second option:</p>
+<pre class="r"><code>litters_data_clean = 
+  drop_na(
+    mutate(
+      select(
+        janitor::clean_names(
+          read_csv(&quot;./data/FAS_litters.csv&quot;, col_types = &quot;ccddiiii&quot;)
+          ), 
+      -pups_survive
+      ),
+    wt_gain = gd18_weight - gd0_weight,
+    group = str_to_lower(group)
+    ),
+  wt_gain
+  )
+
+litters_data_clean
+## # A tibble: 31 × 8
+##   group litter_number gd0_weight gd18_weight gd_of_birth pups_born_alive
+##   &lt;chr&gt; &lt;chr&gt;              &lt;dbl&gt;       &lt;dbl&gt;       &lt;int&gt;           &lt;int&gt;
+## 1 con7  #85                 19.7        34.7          20               3
+## 2 con7  #1/2/95/2           27          42            19               8
+## 3 con7  #5/5/3/83/3-3       26          41.4          19               6
+## # ℹ 28 more rows
+## # ℹ 2 more variables: pups_dead_birth &lt;int&gt;, wt_gain &lt;dbl&gt;</code></pre>
+<p>These are both confusing and bad: the first gets confusing and
+clutters our workspace, and the second has to be read inside out.</p>
+<p>Piping solves this problem. It allows you to turn the nested approach
+into a sequential chain by passing the result of one function call as an
+argument to the next function call:</p>
+<pre class="r"><code>litters_data = 
+  read_csv(&quot;./data/FAS_litters.csv&quot;, col_types = &quot;ccddiiii&quot;) |&gt; 
+  janitor::clean_names() |&gt; 
+  select(-pups_survive) |&gt; 
+  mutate(
+    wt_gain = gd18_weight - gd0_weight,
+    group = str_to_lower(group)) |&gt; 
+  drop_na(wt_gain)
+
+litters_data
+## # A tibble: 31 × 8
+##   group litter_number gd0_weight gd18_weight gd_of_birth pups_born_alive
+##   &lt;chr&gt; &lt;chr&gt;              &lt;dbl&gt;       &lt;dbl&gt;       &lt;int&gt;           &lt;int&gt;
+## 1 con7  #85                 19.7        34.7          20               3
+## 2 con7  #1/2/95/2           27          42            19               8
+## 3 con7  #5/5/3/83/3-3       26          41.4          19               6
+## # ℹ 28 more rows
+## # ℹ 2 more variables: pups_dead_birth &lt;int&gt;, wt_gain &lt;dbl&gt;</code></pre>
+<p>All three approaches result in the same dataset, but the piped
+commands are by far the most straightforward. The easiest way to read
+<code>|&gt;</code> is “then”; the keyboard shortcuts are Ctrl + Shift +
+M (Windows) and Cmd + Shift + M (Mac). Note that by default RStudio will
+insert the “traditional” pipe <code>%&gt;%</code>, and you can update to
+the native in pipe through Global Preferences &gt; Code &gt; Use Native
+Pipe Operator. More on the difference between <code>|&gt;</code> and
+<code>%&gt;%</code> below.</p>
+<p>The functions in <code>dplyr</code> (and much of the
+<code>tidyverse</code>) are designed to work smoothly with the pipe
+operator. By default, the pipe will take the result of one function call
+and use that as the first argument of the next function call; by design,
+functions in <code>dplyr</code> will take a tibble as an input and
+return a tibble as a result. As a consequence, functions in
+<code>dplyr</code> are easy to connect in a data cleaning chain.</p>
+<p>In the majority of cases (and everywhere in the tidyverse) you can
+trust that the first argument is the right one and be happy with life,
+but there are some cases where what you’re piping isn’t going into the
+first argument. Here, using the placeholder <code>_</code> is necessary
+to indicate where the object being piped should go. For example, to
+regress <code>wt_gain</code> on <code>pups_born_alive</code>, you might
+use:</p>
+<pre class="r"><code>litters_data |&gt;
+  lm(wt_gain ~ pups_born_alive, data = _) |&gt;
+  broom::tidy()
+## # A tibble: 2 × 5
+##   term            estimate std.error statistic  p.value
+##   &lt;chr&gt;              &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept)       13.1       1.27      10.3  3.39e-11
+## 2 pups_born_alive    0.605     0.173      3.49 1.55e- 3</code></pre>
+<p>There are limitations to the pipe. You shouldn’t have sequences that
+are too long; there isn’t a great way to deal with multiple inputs and
+outputs; and not everyone will know what <code>|&gt;</code> means or
+does. That said, compared to days when R users only had the first two
+options, life is much better!</p>
+<p><strong><em>Learning Assessment:</em></strong> Write a chain of
+commands that:</p>
+<ul>
+<li>loads the pups data</li>
+<li>cleans the variable names</li>
+<li>filters the data to include only pups with sex 1</li>
+<li>removes the PD ears variable</li>
+<li>creates a variable that indicates whether PD pivot is 7 or more
+days</li>
+</ul>
+<details>
+<summary>
+Solution
+</summary>
+<p>The chunk below performs these actions:</p>
+<pre class="r"><code>read_csv(&quot;./data/FAS_pups.csv&quot;, col_types = &quot;ciiiii&quot;) |&gt;
+  janitor::clean_names() |&gt; 
+  filter(sex == 1) |&gt; 
+  select(-pd_ears) |&gt; 
+  mutate(pd_pivot_gt7 = pd_pivot &gt; 7)
+## # A tibble: 155 × 6
+##   litter_number   sex pd_eyes pd_pivot pd_walk pd_pivot_gt7
+##   &lt;chr&gt;         &lt;int&gt;   &lt;int&gt;    &lt;int&gt;   &lt;int&gt; &lt;lgl&gt;       
+## 1 #85               1      13        7      11 FALSE       
+## 2 #85               1      13        7      12 FALSE       
+## 3 #1/2/95/2         1      13        7       9 FALSE       
+## # ℹ 152 more rows</code></pre>
+</details>
+</div>
+<div id="vs" class="section level3">
+<h3><code>|&gt;</code> vs <code>%&gt;%</code></h3>
+<p>There are some subtle differences between <code>|&gt;</code> and
+<code>%&gt;%</code> that it can be helpful to <a
+href="https://www.tidyverse.org/blog/2023/04/base-vs-magrittr-pipe/">read
+about</a>, but in the vast majority of cases these are effectively
+interchangeable. While the similarities and differences can matter,
+there are a few points that are likely to come up more often:</p>
+<ul>
+<li>You’ll see <code>%&gt;%</code> a lot in code online. It was
+introduced first, and was very prevalent in tidyverse code for a long
+time before <code>|&gt;</code> came along.</li>
+<li>The native pipe <code>|&gt;</code> was <a
+href="https://www.infoworld.com/article/3621369/use-the-new-r-pipe-built-into-r-41.html">introduced</a>
+in R 4.1.0, and it changed some in 4.2.0 and 4.3.0; it’s pretty stable
+now and the main functionality is unlikely to change, but it won’t be
+familiar to everyone and can’t be used at all in older versions of
+R.</li>
+</ul>
+</div>
+</div>
+<div id="other-materials" class="section level2">
+<h2>Other materials</h2>
+<p>There’s lots of stuff out there on how to clean your data using
+<code>dplyr</code>.</p>
+<ul>
+<li>R for Data Science has a chapter on <a
+href="http://r4ds.had.co.nz/transform.html">data transformation</a>. The
+chapter on <a href="http://r4ds.had.co.nz/pipes.html">pipes</a> may also
+be useful at this point.</li>
+<li>R Programming for Research also discusses <a
+href="https://geanders.github.io/RProgrammingForResearch/entering-and-cleaning-data-1.html#data-cleaning">data
+cleaning</a>.</li>
+<li>Even R Programming for Data Science, which tends towards base R, has
+a chapter on <a
+href="https://bookdown.org/rdpeng/rprogdatascience/managing-data-frames-with-the-dplyr-package.html"><code>dplyr</code></a>.</li>
+<li>The <a
+href="https://github.com/rstudio/cheatsheets/raw/master/data-transformation.pdf">data
+transformation cheatsheet</a> is handy once you have a good handle on
+things.</li>
+</ul>
+<p>The code that I produced working examples in lecture is <a
+href="https://github.com/P8105/data_wrangling_i">here</a>.</p>
+</div>
+
+<br><br>
+<footer>
+  <img src="images/p8105_stickers.png" alt="stickers" style="width:30%">
+  <br>
+  <p class="copyright text-muted" align="center">Copyright &copy; 2019 Jeff Goldsmith</p>
+</footer>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Statistical Learning</title>
+
+<script src="site_libs/header-attrs-2.24/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" />
+<script defer src="https://use.fontawesome.com/releases/v5.0.3/js/all.js"></script>
+<script defer src="https://use.fontawesome.com/releases/v5.0.0/js/v4-shims.js"></script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-151578452-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-151578452-1');
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">P8105</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="schedule.html">Schedule</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Topics
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="topic_what_is_data_science.html">What is Data Science?</a>
+    </li>
+    <li>
+      <a href="topic_building_blocks.html">Building Blocks</a>
+    </li>
+    <li>
+      <a href="topic_data_wrangling_i.html">Data Wrangling I</a>
+    </li>
+    <li>
+      <a href="topic_visualization_and_eda.html">Visualization and EDA</a>
+    </li>
+    <li>
+      <a href="topic_data_wrangling_ii.html">Data Wrangling II</a>
+    </li>
+    <li>
+      <a href="topic_interactivity.html">Interactivity</a>
+    </li>
+    <li>
+      <a href="topic_iteration.html">Iteration</a>
+    </li>
+    <li>
+      <a href="topic_linear_models.html">Linear Models</a>
+    </li>
+    <li>
+      <a href="topic_other_material.html">Other Materials</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Datasets
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="dataset_airbnb.html">Airbnb</a>
+    </li>
+    <li>
+      <a href="dataset_brfss.html">BRFSS</a>
+    </li>
+    <li>
+      <a href="dataset_fivethirtyeight.html">FiveThirtyEight</a>
+    </li>
+    <li>
+      <a href="dataset_instacart.html">Instacart</a>
+    </li>
+    <li>
+      <a href="dataset_mr_trash_wheel.html">Mr. Trash Wheel</a>
+    </li>
+    <li>
+      <a href="dataset_noaa.html">NOAA</a>
+    </li>
+    <li>
+      <a href="dataset_restaurant_inspections.html">NYC Restaurant Inspections</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="homework_and_projects.html">Homework and Projects</a>
+</li>
+<li>
+  <a href="course_communication.html">Communication</a>
+</li>
+<li>
+  <a href="https://github.com/P8105/p8105.github.io">
+    <span class="fa fa-github"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Statistical Learning</h1>
+
+</div>
+
+
+<p>Statistical learning methods – both supervised and unsupervised –
+provide techniques for gaining insights from data. These methods have
+various goals, including prediction, pattern recognition, and
+classification; they also vary in complexity and interpretability. This
+lecture is intended to provide a very broad overview of two methods:
+lasso and k-means clustering.</p>
+<pre><code>## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+## ✔ dplyr     1.1.3     ✔ readr     2.1.4
+## ✔ forcats   1.0.0     ✔ stringr   1.5.0
+## ✔ ggplot2   3.4.3     ✔ tibble    3.2.1
+## ✔ lubridate 1.9.3     ✔ tidyr     1.3.0
+## ✔ purrr     1.0.2     
+## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+## ✖ dplyr::filter() masks stats::filter()
+## ✖ dplyr::lag()    masks stats::lag()
+## ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
+<div id="some-slides" class="section level2">
+<h2>Some slides</h2>
+<script async class="speakerdeck-embed" data-id="911acc341b434b02b24df1fdab954c7e" data-ratio="1.77777777777778" src="//speakerdeck.com/assets/embed.js"></script>
+<div style="margin-bottom:5px">
+<strong>
+<a href="https://speakerdeck.com/jeffgoldsmith/p8105-statistical-learning" title="Statistical Learning" target="_blank">Statistical
+Learning</a> </strong> from
+<strong><a href="https://speakerdeck.com/jeffgoldsmith" target="_blank">Jeff
+Goldsmith</a></strong>.
+</div>
+<p><br></p>
+</div>
+<div id="example" class="section level2">
+<h2>Example</h2>
+<p>As always, I’ll work on today’s example in a GitHub repo + local
+directory / R Project. <a href="resources/extra_topic_data.zip">This zip
+file</a> has a couple of datasets we’ll look at.</p>
+<pre class="r"><code>library(tidyverse)
+library(glmnet)</code></pre>
+<pre><code>## Loading required package: Matrix</code></pre>
+<pre><code>## 
+## Attaching package: &#39;Matrix&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:tidyr&#39;:
+## 
+##     expand, pack, unpack</code></pre>
+<pre><code>## Loaded glmnet 4.1-8</code></pre>
+<pre class="r"><code>set.seed(11)</code></pre>
+<div id="lasso" class="section level3">
+<h3>Lasso</h3>
+<p>To illustrate the lasso, we’ll data from a study of factors that
+affect birthweight. The code chunk below loads and cleans these data,
+converts to factors where appropriate, and takes a sample of size 200
+from the result.</p>
+<pre class="r"><code>bwt_df = 
+  read_csv(&quot;data/birthweight.csv&quot;) |&gt; 
+  janitor::clean_names() |&gt;
+  mutate(
+    babysex = as.factor(babysex),
+    babysex = fct_recode(babysex, &quot;male&quot; = &quot;1&quot;, &quot;female&quot; = &quot;2&quot;),
+    frace = as.factor(frace),
+    frace = fct_recode(
+      frace, &quot;white&quot; = &quot;1&quot;, &quot;black&quot; = &quot;2&quot;, &quot;asian&quot; = &quot;3&quot;, 
+      &quot;puerto rican&quot; = &quot;4&quot;, &quot;other&quot; = &quot;8&quot;),
+    malform = as.logical(malform),
+    mrace = as.factor(mrace),
+    mrace = fct_recode(
+      mrace, &quot;white&quot; = &quot;1&quot;, &quot;black&quot; = &quot;2&quot;, &quot;asian&quot; = &quot;3&quot;, 
+      &quot;puerto rican&quot; = &quot;4&quot;)) |&gt; 
+  sample_n(200)</code></pre>
+<pre><code>## Rows: 4342 Columns: 20
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## dbl (20): babysex, bhead, blength, bwt, delwt, fincome, frace, gaweeks, malf...
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<p>To fit a lasso model, we’ll use <code>glmnet</code>. This package is
+widely used and broadly useful, but predates the <code>tidyverse</code>
+by a long time. The interface asks for an outcome vector <code>y</code>
+and a matrix of predictors <code>X</code>, which are created next. To
+create a predictor matrix that includes relevant dummy variables based
+on factors, we’re using <code>model.matrix</code> and excluding the
+intercept</p>
+<pre class="r"><code>x = model.matrix(bwt ~ ., bwt_df)[,-1]
+y = bwt_df |&gt; pull(bwt)</code></pre>
+<p>We fit the lasso model for each tuning parameter in a pre-defined
+grid <code>lambda</code>, and then compare the fits using cross
+validation. I chose this grid using the trusty “try things until it
+looks right” method; <code>glmnet</code> will pick something reasonable
+by default if you prefer that.</p>
+<pre class="r"><code>lambda = 10^(seq(3, -2, -0.1))
+
+lasso_fit =
+  glmnet(x, y, lambda = lambda)
+
+lasso_cv =
+  cv.glmnet(x, y, lambda = lambda)
+
+lambda_opt = lasso_cv$lambda.min</code></pre>
+<p>The plot below shows coefficient estimates corresponding to a subset
+of the predictors in the dataset – these are predictors that have
+non-zero coefficients for at least one tuning parameter value in the
+pre-defined grid. As lambda increases, the coefficient values are shrunk
+to zero and the model becomes more sparse. The optimal tuning parameter,
+determined using cross validation, is shown by a vertical blue line.</p>
+<pre class="r"><code>lasso_fit |&gt; 
+  broom::tidy() |&gt; 
+  select(term, lambda, estimate) |&gt; 
+  complete(term, lambda, fill = list(estimate = 0) ) |&gt; 
+  filter(term != &quot;(Intercept)&quot;) |&gt; 
+  ggplot(aes(x = log(lambda, 10), y = estimate, group = term, color = term)) + 
+  geom_path() + 
+  geom_vline(xintercept = log(lambda_opt, 10), color = &quot;blue&quot;, size = 1.2) +
+  theme(legend.position = &quot;none&quot;)</code></pre>
+<p><img src="stat_learning_files/figure-html/unnamed-chunk-5-1.png" width="90%" /></p>
+<p>The next plot shows the CV curve itself. This is relatively shallow –
+having nothing at all in your model isn’t great, but you can get
+reasonable predictions from models that have “too many” predictors.</p>
+<pre class="r"><code>lasso_cv |&gt; 
+  broom::tidy() |&gt; 
+  ggplot(aes(x = log(lambda, 10), y = estimate)) + 
+  geom_point()  </code></pre>
+<p><img src="stat_learning_files/figure-html/unnamed-chunk-6-1.png" width="90%" /></p>
+<p>The coefficients from the optimal model are shown below.</p>
+<pre class="r"><code>lasso_fit = 
+  glmnet(x, y, lambda = lambda_opt)
+
+lasso_fit |&gt; broom::tidy()</code></pre>
+<pre><code>## # A tibble: 12 × 5
+##    term               step  estimate lambda dev.ratio
+##    &lt;chr&gt;             &lt;dbl&gt;     &lt;dbl&gt;  &lt;dbl&gt;     &lt;dbl&gt;
+##  1 (Intercept)           1 -3659.      12.6     0.627
+##  2 babysexfemale         1    46.2     12.6     0.627
+##  3 bhead                 1    77.9     12.6     0.627
+##  4 blength               1    71.8     12.6     0.627
+##  5 fincome               1     0.252   12.6     0.627
+##  6 gaweeks               1    23.1     12.6     0.627
+##  7 malformTRUE           1   447.      12.6     0.627
+##  8 menarche              1   -29.4     12.6     0.627
+##  9 mraceblack            1  -105.      12.6     0.627
+## 10 mracepuerto rican     1  -145.      12.6     0.627
+## 11 smoken                1    -2.62    12.6     0.627
+## 12 wtgain                1     2.32    12.6     0.627</code></pre>
+<p>To be clear, these don’t come with p-values and it’s really
+challenging to do inference. These are also different from a usual OLS
+fit for a multiple linear regression model that uses the same
+predictors: the lasso penalty affects these even if they’re retained by
+the model.</p>
+<p>A final point is that on the full dataset, lasso doesn’t do you much
+good. With ~4000 datapoints, the relatively few coefficients are
+estimated well enough that penalization doesn’t make much of a
+difference in this example.</p>
+</div>
+<div id="clustering-pokemon" class="section level3">
+<h3>Clustering: pokemon</h3>
+<p>For the first clustering example, we’ll use a dataset containing
+information about pokemon. The full dataset contains several variables
+(including some that aren’t numeric, which is a challenge for clustering
+we won’t address). To make results easy to visualize, we look only at
+<code>hp</code> and <code>speed</code>; a scatterplot is below.</p>
+<pre class="r"><code>poke_df = 
+  read_csv(&quot;./data/pokemon.csv&quot;) |&gt; 
+  janitor::clean_names() |&gt; 
+  select(hp, speed)</code></pre>
+<pre><code>## Rows: 800 Columns: 13
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## chr (3): Name, Type 1, Type 2
+## dbl (9): #, Total, HP, Attack, Defense, Sp. Atk, Sp. Def, Speed, Generation
+## lgl (1): Legendary
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<pre class="r"><code>poke_df |&gt; 
+  ggplot(aes(x = hp, y = speed)) + 
+  geom_point()</code></pre>
+<p><img src="stat_learning_files/figure-html/unnamed-chunk-8-1.png" width="90%" /></p>
+<p>K-means clustering is established enough that it’s implemented in the
+base R <code>stats</code> package in the <code>kmeans</code> function.
+This also has a bit of an outdated interface, but there you go. The code
+chunk below fits the k-means algorithm with three clusters to the data
+shown above.</p>
+<pre class="r"><code>kmeans_fit =
+  kmeans(x = poke_df, centers = 3)</code></pre>
+<p>More recent tools allow interactions with the <code>kmeans</code>
+output. In particular, we’ll use <code>broom::augment</code> to add
+cluster assignments to the data, and plot the results.</p>
+<pre class="r"><code>poke_df =
+  broom::augment(kmeans_fit, poke_df)
+
+poke_df |&gt; 
+  ggplot(aes(x = hp, y = speed, color = .cluster)) +
+  geom_point()</code></pre>
+<p><img src="stat_learning_files/figure-html/unnamed-chunk-10-1.png" width="90%" /></p>
+<p>Clusters are broadly interpretable, but this still doesn’t come with
+inference. Also, at boundaries between clusters, the distinctions can
+seem a bit … arbitrary.</p>
+<p>The code chunk below maps across a few choices for the number of
+clusters, and then plots the results.</p>
+<pre class="r"><code>clusts =
+  tibble(k = 2:4) |&gt;
+  mutate(
+    km_fit =    map(k, \(n_clust) kmeans(poke_df, centers = n_clust)),
+    augmented = map(km_fit, \(fit) broom::augment(x = fit, poke_df))
+  )
+
+clusts |&gt; 
+  select(-km_fit) |&gt; 
+  unnest(augmented) |&gt; 
+  ggplot(aes(hp, speed, color = .cluster)) +
+  geom_point(aes(color = .cluster)) +
+  facet_grid(~k)</code></pre>
+<p><img src="stat_learning_files/figure-html/unnamed-chunk-11-1.png" width="90%" /></p>
+<p>There are metrics that can suggest which of these is the better
+choice, but we won’t get into that.</p>
+</div>
+<div id="clustering-penguins" class="section level3">
+<h3>Clustering: penguins</h3>
+<p>As a quick example of when clustering is more visually obvious, we’ll
+take a look at <a
+href="https://allisonhorst.github.io/palmerpenguins/">data</a>
+“collected and made available by Dr. Kristen Gorman and the Palmer
+Station, Antarctica LTER, a member of the Long Term Ecological Research
+Network.” You may need to install the <code>palmerpenguins</code>
+package to see this example. First we’ll load the data and do some
+initial tidying to keep the variables of interest and remove rows with
+missing values. We’ll then make a quick visualization of bill length vs
+flipper length.</p>
+<pre class="r"><code>library(palmerpenguins)
+
+data(&quot;penguins&quot;)
+
+penguins = 
+  penguins |&gt; 
+  select(species, bill_length_mm, flipper_length_mm) |&gt; 
+  drop_na() 
+
+penguins |&gt; 
+  ggplot(aes(x = bill_length_mm, y = flipper_length_mm, color = species)) + 
+  geom_point()</code></pre>
+<p><img src="stat_learning_files/figure-html/unnamed-chunk-12-1.png" width="90%" /></p>
+<p>We’ll again use <code>kmeans</code> to identify clusters in a
+data-driven way. We remove the <code>species</code> variable and rescale
+the remaining columns, since <code>kmeans</code> is sensitive to
+different scales for the input variables. The results are shown in the
+next plot.</p>
+<pre class="r"><code>kmeans_fit =
+  penguins |&gt; 
+  select(-species) |&gt; 
+  scale() |&gt; 
+  kmeans(centers = 3)
+
+penguins |&gt; 
+  broom::augment(kmeans_fit, data = _) |&gt; 
+  ggplot(
+    aes(x = bill_length_mm, y = flipper_length_mm,
+        color = .cluster, shape = species)) + 
+  geom_point(size = 2)</code></pre>
+<p><img src="stat_learning_files/figure-html/unnamed-chunk-13-1.png" width="90%" /></p>
+<p>As shown in the table below, the data-driven clusters don’t perfectly
+correspond to the penguins’ species, but the alignment is pretty good.
+This is helpful for illustrating a good use-case for clustering – if the
+<code>species</code> variable didn’t exist, clustering would provide a
+pretty good classification of observed data that simplifies the more
+complex structure for bill and flipper length.</p>
+<pre class="r"><code>penguins |&gt; 
+  broom::augment(kmeans_fit, data = _) |&gt; 
+  count(species, .cluster) |&gt; 
+  pivot_wider(
+    names_from = .cluster, 
+    values_from = n, 
+    values_fill = 0)</code></pre>
+<pre><code>## # A tibble: 3 × 4
+##   species     `1`   `2`   `3`
+##   &lt;fct&gt;     &lt;int&gt; &lt;int&gt; &lt;int&gt;
+## 1 Adelie        1     4   146
+## 2 Chinstrap     4    59     5
+## 3 Gentoo      122     1     0</code></pre>
+</div>
+<div id="clustering-trajectories" class="section level3">
+<h3>Clustering: trajectories</h3>
+<p>A final clustering example uses longitudinally observed data. The
+process we’ll focus on is:</p>
+<ul>
+<li>for each subject, estimate a simple linear regression</li>
+<li>extract the intercept and slope</li>
+<li>cluster using the intercept and slope</li>
+</ul>
+<p>Below we import and plot the trajectory data.</p>
+<pre class="r"><code>traj_data = 
+  read_csv(&quot;./data/trajectories.csv&quot;)</code></pre>
+<pre><code>## Rows: 1600 Columns: 3
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## dbl (3): subj, week, value
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<pre class="r"><code>traj_data |&gt; 
+  ggplot(aes(x = week, y = value, group = subj)) + 
+  geom_point() + 
+  geom_path()</code></pre>
+<p><img src="stat_learning_files/figure-html/unnamed-chunk-15-1.png" width="90%" /></p>
+<p>Next we’ll do some data manipulation. These steps compute the SLRs,
+extract estimates, and format the data for k-means clustering.</p>
+<pre class="r"><code>int_slope_df = 
+  traj_data |&gt; 
+  nest(data = week:value) |&gt; 
+  mutate(
+    models = map(data, \(df) lm(value ~ week, data = df)),
+    result = map(models, broom::tidy)
+  ) |&gt; 
+  select(subj, result) |&gt; 
+  unnest(result) |&gt; 
+  select(subj, term, estimate) |&gt; 
+  pivot_wider(
+    names_from = term,
+    values_from = estimate
+  ) |&gt; 
+  rename(int = &quot;(Intercept)&quot;, slope = week)</code></pre>
+<p>A plot of the intercepts and slopes are below. There does seem to be
+some structure, and we’ll use k-means clustering to try to make that
+concrete.</p>
+<pre class="r"><code>int_slope_df |&gt; 
+  ggplot(aes(x = int, y = slope)) + 
+  geom_point()</code></pre>
+<p><img src="stat_learning_files/figure-html/unnamed-chunk-17-1.png" width="90%" /></p>
+<pre class="r"><code>km_fit = 
+  kmeans(
+    x = int_slope_df |&gt; select(-subj) |&gt; scale(), 
+    centers = 2)
+
+int_slope_df =
+  broom::augment(km_fit, int_slope_df)</code></pre>
+<p>The plot below shows the results of k-means based on the intercepts
+and slopes. This is … not bad, but honestly maybe not what I’d hoped
+for.</p>
+<pre class="r"><code>int_slope_df |&gt; 
+  ggplot(aes(x = int, y = slope, color = .cluster)) +
+  geom_point()</code></pre>
+<p><img src="stat_learning_files/figure-html/unnamed-chunk-18-1.png" width="90%" /></p>
+<p>Finally, we’ll add the cluster assignments to the original trajectory
+data and plot based on this. Again, the cluster assignments are okay but
+maybe not great.</p>
+<pre class="r"><code>left_join(traj_data, int_slope_df) |&gt; 
+  ggplot(aes(x = week, y = value, group = subj, color = .cluster)) + 
+  geom_point() + 
+  geom_path() </code></pre>
+<pre><code>## Joining with `by = join_by(subj)`</code></pre>
+<p><img src="stat_learning_files/figure-html/unnamed-chunk-19-1.png" width="90%" /></p>
+<p>This example is very much related to “trajectory analysis”, which has
+become pretty popular recently (maybe because <code>PROC TRAJ</code>
+exists in SAS …). The basic idea is to use tools from longitudinal data
+analysis to estimate trajectories underlying data – mixed models rather
+than SLRs. The subject-level estimates (random effects) are then
+clustered; cluster means are hopefully interpretable, and cluster
+assignments are thought to be meaningful. In many cases, though, the
+distinction between groups is fairly arbitrary.</p>
+</div>
+</div>
+<div id="other-materials" class="section level2">
+<h2>Other materials</h2>
+<ul>
+<li>Intro to Statistical Learning with R, chapters 6 and 10</li>
+<li>Nice <a
+href="https://shiny.rstudio.com/gallery/kmeans-example.html">shiny
+app</a> for k-means</li>
+<li>Good <a
+href="https://idc9.github.io/stor390/notes/clustering/clustering.html">overview</a>
+of clustering</li>
+<li>Some discussion about <a
+href="https://cran.microsoft.com//web/packages/broom/vignettes/kmeans.html">tidying</a>
+results</li>
+</ul>
+<p>The code that I produced working examples in lecture is <a
+href="https://github.com/P8105/extra_topics">here</a>.</p>
+</div>
+
+<br><br>
+<footer>
+  <img src="images/p8105_stickers.png" alt="stickers" style="width:30%">
+  <br>
+  <p class="copyright text-muted" align="center">Copyright &copy; 2019 Jeff Goldsmith</p>
+</footer>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

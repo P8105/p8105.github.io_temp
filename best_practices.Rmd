@@ -1,0 +1,304 @@
+---
+title: "Getting started and best practices"
+output:
+  html_document: 
+    toc: true
+    toc_float: true
+---
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  fig.width = 6,
+  fig.asp = .6,
+  out.width = "90%"
+)
+```
+
+This is the first module in the [Building Blocks](topic_building_blocks.html) topic.
+
+## Overview {.tabset .tabset-pills}
+
+### Learning Objectives
+
+We'll be getting up-to-speed on the basic tools in R. As part of that, we'll define and establish some good habits. 
+
+### Slide Deck
+
+<div class="vid_container">
+  <iframe 
+    src="https://speakerdeck.com/player/39618f30472e4cac9659ce4f21a98aa6" 
+    allowfullscreen 
+    frameborder="0"
+    class="video">
+  </iframe>
+</div>
+
+<div style="margin-bottom:5px"> <strong> <a href="https://speakerdeck.com/jeffgoldsmith/p8105-best-practices" title="Best Practices" target="_blank">Best Practices</a> </strong> from <strong><a href="https://speakerdeck.com/jeffgoldsmith" target="_blank">Jeff Goldsmith</a></strong>. </div><br>
+
+***
+
+### Video Lecture
+
+<div class="vid_container">
+  <iframe 
+    src="https://www.youtube.com/embed/zuxfEHEhcGg"
+    frameborder="0" allowfullscreen class="video">
+  </iframe>
+</div>
+
+***
+
+## Example
+
+### A bit of advice
+
+You've probably been using computers for as long as you can remember, but now is a good time to develop intentionality in how you use a computer for work. In the context of this class, and in your professional life more broadly, a computer is the tool you use to execute specific tasks; the more skilled you are in using a computer as a tool, the better off you'll be. 
+
+Think of your computer the way a chef thinks of a kitchen -- being able to find and use something exactly when you need will make your work process more seamless. As Ellen Bennett says [in this article](https://www.nytimes.com/2019/04/03/t-magazine/kitchen-organization.html), "It’s about not having to do the extra work" that comes from looking for a tool when you need it. A bit closer to the topic of this class, Hilary Parker [convincingly argues](https://peerj.com/preprints/3210/) that "increased fluency and mastery of the tooling means that the practitioner can create uninhibited." 
+
+Today we're going to talk a lot about using R and being organized. Beyond that, getting in the habit of using an application launcher / productivity application (like [Alfred](https://www.alfredapp.com) for OSX or maybe [Launchy](https://www.launchy.net) for Windows 10) will help you quickly navigate on your machine, saving time and effort. You should also get in the habit of using keyboard shortcuts, both in RStudio and elsewhere on your machine.
+
+
+### Get started
+
+Launch R Studio and take stock -- find the Console, the Environment/History, and the Files/Plots/Packages/Help. This is also a good time to set some preferences -- I strongly encourage you to turn off saving / loading the workspace and history, and also to turn on a lot of the R code diagnostics.
+
+Create a new R script using File > New File > R Script. Write a short comment section describing what this is, and follow along with the code below!
+
+```{r}
+##################################################################
+# Sept 5, 2023
+# Jeff Goldsmith
+#
+# Script for exploring R!
+##################################################################
+```
+
+As part of [Homework 0](homework_0.html), we installed a lot of packages. You don't need to re-install those each time you need them, but you do need to load packages you want to use with the `library` function. Although we won't use it yet, I'm going to load the `tidyverse` package now. 
+
+```{r}
+library(tidyverse)
+```
+
+You can do basic computations in R, either on the command line (in the console) or by writing things in the script and executing the code in the console. Note that you can execute commands (e.g. the line with the cursor or highlighted code) in the console from a script using Command+Enter (Mac) or Ctrl+Enter (Windows).
+
+```{r}
+2 + 3
+
+(18/3 + 1*2) ^ (4 - 2) - 6.18273
+```
+
+Before long, you'll do all your arithmetic in R!
+
+Computation is great, but you need to be able to assign objects to names. 
+
+```{r}
+x = (18/3 + 1*2) ^ (4 - 2) - 6.18273
+y = c(1, 3, 6, 9)
+
+x + y
+```
+
+When making assignments, R assumes you don't want to see the result. If you do want to see the result, you'll have to ask for it. You can also apply **functions** to objects.
+
+```{r}
+x = runif(20)
+x
+
+mean(x)
+var(x)
+```
+
+We've created two variables, `x` and `y` -- these now exist in the **environment**. You can see everything in the environment using `ls()` on the command line, or check out the environment pane in RStudio.
+
+(If you care about these things, [people](https://colinfay.me/r-assignment/) have [opinions](https://twitter.com/JennyBryan/status/1162185393518759936) about [assignment operators](https://r4ds.had.co.nz/workflow-basics.html#coding-basics). I don't have such strong opinions about this, and don't care much if you use `=` or `<-`.)
+
+### Data frames
+
+R can handle several data types in addition to numbers. To illustrate this, I'm going to create a quick data frame using the `tibble` function and manually check the class of some of the variables.  This is also a good time to point out RStudio's tabbed autocompletion -- start typing a variable name and press Tab.
+
+```{r}
+example_df = tibble(
+  vec_numeric = 5:8,
+  vec_char = c("My", "name", "is", "Jeff"),
+  vec_logical = c(TRUE, TRUE, TRUE, FALSE),
+  vec_factor = factor(c("male", "male", "female", "female"))
+)
+
+example_df
+```
+
+We're going to spend a lot of time talking about data frames over the course of the semester, starting in [Data Wrangling I](topic_data_wrangling_i.html). For now, just think of it as a rectangle that holds data you care about. 
+
+
+### Basic plots
+
+Base R comes equipped with plotting but -- just giving you a heads-up -- if you [use base R graphics](https://simplystatistics.org/2016/02/11/why-i-dont-use-ggplot2/) people might give you a [hard](https://twitter.com/drob/status/697858212779806721) [time](https://twitter.com/_inundata/status/868297266913697792). 
+
+Instead, we'll use `ggplot`; a basic example follows. 
+
+```{r}
+set.seed(1)
+
+plot_df = tibble(
+  x = rnorm(1000, sd = .5),
+  y = 1 + 2 * x + rnorm(1000)
+)
+
+ggplot(plot_df, aes(x = x)) + geom_histogram()
+ggplot(plot_df, aes(x = x, y = y)) + geom_point()
+```
+
+We'll go through plotting in detail in [Visualization and EDA](topic_visualization_and_eda.html). 
+
+
+### Self-contained, readable scripts
+
+You should _always_ keep the complete code that was used for an analysis or project, no matter how brief. Your code should be self-contained -- it should include everything you did to produce what you wanted to produce. The two scripts below repeat content from above. 
+
+First, data frames and variable classes.
+
+```{r, eval = FALSE}
+##################################################################
+# Sept 5, 2023
+# Jeff Goldsmith
+#
+# Script exploring variable assignment
+##################################################################
+
+library(tidyverse)
+
+## create two variables
+x = (18/3 + 1*2) ^ (4 - 2) - 6.18273
+y = c(1, 3, 6, 9)
+
+## print and add the variables
+x
+x + y
+
+## overwrite x and examine / manipulate
+x = runif(20)
+x
+
+mean(x)
+var(x)
+```
+
+Second, simple plots. 
+
+```{r, eval = FALSE}
+##################################################################
+# Sept 5, 2023
+# Jeff Goldsmith
+#
+# Script producing basic plots
+##################################################################
+
+library(tidyverse)
+
+## set seed to ensure reproducibility
+set.seed(1234)
+
+## define data frame containing x and y
+plot_df = tibble(
+  x = rnorm(1000, sd = .5),
+  y = 1 + 2 * x + rnorm(1000)
+)
+
+## histogram of x
+ggplot(plot_df, aes(x = x)) + geom_histogram()
+
+## scatterplot of x and y
+ggplot(plot_df, aes(x = x, y = y)) + geom_point()
+```
+
+The scripts above illustrate some "best practices" that you should adopt:
+
+* There is a brief section at the outset identifying the author, giving the date, and providing a brief description of the content.
+* Each script includes comments describing each block or chunk of code.
+* The use of a consistent naming convention (`snake_case`).
+* Variable names are reasonable in the context of the script.
+* The code iteslf is easy-to-read -- adequate spacing within and between lines of code. (Turn on code diagnositics if you haven't already; this can be found in Preferences > Code > Diagnostics.)
+
+The organization of code into self-contained scripts is itself part of a bigger picture. Rather than focusing on the variables (or plots, or even complete analyses), focus on the code that produces them. Given whatever inputs you have (none for now, although later there will be data), your code should reliably produce whatever outputs you want. 
+
+To check how "real" your scripts are, clear out your workspace by restarting your R Session (Session > Restart R) and re-run everything. If everything works, great; if not, address the issue by editing your script. Do this frequently! Note -- using `rm(list = ls())` [doesn't do the same thing](https://rstats.wtf/source-and-blank-slates#rm-list-ls), and can get you into trouble. 
+
+R will, by default, save everything in your workspace. As noted above, I strongly suggest you turn this behavior off (Preferences > General > Save Workspace: Never). First, doing so will remove a crutch early on and help you focus on your scripts as standalone objects. Second, saving your workspace automatically and doing so in the background can get you in trouble if (or when) you deal with patient data. 
+
+A final word about scripts -- not every line of code you write will (or should) make it to your scripts. It can take a few attempts to get code you like, and you don't need to save the intermediate stuff. You also don't need to save every bit of exploratory analysis you do -- keep the stuff that improved your understanding, but discard the rest. 
+
+
+### Organizing projects
+
+Your projects will generally consist of several related files -- input data, scripts, results. It's important to keep these organized, so you can find everything you need quickly and easily. R Projects, through RStudio, give you an easy way to do this. 
+
+Create a directory and save the previous two scripts into that directory. Script names, like variable names, should be descriptive (e.g. `20230905_var_assign.R` and `20230905_simple_plots.R`). The directory name should be descriptive as well, and it should be in a reasonable place on your computer (e.g. `~/Documents/first_project/`). Create an R Project using File > New Project > Existing Directory and specifying the directory you just created.
+
+For now, the best part about R Projects is that they force you to think about and organize the elements you need for your analysis or project. Double-clicking the new `.Rproj` file will launch the R Project; you'll see a Files tab in the usual Plots / Packages / Help / Viewer pane. Later, we'll find R Projects useful in other ways. 
+
+
+### Paths and your working directory
+
+To this point, we've been working entirely inside RStudio without a need to access anything on your computer. That's allowed us to avoid a discussion of your Working Directory, but now we'll address that too. As you're working, R is sitting inside a single directory on your computer -- it can find files in that directory or output files to that directory. Check your current working directory using:
+
+```{r, eval = FALSE}
+getwd()
+```
+
+If you've opened your R Project, that should be your working directory. That's great! Another bit of encouragement to keep your stuff organized. This means that anything you output will be written to this directory:
+
+```{r, eval = FALSE}
+ggplot(plot_df, aes(x = x, y = y)) + geom_point()
+ggsave("scatter_plot.pdf", height = 4, width = 6)
+```
+
+With larger projects, it can be useful to create sub-directories for your project (e.g. `data` and `results`) -- you don't need to worry about that for now, but when you do this you should use relative paths to keep everything self-contained. That's also a good time to start getting used to the [`here::here`](https://github.com/jennybc/here_here) approach to path construction.
+
+Note that we exported a figure using a command, rather than clicking the Export in the Plots tab. This is intentional -- whatever your script produces, it should do so exclusively from the code you've written.
+
+
+### Workflow
+
+All this together suggests a workflow. For every new project (and I mean _every new project_), do the following:
+
+* Create a directory with a reasonable name and path (e.g. `~/Documents/School/P8105/Homework_2/`)
+* Put an R Project in the directory
+* Keep everything related to the analysis -- data inputs, scripts, reports, output -- in there
+* Periodically check for reproducibility of the analysis
+
+Starting this habit early will save you a _ton_ of headaches along the road.  
+
+## Other materials
+
+R can take a while to learn. Luckily, tons of people have put together resources to try to make this easier!
+
+* [A (very) short intro to R](https://cran.r-project.org/doc/contrib/Torfs+Brauer-Short-R-Intro.pdf)
+* The [swirl](http://swirlstats.com) package will help you learn R in R
+* The [Base R cheatsheet](https://www.rstudio.com/wp-content/uploads/2016/05/base-r.pdf) is very handy
+* Not about R specifically, but the [RStudio cheatsheet](https://www.rstudio.com/wp-content/uploads/2016/01/rstudio-IDE-cheatsheet.pdf) might be handy!
+
+This content draws on the work of others; there are also useful references for a lot of this online.
+
+Basically all you need to know about workflows can be found in writing by Jenny Bryan:
+
+* Her [deep thoughts](https://www.slideshare.net/jenniferbryan5811/cm002-deep-thoughts) on data analytic work is a good starting point
+* Also, her intro to [workspaces, the working directory, and R Projects](http://stat545.com/block002_hello-r-workspace-wd-project.html)
+* Also also, her slides on [how to name files](https://speakerdeck.com/jennybc/how-to-name-files)
+* Also also also, her discussion on a [project-oriented workflow](https://www.tidyverse.org/articles/2017/12/workflow-vs-script/)
+* A good thing to refer to often is her book [WTF](https://rstats.wtf/source-and-blank-slates) -- I read this and learn new things every time.
+
+Other people have written useful things too:
+
+* The Advanced R [style guide](http://adv-r.had.co.nz/Style.html) is a great collection of coding guidelines
+* The R for Data Science workflows on [scripts](http://r4ds.had.co.nz/workflow-scripts.html) and [projects](http://r4ds.had.co.nz/workflow-projects.html)
+* RStudio's guide to [using projects](https://support.rstudio.com/hc/en-us/articles/200526207-Using-Projects)
+
+There are also some longer or more advanced references. I'm noting these so you have them available, although I don't expect you'll read them in detail. 
+
+* R Programming for Data Science goes into a lot of detail, but these [two](https://bookdown.org/rdpeng/rprogdatascience/r-nuts-and-bolts.html) [chapters](https://bookdown.org/rdpeng/rprogdatascience/subsetting-r-objects.html) are very relevant! Note that many of the included sections also have videos to help you.
+* Andrew Jaffe and John Muschelli's [Introduction to R for Public Health Researchers](http://aejaffe.com/summerR_2016/)
+* Cosma Shalizi and Andrew Thomas' [Statistical Computing 36-350: Beginning to Advanced Techniques in R](https://www.stat.cmu.edu/~cshalizi/statcomp/14/)
+
+The code that I produced working examples in lecture is [here](https://github.com/jeff-goldsmith/example_repo).

@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Writing Functions</title>
+
+<script src="site_libs/header-attrs-2.24/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" />
+<script defer src="https://use.fontawesome.com/releases/v5.0.3/js/all.js"></script>
+<script defer src="https://use.fontawesome.com/releases/v5.0.0/js/v4-shims.js"></script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-151578452-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-151578452-1');
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">P8105</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="schedule.html">Schedule</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Topics
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="topic_what_is_data_science.html">What is Data Science?</a>
+    </li>
+    <li>
+      <a href="topic_building_blocks.html">Building Blocks</a>
+    </li>
+    <li>
+      <a href="topic_data_wrangling_i.html">Data Wrangling I</a>
+    </li>
+    <li>
+      <a href="topic_visualization_and_eda.html">Visualization and EDA</a>
+    </li>
+    <li>
+      <a href="topic_data_wrangling_ii.html">Data Wrangling II</a>
+    </li>
+    <li>
+      <a href="topic_interactivity.html">Interactivity</a>
+    </li>
+    <li>
+      <a href="topic_iteration.html">Iteration</a>
+    </li>
+    <li>
+      <a href="topic_linear_models.html">Linear Models</a>
+    </li>
+    <li>
+      <a href="topic_other_material.html">Other Materials</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Datasets
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="dataset_airbnb.html">Airbnb</a>
+    </li>
+    <li>
+      <a href="dataset_brfss.html">BRFSS</a>
+    </li>
+    <li>
+      <a href="dataset_fivethirtyeight.html">FiveThirtyEight</a>
+    </li>
+    <li>
+      <a href="dataset_instacart.html">Instacart</a>
+    </li>
+    <li>
+      <a href="dataset_mr_trash_wheel.html">Mr. Trash Wheel</a>
+    </li>
+    <li>
+      <a href="dataset_noaa.html">NOAA</a>
+    </li>
+    <li>
+      <a href="dataset_restaurant_inspections.html">NYC Restaurant Inspections</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="homework_and_projects.html">Homework and Projects</a>
+</li>
+<li>
+  <a href="course_communication.html">Communication</a>
+</li>
+<li>
+  <a href="https://github.com/P8105/p8105.github.io">
+    <span class="fa fa-github"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Writing Functions</h1>
+
+</div>
+
+
+<p>If you use the same code twice, you need a function – this will
+improve code readability, facilitate troubleshooting, and reduce chances
+for mistakes. This content looks at the best approaches for writing R
+functions.</p>
+<p>This is the first module in the <a
+href="topic_iteration.html">Iteration</a> topic.</p>
+<div id="overview" class="section level2 tabset tabset-pills">
+<h2 class="tabset tabset-pills">Overview</h2>
+<div id="learning-objectives" class="section level3">
+<h3>Learning Objectives</h3>
+<p>Create simple R functions to abstract common processes.</p>
+</div>
+<div id="slide-deck" class="section level3">
+<h3>Slide Deck</h3>
+<div class="vid_container">
+<p><iframe 
+    src="https://speakerdeck.com/player/3f91d97c70e641cea46366ac9d90c929" 
+    allowfullscreen 
+    frameborder="0"
+    class="video"> </iframe></p>
+</div>
+<div style="margin-bottom:5px">
+<strong>
+<a href="https://speakerdeck.com/jeffgoldsmith/p8105-writing-functions" title="Writing Functions" target="_blank">Writing
+Functions</a> </strong> from
+<strong><a href="https://speakerdeck.com/jeffgoldsmith" target="_blank">Jeff
+Goldsmith</a></strong>.
+</div>
+<p><br></p>
+<hr />
+</div>
+<div id="video-lecture" class="section level3">
+<h3>Video Lecture</h3>
+<div class="vid_container">
+<p><iframe 
+    src="https://www.youtube.com/embed/wd44ZlHmlLQ"
+    frameborder="0" allowfullscreen class="video"> </iframe></p>
+</div>
+<hr />
+</div>
+</div>
+<div id="example" class="section level2">
+<h2>Example</h2>
+<p>For this topic, I’ll create a GitHub repo + directory / R Project
+called <code>iteration</code>. I’ll write code for today’s content in a
+new R Markdown document called <code>writing_functions.Rmd</code>, and
+I’m going to load the usual packages. I’m also setting the seed so that
+the output on this page is fixed.</p>
+<pre class="r"><code>library(tidyverse)
+library(rvest)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;rvest&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:readr&#39;:
+## 
+##     guess_encoding</code></pre>
+<pre class="r"><code>set.seed(1)</code></pre>
+<div id="my-first-function" class="section level3">
+<h3>My first function</h3>
+<p>The best way to build up a function is to start with code you’ve
+written outside a function. To see how this might work, I’ll start with
+a simple example: the chunk below takes a sample from a normal
+distribution and then computes the vector of Z scores for the
+sample.</p>
+<pre class="r"><code>x_vec = rnorm(25, mean = 5, sd = 3)
+
+(x_vec - mean(x_vec)) / sd(x_vec)</code></pre>
+<pre><code>##  [1] -0.83687228  0.01576465 -1.05703126  1.50152998  0.16928872 -1.04107494
+##  [7]  0.33550276  0.59957343  0.42849461 -0.49894708  1.41364561  0.23279252
+## [13] -0.83138529 -2.50852027  1.00648110 -0.22481531 -0.19456260  0.81587675
+## [19]  0.68682298  0.44756609  0.78971253  0.64568566 -0.09904161 -2.27133861
+## [25]  0.47485186</code></pre>
+<p>If I want to repeat this (admittedly simple) process for lots of
+samples, I might want to have a function that takes the sample as an
+<em>argument</em>, computes the vector of Z scores in the <em>body</em>,
+and <em>returns</em> the result. I define such a function below.</p>
+<pre class="r"><code>z_scores = function(x) {
+  
+  z = (x - mean(x)) / sd(x)
+  z
+  
+}
+
+z_scores(x_vec)</code></pre>
+<pre><code>##  [1] -0.83687228  0.01576465 -1.05703126  1.50152998  0.16928872 -1.04107494
+##  [7]  0.33550276  0.59957343  0.42849461 -0.49894708  1.41364561  0.23279252
+## [13] -0.83138529 -2.50852027  1.00648110 -0.22481531 -0.19456260  0.81587675
+## [19]  0.68682298  0.44756609  0.78971253  0.64568566 -0.09904161 -2.27133861
+## [25]  0.47485186</code></pre>
+<p>I can try this with a few samples and confirm that it works. I should
+also try to think of ways this code might break; the attempts below try
+a variety of inputs to see what happens.</p>
+<pre class="r"><code>z_scores(3)</code></pre>
+<pre><code>## [1] NA</code></pre>
+<pre class="r"><code>z_scores(&quot;my name is jeff&quot;)</code></pre>
+<pre><code>## Error in x - mean(x): non-numeric argument to binary operator</code></pre>
+<pre class="r"><code>z_scores(iris)</code></pre>
+<pre><code>## Error in is.data.frame(x): &#39;list&#39; object cannot be coerced to type &#39;double&#39;</code></pre>
+<pre class="r"><code>z_scores(sample(c(TRUE, FALSE), 25, replace = TRUE))</code></pre>
+<pre><code>##  [1] -0.7348469  1.3063945 -0.7348469 -0.7348469  1.3063945  1.3063945
+##  [7] -0.7348469 -0.7348469 -0.7348469  1.3063945  1.3063945 -0.7348469
+## [13] -0.7348469 -0.7348469 -0.7348469 -0.7348469 -0.7348469  1.3063945
+## [19] -0.7348469 -0.7348469 -0.7348469 -0.7348469  1.3063945  1.3063945
+## [25]  1.3063945</code></pre>
+<p>These all did something I didn’t want, but only two returned errors.
+To avoid behavior you don’t want (i.e. to <a
+href="http://www.faqs.org/docs/artu/ch01s06.html">“fail noisily and as
+soon as possible”</a>) we’ll add some checks on the argument values
+using conditional statements.</p>
+<pre class="r"><code>z_scores = function(x) {
+  
+  if (!is.numeric(x)) {
+    stop(&quot;Argument x should be numeric&quot;)
+  } else if (length(x) == 1) {
+    stop(&quot;Z scores cannot be computed for length 1 vectors&quot;)
+  }
+  
+  z = mean(x) / sd(x)
+  
+  z
+}</code></pre>
+<p>Fantastic – we have a pretty solid function for computing Z
+scores!</p>
+</div>
+<div id="multiple-outputs" class="section level3">
+<h3>Multiple outputs</h3>
+<p>In some cases it might be better to return the mean and standard
+deviation instead of the Z scores. A first option is to store each of
+the values in a named list, and to return that list. (We’ll talk more
+about lists in <a href="iteration_and_listcols.html">iteration and
+listcols</a>.)</p>
+<pre class="r"><code>mean_and_sd = function(x) {
+  
+  if (!is.numeric(x)) {
+    stop(&quot;Argument x should be numeric&quot;)
+  } else if (length(x) == 1) {
+    stop(&quot;Cannot be computed for length 1 vectors&quot;)
+  }
+  
+  mean_x = mean(x)
+  sd_x = sd(x)
+
+  list(mean = mean_x, 
+       sd = sd_x)
+}</code></pre>
+<p>Alternatively, we might store values in a data frame.</p>
+<pre class="r"><code>mean_and_sd = function(x) {
+  
+  if (!is.numeric(x)) {
+    stop(&quot;Argument x should be numeric&quot;)
+  } else if (length(x) == 1) {
+    stop(&quot;Cannot be computed for length 1 vectors&quot;)
+  }
+  
+  mean_x = mean(x)
+  sd_x = sd(x)
+
+  tibble(
+    mean = mean_x, 
+    sd = sd_x
+  )
+}</code></pre>
+<p>In general, either of these will be fine; which one you choose will
+depend on what kind of values you want to return, and what you plan to
+do with the function itself. If you want to return the original sample
+along with the computed values, a list might make sense; if you plan to
+run your function a lot and study the results, having a data frame will
+make it easier to use other tools. We’ll see more of that in <a
+href="iteration_and_simulation.html">iteration and simulation</a>.</p>
+</div>
+<div id="multiple-inputs" class="section level3">
+<h3>Multiple inputs</h3>
+<p>As exciting as it is to compute Z scores, let’s start setting our
+sights higher. I’d like to have a function that takes a given sample
+size along with a true mean and standard deviation, simulates data from
+a normal distribution, and returns the estimated mean and standard
+deviation. I’ll start from the code below.</p>
+<pre class="r"><code>sim_data = tibble(
+  x = rnorm(30, mean = 2, sd = 3)
+)
+
+sim_data |&gt; 
+  summarize(
+    mu_hat = mean(x),
+    sigma_hat = sd(x)
+  )</code></pre>
+<pre><code>## # A tibble: 1 × 2
+##   mu_hat sigma_hat
+##    &lt;dbl&gt;     &lt;dbl&gt;
+## 1   1.63      3.06</code></pre>
+<p>You should take a few minutes to examine this code – make a plot of
+the simulated data to make sure it “makes sense”, take a look at the
+result of computing the mean and standard deviation, etc.</p>
+<p>Once you’re satisfied, it’s time to wrap things up in a function. I’d
+like to be able to change the sample size and parameters, so those will
+be my <em>arguments</em>; the code that simulates data and computes the
+sample mean and SD go in the <em>body</em>; and the <em>return</em>
+statement should include the estimates. A function that does all this,
+using default values for the mean and standard deviation, is below.</p>
+<pre class="r"><code>sim_mean_sd = function(n, mu = 2, sigma = 3) {
+  
+  sim_data = tibble(
+    x = rnorm(n, mean = mu, sd = sigma),
+  )
+  
+  sim_data |&gt; 
+    summarize(
+      mu_hat = mean(x),
+      sigma_hat = sd(x)
+    )
+}</code></pre>
+<p>Repeated calls to <code>sim_mean_sd()</code> will give a sense of
+sampling variability in estimating the mean and standard deviation from
+a sample; take a few minutes to run <code>sim_mean_sd(30)</code> a few
+times, and then to run <code>sim_mean_sd(300)</code>, and think about
+the results. We’ll examine this more formally in <a
+href="iteration_and_listcols.html">iteration</a> and in <a
+href="simulation.html">simulation</a>.</p>
+<p>This is also a good time to point out how R handles argument
+matching. We can use <em>positional</em> matching, meaning the first
+value supplied is taken to be the first argument, the second value is
+the second argument, and so on. We do this with <code>tidyverse</code>
+functions a lot; the first argument is always a dataframe, and we just
+supply that dataframe in the first position. We also use positional
+matching when we call <code>mean(x)</code> or
+<code>sim_mean_sd(30, 5, 1)</code>.</p>
+<p>Alternatively, we can use <em>named</em> matching, which uses the
+argument name in the function call. Named matching can be a bit more
+stable when you’re writing your own functions (in case you decide to
+change the order of the inputs, for example) but isn’t strictly
+necessary. Named arguments can be supplied in any order:
+<code>sim_mean_sd(n = 30, mu = 5, sd = 1)</code> is equivalent to
+<code>sim_mean_sd(sd = 1, n = 30, mu = 5)</code>.</p>
+</div>
+<div id="revisiting-past-examples" class="section level3">
+<h3>Revisiting past examples</h3>
+<p>There have been a couple of times in this class that I’ve had to
+write code I didn’t like, because it would have made sense to write a
+function. We’ll revisit those quickly to see how we could improve our
+code.</p>
+<div id="loading-lotr-data" class="section level4">
+<h4>Loading LoTR data</h4>
+<p>In <a href="tidy_data.html">tidy data</a>, we broke the “only copy
+code twice” rule when we used the code below to process the <a
+href="./data/LotR_Words.xlsx">LoTR words data</a>:</p>
+<pre class="r"><code>fellowship_ring = readxl::read_excel(&quot;./data/LotR_Words.xlsx&quot;, range = &quot;B3:D6&quot;) |&gt;
+  mutate(movie = &quot;fellowship_ring&quot;)
+
+two_towers = readxl::read_excel(&quot;./data/LotR_Words.xlsx&quot;, range = &quot;F3:H6&quot;) |&gt;
+  mutate(movie = &quot;two_towers&quot;)
+
+return_king = readxl::read_excel(&quot;./data/LotR_Words.xlsx&quot;, range = &quot;J3:L6&quot;) |&gt;
+  mutate(movie = &quot;return_king&quot;)
+
+lotr_tidy = bind_rows(fellowship_ring, two_towers, return_king) |&gt;
+  janitor::clean_names() |&gt;
+  pivot_longer(
+    female:male,
+    names_to = &quot;sex&quot;,
+    values_to = &quot;words&quot;) |&gt; 
+  mutate(race = str_to_lower(race)) |&gt; 
+  select(movie, everything()) </code></pre>
+<p><strong><em>Learning Assessment:</em></strong> Try to write a
+function that can be used to abstract the data loading and cleaning
+process. Use this function to recreate the tidied LoTR dataset.</p>
+<details>
+<summary>
+Solution
+</summary>
+<p>The function below will read in and clean LoTR data – it differs from
+the previous code by including some data tidying steps in the function
+rather than after data have been combined, but produces the same
+result.</p>
+<pre class="r"><code>lotr_load_and_tidy = function(path, range, movie_name) {
+  
+  df = 
+    readxl::read_excel(path, range = range) |&gt;
+    janitor::clean_names() |&gt;
+    pivot_longer(
+      female:male,
+      names_to = &quot;sex&quot;,
+      values_to = &quot;words&quot;) |&gt;
+    mutate(
+      race = str_to_lower(race),
+      movie = movie_name) |&gt; 
+    select(movie, everything())
+  
+  df
+  
+}
+
+lotr_tidy = 
+  bind_rows(
+    lotr_load_and_tidy(&quot;data/LotR_Words.xlsx&quot;, &quot;B3:D6&quot;, &quot;fellowship_ring&quot;),
+    lotr_load_and_tidy(&quot;data/LotR_Words.xlsx&quot;, &quot;F3:H6&quot;, &quot;two_towers&quot;),
+    lotr_load_and_tidy(&quot;data/LotR_Words.xlsx&quot;, &quot;J3:L6&quot;, &quot;return_king&quot;))</code></pre>
+<p>Having a function that handles the loading and cleaning is great – if
+I decide I want to change the tidying step, I only have to do it once,
+and I don’t have to worry about mistakes creeping in through
+copy-and-paste errors!</p>
+</details>
+</div>
+<div id="nsduh" class="section level4">
+<h4>NSDUH</h4>
+<p>In <a href="reading_data_from_the_web.html">reading data from the
+web</a>, we wrote code that allowed us to scrape information in from a
+page containing NSDUH results. We refined the resulting table in <a
+href="strings_and_factors.html">strings and factors</a>. A version of
+our prior code is below.</p>
+<pre class="r"><code>nsduh_url = &quot;http://samhda.s3-us-gov-west-1.amazonaws.com/s3fs-public/field-uploads/2k15StateFiles/NSDUHsaeShortTermCHG2015.htm&quot;
+
+nsduh_html = read_html(nsduh_url)
+
+data_marj = 
+  nsduh_html |&gt; 
+  html_table() |&gt; 
+  nth(1) |&gt;
+  slice(-1) |&gt; 
+  select(-contains(&quot;P Value&quot;)) |&gt;
+  pivot_longer(
+    -State,
+    names_to = &quot;age_year&quot;, 
+    values_to = &quot;percent&quot;) |&gt;
+  separate(age_year, into = c(&quot;age&quot;, &quot;year&quot;), sep = &quot;\\(&quot;) |&gt;
+  mutate(
+    year = str_replace(year, &quot;\\)&quot;, &quot;&quot;),
+    percent = str_replace(percent, &quot;[a-c]$&quot;, &quot;&quot;),
+    percent = as.numeric(percent)) |&gt;
+  filter(!(State %in% c(&quot;Total U.S.&quot;, &quot;Northeast&quot;, &quot;Midwest&quot;, &quot;South&quot;, &quot;West&quot;)))</code></pre>
+<p>Let’s write a quick function to scrape review information for other
+tables on this page. We’ll pass in the HTML data as an argument so we
+don’t scrape it each time, along with a number and name for the table we
+want to process.</p>
+<pre class="r"><code>nsduh_table &lt;- function(html, table_num, table_name) {
+  
+  table = 
+    html |&gt; 
+    html_table() |&gt; 
+    nth(table_num) |&gt;
+    slice(-1) |&gt; 
+    select(-contains(&quot;P Value&quot;)) |&gt;
+    pivot_longer(
+      -State,
+      names_to = &quot;age_year&quot;, 
+      values_to = &quot;percent&quot;) |&gt;
+    separate(age_year, into = c(&quot;age&quot;, &quot;year&quot;), sep = &quot;\\(&quot;) |&gt;
+    mutate(
+      year = str_replace(year, &quot;\\)&quot;, &quot;&quot;),
+      percent = str_replace(percent, &quot;[a-c]$&quot;, &quot;&quot;),
+      percent = as.numeric(percent),
+      name = table_name) |&gt;
+    filter(!(State %in% c(&quot;Total U.S.&quot;, &quot;Northeast&quot;, &quot;Midwest&quot;, &quot;South&quot;, &quot;West&quot;)))
+  
+  table
+  
+}</code></pre>
+<p>Next we’ll use this to get a few different tables and combine the
+results.</p>
+<pre class="r"><code>nsduh_results = 
+  bind_rows(
+    nsduh_table(nsduh_html, 1, &quot;marj_one_year&quot;),
+    nsduh_table(nsduh_html, 4, &quot;cocaine_one_year&quot;),
+    nsduh_table(nsduh_html, 5, &quot;heroin_one_year&quot;)
+  )</code></pre>
+<p>In addition to being less likely to result in errors than
+copy-and-pasting, using a function is clearer: once the purpose of the
+function is known, using that function to extract separate tables uses
+only three easy-to-understand lines of code.</p>
+</div>
+</div>
+<div id="functions-as-arguments" class="section level3">
+<h3>Functions as arguments</h3>
+<p>One powerful tool is the ability to pass functions as arguments into
+functions. This might seem like a weird thing to do, but it has a lot of
+handy applications – we’ll see just how far it goes in the next modules
+in this topic.</p>
+<p>As a quick example, suppose we wanted to get a sense of how similar
+or different values in a vector are to each other. There are lots of
+ways to measure this – variance, standard deviation, range,
+inter-quartile range – and some are more appropriate in some cases than
+in others. The function below allows you to input a vector and a
+function, and returns the result of applying the specified function to
+the vector input.</p>
+<pre class="r"><code>x_vec = rnorm(25, 0, 1)
+
+my_summary = function(x, summ_func) {
+  summ_func(x)
+}
+
+my_summary(x_vec, sd)</code></pre>
+<pre><code>## [1] 0.753654</code></pre>
+<pre class="r"><code>my_summary(x_vec, IQR)</code></pre>
+<pre><code>## [1] 1.083116</code></pre>
+<pre class="r"><code>my_summary(x_vec, var)</code></pre>
+<pre><code>## [1] 0.5679943</code></pre>
+<p>This example is pretty trivial – you could just apply those functions
+directly to <code>x</code> and skip the hassle – but in many cases the
+idea of passing functions as arguments is really powerful. As a
+practical example, remember that you can reorder factors according to
+different summaries in <code>fct_reorder</code>!</p>
+</div>
+<div id="scoping-and-names" class="section level3">
+<h3>Scoping and names</h3>
+<p>Take a look at the code below. Will the call <code>f(x = y)</code>
+work? If so, what will it produce? What is the current value of
+<code>x</code>, <code>y</code>, and <code>z</code>?</p>
+<pre class="r"><code>f = function(x) {
+  z = x + y
+  z
+}
+
+x = 1
+y = 2
+
+f(x = y)</code></pre>
+<p>Examples like this are tricky, but emphasize an issue that comes up a
+lot in writing functions: you define a variable in your global
+environment and use it in your function, but it isn’t passed as an
+argument. This is easy to miss, especially when you go from code written
+in chunks to a function, and can be hard to track down if you empty your
+working directory or change a variable name. The best advice I have is
+to give your arguments useful names and think carefully about where
+everything is defined, and to periodically restart R and try everything
+again!</p>
+</div>
+</div>
+<div id="other-materials" class="section level2">
+<h2>Other materials</h2>
+<ul>
+<li>There are chapters on functions in <a
+href="http://r4ds.had.co.nz/functions.html">R for Data Science</a> and
+<a href="http://adv-r.had.co.nz/Functions.html">Advanced R</a></li>
+<li>Jenny Bryan has a <a
+href="http://stat545.com/block011_write-your-own-function-01.html">three</a>
+<a
+href="http://stat545.com/block011_write-your-own-function-02.html">part</a>
+<a
+href="http://stat545.com/block011_write-your-own-function-03.html">series</a>
+on writing functions (each part is short)</li>
+<li>R Programming for Data Science has nice chapters on <a
+href="https://bookdown.org/rdpeng/rprogdatascience/functions.html">functions</a>
+and <a
+href="https://bookdown.org/rdpeng/rprogdatascience/scoping-rules-of-r.html">scoping</a></li>
+<li>The <a href="http://www.faqs.org/docs/artu/ch01s06.html">Basics of
+UNIX Philosophy</a>, linked to above, apply broadly to designing
+code</li>
+</ul>
+<p>The code that I produced working examples in lecture is <a
+href="https://github.com/p8105/iteration">here</a>.</p>
+</div>
+
+<br><br>
+<footer>
+  <img src="images/p8105_stickers.png" alt="stickers" style="width:30%">
+  <br>
+  <p class="copyright text-muted" align="center">Copyright &copy; 2019 Jeff Goldsmith</p>
+</footer>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

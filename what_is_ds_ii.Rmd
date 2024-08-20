@@ -1,0 +1,129 @@
+---
+title: "What is Data Science?"
+output:
+  html_document: 
+    toc: true
+    toc_float: true
+---
+
+We have, by now, established some fundamental tools for doing data science. It's important to revisit our definition, and especially our discussion of connotation, before moving forward.
+
+```{r, echo = FALSE, warning=FALSE, message=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  fig.width = 6,
+  fig.asp = .6,
+  out.width = "90%"
+)
+
+library(tidyverse)
+
+theme_set(theme_bw() + theme(legend.position = "bottom"))
+```
+
+## Overview {.tabset .tabset-pills}
+
+### Learning Objectives
+
+Pull together skills learned through this point to produce analytical summaries and reports.
+
+### Slide Deck
+
+<div class="vid_container">
+  <iframe 
+    src="https://speakerdeck.com/player/69791e0a56b14efd9f741fc10cea30f9" 
+    allowfullscreen 
+    frameborder="0"
+    class="video">
+  </iframe>
+</div>
+
+<div style="margin-bottom:5px"> <strong> <a href="https://speakerdeck.com/jeffgoldsmith/p8105-data-science-revisited" title="Writing with data" target="_blank">What is Data Science? Revisited</a> </strong> from <strong><a href="https://speakerdeck.com/jeffgoldsmith" target="_blank">Jeff Goldsmith</a></strong>. </div><br>
+
+***
+
+
+## Example
+
+This example is based entirely on live-coding and uses the [NYC Airbnb data](dataset_airbnb.html). The data can be imported using the [p8105.datasets](https://github.com/P8105/p8105.datasets) package:
+
+```{r}
+library(p8105.datasets)
+
+data(nyc_airbnb)
+```
+
+As always, I'll do today's coding in a R Markdown file, sitting in an GitHub Repo / R Project.
+
+### Understanding variables
+
+First, let's take a few minutes to understand the dataset and the variables it contains.
+
+```{r}
+# View(nyc_airbnb)
+str(nyc_airbnb)
+
+nyc_airbnb %>%
+  count(room_type)
+
+nyc_airbnb %>%
+  count(neighbourhood_group)
+```
+
+### Brainstorming questions
+
+A major element of data science is to ask questions, and this dataset provides some rich opportunities. For example, we might ask:
+
+* Does rating vary by neighborhood, room type, or both?
+* How is price related to other variables?
+* Where are rentals located?
+
+We'll take a few minutes as a class to brainstorm some additional questions, and then try to answer some of them.
+
+```{r, echo = FALSE, eval = FALSE}
+ggplot(nyc_airbnb, aes(x = longitude, y = latitude)) +
+  geom_point() + 
+  coord_map()
+  coord_equal(ratio = 1)
+```
+
+```{r, echo = FALSE, eval = FALSE}
+library(leaflet)
+library(p8105.datasets)
+
+data("nyc_airbnb")
+
+nyc_airbnb = 
+  nyc_airbnb %>% 
+  mutate(stars = review_scores_location / 2) %>% 
+  rename(boro = neighbourhood_group)
+
+pal <- colorNumeric(
+  palette = "viridis",
+  domain = nyc_airbnb$stars)
+
+nyc_airbnb %>% 
+  filter(boro %in% c("Manhattan", "Brooklyn", "Queens")) %>% 
+  na.omit(stars) %>% 
+  sample_n(5000) %>% 
+  mutate(click_label = str_c("<b>$", price, "</b><br>", stars, " stars<br>", number_of_reviews, " reviews")) %>% 
+  leaflet() %>% 
+  addProviderTiles(providers$CartoDB.Positron) %>% 
+  addCircleMarkers(~lat, ~long, radius = .1, color = ~pal(stars), popup = ~click_label)
+```
+
+## Other materials
+
+Some additional links on `leaflet`:
+
+* A quick introduction is [here](https://teachdatascience.com/leaflet/)
+* A more thorough overview is [here](https://rstudio.github.io/leaflet/)
+
+Some other reading on thinking like a data scientist:
+
+* If you didn't listen before, now's the time for Chris Volinsky's ["How Industry Views Data Science Education in Statistics Departments"](https://youtu.be/JLs01Z5baSU?t=1063)
+* Jeff Leek's [problem forward](https://simplystatistics.org/2013/05/29/what-statistics-should-do-about-big-data-problem-forward-not-solution-backward/) blog post
+* This (somewhat long) [post](https://simplystatistics.org/2019/01/09/how-data-scientists-think-a-mini-case-study/) has great insights into a data science mindset 
+* Although we're playing with public (scraped) data, you might be interested in [How R Helps Airbnb Make the Most of Its Data](https://peerj.com/preprints/3182/)
+
+The code that I produced working examples in lecture is [here](https://github.com/P8105/case_study).

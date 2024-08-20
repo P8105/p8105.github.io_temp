@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Getting started and best practices</title>
+
+<script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" />
+<script defer src="https://use.fontawesome.com/releases/v5.0.3/js/all.js"></script>
+<script defer src="https://use.fontawesome.com/releases/v5.0.0/js/v4-shims.js"></script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-151578452-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-151578452-1');
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">P8105</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="schedule.html">Schedule</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Topics
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="topic_what_is_data_science.html">What is Data Science?</a>
+    </li>
+    <li>
+      <a href="topic_building_blocks.html">Building Blocks</a>
+    </li>
+    <li>
+      <a href="topic_data_wrangling_i.html">Data Wrangling I</a>
+    </li>
+    <li>
+      <a href="topic_visualization_and_eda.html">Visualization and EDA</a>
+    </li>
+    <li>
+      <a href="topic_data_wrangling_ii.html">Data Wrangling II</a>
+    </li>
+    <li>
+      <a href="topic_interactivity.html">Interactivity</a>
+    </li>
+    <li>
+      <a href="topic_iteration.html">Iteration</a>
+    </li>
+    <li>
+      <a href="topic_linear_models.html">Linear Models</a>
+    </li>
+    <li>
+      <a href="topic_other_material.html">Other Materials</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Datasets
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="dataset_airbnb.html">Airbnb</a>
+    </li>
+    <li>
+      <a href="dataset_brfss.html">BRFSS</a>
+    </li>
+    <li>
+      <a href="dataset_fivethirtyeight.html">FiveThirtyEight</a>
+    </li>
+    <li>
+      <a href="dataset_instacart.html">Instacart</a>
+    </li>
+    <li>
+      <a href="dataset_mr_trash_wheel.html">Mr. Trash Wheel</a>
+    </li>
+    <li>
+      <a href="dataset_noaa.html">NOAA</a>
+    </li>
+    <li>
+      <a href="dataset_restaurant_inspections.html">NYC Restaurant Inspections</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="homework_and_projects.html">Homework and Projects</a>
+</li>
+<li>
+  <a href="course_communication.html">Communication</a>
+</li>
+<li>
+  <a href="https://github.com/P8105/p8105.github.io">
+    <span class="fa fa-github"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Getting started and best practices</h1>
+
+</div>
+
+
+<p>This is the first module in the <a
+href="topic_building_blocks.html">Building Blocks</a> topic.</p>
+<div id="overview" class="section level2 tabset tabset-pills">
+<h2 class="tabset tabset-pills">Overview</h2>
+<div id="learning-objectives" class="section level3">
+<h3>Learning Objectives</h3>
+<p>We’ll be getting up-to-speed on the basic tools in R. As part of
+that, we’ll define and establish some good habits.</p>
+</div>
+<div id="slide-deck" class="section level3">
+<h3>Slide Deck</h3>
+<div class="vid_container">
+<p><iframe 
+    src="https://speakerdeck.com/player/39618f30472e4cac9659ce4f21a98aa6" 
+    allowfullscreen 
+    frameborder="0"
+    class="video"> </iframe></p>
+</div>
+<div style="margin-bottom:5px">
+<strong>
+<a href="https://speakerdeck.com/jeffgoldsmith/p8105-best-practices" title="Best Practices" target="_blank">Best
+Practices</a> </strong> from
+<strong><a href="https://speakerdeck.com/jeffgoldsmith" target="_blank">Jeff
+Goldsmith</a></strong>.
+</div>
+<p><br></p>
+<hr />
+</div>
+<div id="video-lecture" class="section level3">
+<h3>Video Lecture</h3>
+<div class="vid_container">
+<p><iframe 
+    src="https://www.youtube.com/embed/zuxfEHEhcGg"
+    frameborder="0" allowfullscreen class="video"> </iframe></p>
+</div>
+<hr />
+</div>
+</div>
+<div id="example" class="section level2">
+<h2>Example</h2>
+<div id="a-bit-of-advice" class="section level3">
+<h3>A bit of advice</h3>
+<p>You’ve probably been using computers for as long as you can remember,
+but now is a good time to develop intentionality in how you use a
+computer for work. In the context of this class, and in your
+professional life more broadly, a computer is the tool you use to
+execute specific tasks; the more skilled you are in using a computer as
+a tool, the better off you’ll be.</p>
+<p>Think of your computer the way a chef thinks of a kitchen – being
+able to find and use something exactly when you need will make your work
+process more seamless. As Ellen Bennett says <a
+href="https://www.nytimes.com/2019/04/03/t-magazine/kitchen-organization.html">in
+this article</a>, “It’s about not having to do the extra work” that
+comes from looking for a tool when you need it. A bit closer to the
+topic of this class, Hilary Parker <a
+href="https://peerj.com/preprints/3210/">convincingly argues</a> that
+“increased fluency and mastery of the tooling means that the
+practitioner can create uninhibited.”</p>
+<p>Today we’re going to talk a lot about using R and being organized.
+Beyond that, getting in the habit of using an application launcher /
+productivity application (like <a
+href="https://www.alfredapp.com">Alfred</a> for OSX or maybe <a
+href="https://www.launchy.net">Launchy</a> for Windows 10) will help you
+quickly navigate on your machine, saving time and effort. You should
+also get in the habit of using keyboard shortcuts, both in RStudio and
+elsewhere on your machine.</p>
+</div>
+<div id="get-started" class="section level3">
+<h3>Get started</h3>
+<p>Launch R Studio and take stock – find the Console, the
+Environment/History, and the Files/Plots/Packages/Help. This is also a
+good time to set some preferences – I strongly encourage you to turn off
+saving / loading the workspace and history, and also to turn on a lot of
+the R code diagnostics.</p>
+<p>Create a new R script using File &gt; New File &gt; R Script. Write a
+short comment section describing what this is, and follow along with the
+code below!</p>
+<pre class="r"><code>##################################################################
+# Sept 5, 2023
+# Jeff Goldsmith
+#
+# Script for exploring R!
+##################################################################</code></pre>
+<p>As part of <a href="homework_0.html">Homework 0</a>, we installed a
+lot of packages. You don’t need to re-install those each time you need
+them, but you do need to load packages you want to use with the
+<code>library</code> function. Although we won’t use it yet, I’m going
+to load the <code>tidyverse</code> package now.</p>
+<pre class="r"><code>library(tidyverse)
+## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.1 ──
+## ✔ ggplot2 3.4.1     ✔ purrr   1.0.1
+## ✔ tibble  3.2.1     ✔ dplyr   1.1.0
+## ✔ tidyr   1.3.0     ✔ stringr 1.5.0
+## ✔ readr   2.1.2     ✔ forcats 1.0.0
+## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+## ✖ dplyr::filter() masks stats::filter()
+## ✖ dplyr::lag()    masks stats::lag()</code></pre>
+<p>You can do basic computations in R, either on the command line (in
+the console) or by writing things in the script and executing the code
+in the console. Note that you can execute commands (e.g. the line with
+the cursor or highlighted code) in the console from a script using
+Command+Enter (Mac) or Ctrl+Enter (Windows).</p>
+<pre class="r"><code>2 + 3
+## [1] 5
+
+(18/3 + 1*2) ^ (4 - 2) - 6.18273
+## [1] 57.81727</code></pre>
+<p>Before long, you’ll do all your arithmetic in R!</p>
+<p>Computation is great, but you need to be able to assign objects to
+names.</p>
+<pre class="r"><code>x = (18/3 + 1*2) ^ (4 - 2) - 6.18273
+y = c(1, 3, 6, 9)
+
+x + y
+## [1] 58.81727 60.81727 63.81727 66.81727</code></pre>
+<p>When making assignments, R assumes you don’t want to see the result.
+If you do want to see the result, you’ll have to ask for it. You can
+also apply <strong>functions</strong> to objects.</p>
+<pre class="r"><code>x = runif(20)
+x
+##  [1] 0.27933823 0.59149564 0.73489941 0.80097987 0.02536697 0.93863838
+##  [7] 0.81414839 0.31708769 0.49081563 0.68812726 0.45275637 0.29221666
+## [13] 0.40376805 0.37942314 0.36375781 0.85316557 0.77368318 0.39093447
+## [19] 0.50674730 0.77759665
+
+mean(x)
+## [1] 0.5437473
+var(x)
+## [1] 0.05927642</code></pre>
+<p>We’ve created two variables, <code>x</code> and <code>y</code> –
+these now exist in the <strong>environment</strong>. You can see
+everything in the environment using <code>ls()</code> on the command
+line, or check out the environment pane in RStudio.</p>
+<p>(If you care about these things, <a
+href="https://colinfay.me/r-assignment/">people</a> have <a
+href="https://twitter.com/JennyBryan/status/1162185393518759936">opinions</a>
+about <a
+href="https://r4ds.had.co.nz/workflow-basics.html#coding-basics">assignment
+operators</a>. I don’t have such strong opinions about this, and don’t
+care much if you use <code>=</code> or <code>&lt;-</code>.)</p>
+</div>
+<div id="data-frames" class="section level3">
+<h3>Data frames</h3>
+<p>R can handle several data types in addition to numbers. To illustrate
+this, I’m going to create a quick data frame using the
+<code>tibble</code> function and manually check the class of some of the
+variables. This is also a good time to point out RStudio’s tabbed
+autocompletion – start typing a variable name and press Tab.</p>
+<pre class="r"><code>example_df = tibble(
+  vec_numeric = 5:8,
+  vec_char = c(&quot;My&quot;, &quot;name&quot;, &quot;is&quot;, &quot;Jeff&quot;),
+  vec_logical = c(TRUE, TRUE, TRUE, FALSE),
+  vec_factor = factor(c(&quot;male&quot;, &quot;male&quot;, &quot;female&quot;, &quot;female&quot;))
+)
+
+example_df
+## # A tibble: 4 × 4
+##   vec_numeric vec_char vec_logical vec_factor
+##         &lt;int&gt; &lt;chr&gt;    &lt;lgl&gt;       &lt;fct&gt;     
+## 1           5 My       TRUE        male      
+## 2           6 name     TRUE        male      
+## 3           7 is       TRUE        female    
+## 4           8 Jeff     FALSE       female</code></pre>
+<p>We’re going to spend a lot of time talking about data frames over the
+course of the semester, starting in <a
+href="topic_data_wrangling_i.html">Data Wrangling I</a>. For now, just
+think of it as a rectangle that holds data you care about.</p>
+</div>
+<div id="basic-plots" class="section level3">
+<h3>Basic plots</h3>
+<p>Base R comes equipped with plotting but – just giving you a heads-up
+– if you <a
+href="https://simplystatistics.org/2016/02/11/why-i-dont-use-ggplot2/">use
+base R graphics</a> people might give you a <a
+href="https://twitter.com/drob/status/697858212779806721">hard</a> <a
+href="https://twitter.com/_inundata/status/868297266913697792">time</a>.</p>
+<p>Instead, we’ll use <code>ggplot</code>; a basic example follows.</p>
+<pre class="r"><code>set.seed(1)
+
+plot_df = tibble(
+  x = rnorm(1000, sd = .5),
+  y = 1 + 2 * x + rnorm(1000)
+)
+
+ggplot(plot_df, aes(x = x)) + geom_histogram()
+## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+<p><img src="best_practices_files/figure-html/unnamed-chunk-8-1.png" width="90%" /></p>
+<pre class="r"><code>ggplot(plot_df, aes(x = x, y = y)) + geom_point()</code></pre>
+<p><img src="best_practices_files/figure-html/unnamed-chunk-8-2.png" width="90%" /></p>
+<p>We’ll go through plotting in detail in <a
+href="topic_visualization_and_eda.html">Visualization and EDA</a>.</p>
+</div>
+<div id="self-contained-readable-scripts" class="section level3">
+<h3>Self-contained, readable scripts</h3>
+<p>You should <em>always</em> keep the complete code that was used for
+an analysis or project, no matter how brief. Your code should be
+self-contained – it should include everything you did to produce what
+you wanted to produce. The two scripts below repeat content from
+above.</p>
+<p>First, data frames and variable classes.</p>
+<pre class="r"><code>##################################################################
+# Sept 5, 2023
+# Jeff Goldsmith
+#
+# Script exploring variable assignment
+##################################################################
+
+library(tidyverse)
+
+## create two variables
+x = (18/3 + 1*2) ^ (4 - 2) - 6.18273
+y = c(1, 3, 6, 9)
+
+## print and add the variables
+x
+x + y
+
+## overwrite x and examine / manipulate
+x = runif(20)
+x
+
+mean(x)
+var(x)</code></pre>
+<p>Second, simple plots.</p>
+<pre class="r"><code>##################################################################
+# Sept 5, 2023
+# Jeff Goldsmith
+#
+# Script producing basic plots
+##################################################################
+
+library(tidyverse)
+
+## set seed to ensure reproducibility
+set.seed(1234)
+
+## define data frame containing x and y
+plot_df = tibble(
+  x = rnorm(1000, sd = .5),
+  y = 1 + 2 * x + rnorm(1000)
+)
+
+## histogram of x
+ggplot(plot_df, aes(x = x)) + geom_histogram()
+
+## scatterplot of x and y
+ggplot(plot_df, aes(x = x, y = y)) + geom_point()</code></pre>
+<p>The scripts above illustrate some “best practices” that you should
+adopt:</p>
+<ul>
+<li>There is a brief section at the outset identifying the author,
+giving the date, and providing a brief description of the content.</li>
+<li>Each script includes comments describing each block or chunk of
+code.</li>
+<li>The use of a consistent naming convention
+(<code>snake_case</code>).</li>
+<li>Variable names are reasonable in the context of the script.</li>
+<li>The code iteslf is easy-to-read – adequate spacing within and
+between lines of code. (Turn on code diagnositics if you haven’t
+already; this can be found in Preferences &gt; Code &gt;
+Diagnostics.)</li>
+</ul>
+<p>The organization of code into self-contained scripts is itself part
+of a bigger picture. Rather than focusing on the variables (or plots, or
+even complete analyses), focus on the code that produces them. Given
+whatever inputs you have (none for now, although later there will be
+data), your code should reliably produce whatever outputs you want.</p>
+<p>To check how “real” your scripts are, clear out your workspace by
+restarting your R Session (Session &gt; Restart R) and re-run
+everything. If everything works, great; if not, address the issue by
+editing your script. Do this frequently! Note – using
+<code>rm(list = ls())</code> <a
+href="https://rstats.wtf/source-and-blank-slates#rm-list-ls">doesn’t do
+the same thing</a>, and can get you into trouble.</p>
+<p>R will, by default, save everything in your workspace. As noted
+above, I strongly suggest you turn this behavior off (Preferences &gt;
+General &gt; Save Workspace: Never). First, doing so will remove a
+crutch early on and help you focus on your scripts as standalone
+objects. Second, saving your workspace automatically and doing so in the
+background can get you in trouble if (or when) you deal with patient
+data.</p>
+<p>A final word about scripts – not every line of code you write will
+(or should) make it to your scripts. It can take a few attempts to get
+code you like, and you don’t need to save the intermediate stuff. You
+also don’t need to save every bit of exploratory analysis you do – keep
+the stuff that improved your understanding, but discard the rest.</p>
+</div>
+<div id="organizing-projects" class="section level3">
+<h3>Organizing projects</h3>
+<p>Your projects will generally consist of several related files – input
+data, scripts, results. It’s important to keep these organized, so you
+can find everything you need quickly and easily. R Projects, through
+RStudio, give you an easy way to do this.</p>
+<p>Create a directory and save the previous two scripts into that
+directory. Script names, like variable names, should be descriptive
+(e.g. <code>20230905_var_assign.R</code> and
+<code>20230905_simple_plots.R</code>). The directory name should be
+descriptive as well, and it should be in a reasonable place on your
+computer (e.g. <code>~/Documents/first_project/</code>). Create an R
+Project using File &gt; New Project &gt; Existing Directory and
+specifying the directory you just created.</p>
+<p>For now, the best part about R Projects is that they force you to
+think about and organize the elements you need for your analysis or
+project. Double-clicking the new <code>.Rproj</code> file will launch
+the R Project; you’ll see a Files tab in the usual Plots / Packages /
+Help / Viewer pane. Later, we’ll find R Projects useful in other
+ways.</p>
+</div>
+<div id="paths-and-your-working-directory" class="section level3">
+<h3>Paths and your working directory</h3>
+<p>To this point, we’ve been working entirely inside RStudio without a
+need to access anything on your computer. That’s allowed us to avoid a
+discussion of your Working Directory, but now we’ll address that too. As
+you’re working, R is sitting inside a single directory on your computer
+– it can find files in that directory or output files to that directory.
+Check your current working directory using:</p>
+<pre class="r"><code>getwd()</code></pre>
+<p>If you’ve opened your R Project, that should be your working
+directory. That’s great! Another bit of encouragement to keep your stuff
+organized. This means that anything you output will be written to this
+directory:</p>
+<pre class="r"><code>ggplot(plot_df, aes(x = x, y = y)) + geom_point()
+ggsave(&quot;scatter_plot.pdf&quot;, height = 4, width = 6)</code></pre>
+<p>With larger projects, it can be useful to create sub-directories for
+your project (e.g. <code>data</code> and <code>results</code>) – you
+don’t need to worry about that for now, but when you do this you should
+use relative paths to keep everything self-contained. That’s also a good
+time to start getting used to the <a
+href="https://github.com/jennybc/here_here"><code>here::here</code></a>
+approach to path construction.</p>
+<p>Note that we exported a figure using a command, rather than clicking
+the Export in the Plots tab. This is intentional – whatever your script
+produces, it should do so exclusively from the code you’ve written.</p>
+</div>
+<div id="workflow" class="section level3">
+<h3>Workflow</h3>
+<p>All this together suggests a workflow. For every new project (and I
+mean <em>every new project</em>), do the following:</p>
+<ul>
+<li>Create a directory with a reasonable name and path
+(e.g. <code>~/Documents/School/P8105/Homework_2/</code>)</li>
+<li>Put an R Project in the directory</li>
+<li>Keep everything related to the analysis – data inputs, scripts,
+reports, output – in there</li>
+<li>Periodically check for reproducibility of the analysis</li>
+</ul>
+<p>Starting this habit early will save you a <em>ton</em> of headaches
+along the road.</p>
+</div>
+</div>
+<div id="other-materials" class="section level2">
+<h2>Other materials</h2>
+<p>R can take a while to learn. Luckily, tons of people have put
+together resources to try to make this easier!</p>
+<ul>
+<li><a
+href="https://cran.r-project.org/doc/contrib/Torfs+Brauer-Short-R-Intro.pdf">A
+(very) short intro to R</a></li>
+<li>The <a href="http://swirlstats.com">swirl</a> package will help you
+learn R in R</li>
+<li>The <a
+href="https://www.rstudio.com/wp-content/uploads/2016/05/base-r.pdf">Base
+R cheatsheet</a> is very handy</li>
+<li>Not about R specifically, but the <a
+href="https://www.rstudio.com/wp-content/uploads/2016/01/rstudio-IDE-cheatsheet.pdf">RStudio
+cheatsheet</a> might be handy!</li>
+</ul>
+<p>This content draws on the work of others; there are also useful
+references for a lot of this online.</p>
+<p>Basically all you need to know about workflows can be found in
+writing by Jenny Bryan:</p>
+<ul>
+<li>Her <a
+href="https://www.slideshare.net/jenniferbryan5811/cm002-deep-thoughts">deep
+thoughts</a> on data analytic work is a good starting point</li>
+<li>Also, her intro to <a
+href="http://stat545.com/block002_hello-r-workspace-wd-project.html">workspaces,
+the working directory, and R Projects</a></li>
+<li>Also also, her slides on <a
+href="https://speakerdeck.com/jennybc/how-to-name-files">how to name
+files</a></li>
+<li>Also also also, her discussion on a <a
+href="https://www.tidyverse.org/articles/2017/12/workflow-vs-script/">project-oriented
+workflow</a></li>
+<li>A good thing to refer to often is her book <a
+href="https://rstats.wtf/source-and-blank-slates">WTF</a> – I read this
+and learn new things every time.</li>
+</ul>
+<p>Other people have written useful things too:</p>
+<ul>
+<li>The Advanced R <a href="http://adv-r.had.co.nz/Style.html">style
+guide</a> is a great collection of coding guidelines</li>
+<li>The R for Data Science workflows on <a
+href="http://r4ds.had.co.nz/workflow-scripts.html">scripts</a> and <a
+href="http://r4ds.had.co.nz/workflow-projects.html">projects</a></li>
+<li>RStudio’s guide to <a
+href="https://support.rstudio.com/hc/en-us/articles/200526207-Using-Projects">using
+projects</a></li>
+</ul>
+<p>There are also some longer or more advanced references. I’m noting
+these so you have them available, although I don’t expect you’ll read
+them in detail.</p>
+<ul>
+<li>R Programming for Data Science goes into a lot of detail, but these
+<a
+href="https://bookdown.org/rdpeng/rprogdatascience/r-nuts-and-bolts.html">two</a>
+<a
+href="https://bookdown.org/rdpeng/rprogdatascience/subsetting-r-objects.html">chapters</a>
+are very relevant! Note that many of the included sections also have
+videos to help you.</li>
+<li>Andrew Jaffe and John Muschelli’s <a
+href="http://aejaffe.com/summerR_2016/">Introduction to R for Public
+Health Researchers</a></li>
+<li>Cosma Shalizi and Andrew Thomas’ <a
+href="https://www.stat.cmu.edu/~cshalizi/statcomp/14/">Statistical
+Computing 36-350: Beginning to Advanced Techniques in R</a></li>
+</ul>
+<p>The code that I produced working examples in lecture is <a
+href="https://github.com/jeff-goldsmith/example_repo">here</a>.</p>
+</div>
+
+<br><br>
+<footer>
+  <img src="images/p8105_stickers.png" alt="stickers" style="width:30%">
+  <br>
+  <p class="copyright text-muted" align="center">Copyright &copy; 2019 Jeff Goldsmith</p>
+</footer>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

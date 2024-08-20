@@ -1,0 +1,67 @@
+---
+title: "Airbnb"
+output:
+  html_document: 
+    toc: true
+    toc_float: true
+---
+
+These data were accessed from [Inside Airbnb](http://insideairbnb.com/get-the-data.html) on September 2, 2017. The version of the data that we will use in this class can be found [here](./data/nyc_airbnb.zip).
+
+
+## About [Inside Airbnb](http://insideairbnb.com/about.html)
+
+> Inside Airbnb is an independent, non-commercial set of tools and data that allows you to explore how Airbnb is really being used in cities around the world.
+
+> By analyzing publicly available information about a city's Airbnb's listings, Inside Airbnb provides filters and key metrics so you can see how Airbnb is being used to compete with the residential housing market.
+
+
+## Data description
+
+Inside Airbnb provides some visualizations of the NYC Airbnb data [here](http://insideairbnb.com/new-york-city/), where you can see maps showing type of room, activity, availability, and listings per host for all NYC Airbnb listings.
+
+After downloading both the "listings.csv.gz" and "listings.csv" files, the following code was used to create the provided dataset:
+
+```
+library(tidyverse)
+
+# Uncompress and load the detailed NYC airbnb data
+# But only keep the 2 variables of interest
+zz <- gzfile("listings.csv.gz", 'rt')   
+airbnb_location_df = 
+  read_csv(zz, header = TRUE) %>% 
+  select(id, review_scores_location)
+
+# Read in the summary data for NYC
+airbnb_listings_df =
+  read_csv("listings.csv") %>% 
+  mutate(last_review = as.Date(last_review, format = "%Y-%m-%d"))
+
+# Combine the two datasets
+nyc_airbnb = inner_join(airbnb_location_df, airbnb_listings_df, by = "id")
+
+# Save the data
+save(nyc_airbnb, file = "nyc_airbnb.RData")
+```
+
+The resulting R data file `nyc_airbnb` contains a single dataframe `nyc_airbnb` with 40,753 rows of data on 17 variables:
+
+- `id`: listing id
+- `review_scores_location`: 0-5 stars converted into a 0-10 scale
+- `name`: listing name
+- `host_id`: host id 
+- `host_name`: host name
+- `neighbourhood_group`: NYC borough
+- `neighbourhood`: NYC neighborhood
+- `latitude`: listing latitude
+- `longitude`: listing longitude
+- `room_type`: type of listing (Entire home/apt, Private room, Shared room)
+- `price`: listing price
+- `minimum_nights`: required minimum nights stay
+- `number_of_reviews`: total number of reviews
+- `last_review`: date of last review
+- `reviews per month`: average number of reviews per month
+- `calculated_host_listings_count`: total number of listings for this host
+- `availability_365`: number of days listing is available out of 365
+
+

@@ -1,0 +1,13 @@
+---
+title: "Building Blocks"
+---
+
+The first part of this course will get you up and running. These are the essentials that are necessary for basic analysis development in R. We'll cover some R fundamentals, including the command line and scripts, data types, variable assignments, and some useful functions; we'll talk about best practices for coding in general, including how to ensure readability, name variables and files, and keep things organized; and we'll introduce R Markdown as a framework for writing reproducible reports. 
+
+The topic is made up of the following components:
+
+* [Getting started and best practices](best_practices.html)
+* [Writing with data](writing_with_data.html)
+* [Git and Github](git.html)
+
+The code that I produced working examples in class is [here](https://github.com/p8105/building_blocks).

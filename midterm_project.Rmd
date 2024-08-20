@@ -1,0 +1,41 @@
+---
+title: "Midterm project"
+output:
+  html_document: 
+    toc: true
+    toc_float: true
+---
+
+### Independence
+
+In contrast to Homework assignments, you must work completely independently on this project -- do not discuss your approach, your code, or your results with any other students, and do not use the discussion board for questions related to this project. If questions do arise, please email the instructor and lead TA.
+
+### Context
+
+At this point, we've covered [Building Blocks](topic_building_blocks.html), [Data Wrangling I](topic_data_wrangling_i.html), [Visualization and EDA](topic_visualization_and_eda.html), and [Data Wrangling II](topic_data_wrangling_ii.html). These topics give a broad introduction into the commonly-used tools of data science, and are the main focus of this project.
+
+### Due date
+
+Due: October 21 at 11:59pm. 
+
+### Reproducibility
+
+The course's emphasis on workflow -- especially the use git and GitHub for reproducibility, R Projects to organize your work, R Markdown to write reproducible reports, relative paths to load data from local files, and reasonable naming structures for your files -- will be reflected in your Midterm Project submission. 
+
+To that end: 
+
+* create a **private** GitHub repo + local R Project; we suggest naming this repo / directory `p8105_mtp_YOURUNI` (e.g. `p8105_mtp_ajg2202` for Jeff), but that's not required
+    * non-private repos will be treated as inconsistent with the independent work requirement and as violations of the academic integrity policy
+* add the GitHub user "bst-p8105" as a collaborator on the project, which will give us (and only us) access to your repo
+* create a single .Rmd file named `p8105_mtp_YOURUNI.Rmd` that renders to `github_document`
+* submit a link to your repo via Courseworks
+
+We will assess adherence to the instructions above and whether we are able to knit your .Rmd in the grading of this project. Adherence to appropriate styling and clarity of code will be assessed. This project includes figures; the readability of your embedded plots (e.g. font sizes, axis labels, titles) will be assessed.
+
+
+## Deliverable
+
+For this project, you should write a report describing your work in a way that targets a reasonably sophisticated collaborator – not an expert data scientist, but an interested observer. You should comment on findings (for example, describe trends in tables and figures). Structure your report to include sections corresponding to the problems below. Write in a reproducible way (e.g. using inline R code where necessary) and include relevant code chunks and their output. Include only relevant information, and adhere to a strict-500 word limit (this excludes figures and tables, code chunks, inline code, YAML, and other non-text elements). 
+
+You can check your word count using `wordcountaddin::text_stats("p8105_mtp_YOURUNI.Rmd")`; installation instructions can be found on the [`wordcountaddin` package website](https://github.com/benmarwick/wordcountaddin). We'll use the "koRpus" count. **_NOTE:_** you do not need to include a word count in your report, and running `wordcountaddin::text_stats("p8105_mtp_YOURUNI.Rmd")` in your document can interfere with our automated reproducibility checks. 
+

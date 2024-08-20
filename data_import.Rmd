@@ -1,0 +1,311 @@
+---
+title: "Data Import"
+output:
+  html_document: 
+    toc: true
+    toc_float: true
+---
+
+Importing is the first step in wrangling.
+
+This is the first module in the [Data Wrangling I](topic_data_wrangling_i.html) topic.
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  fig.width = 6,
+  fig.asp = .6,
+  out.width = "90%"
+)
+```
+
+## Overview {.tabset .tabset-pills}
+
+### Learning Objectives
+
+Read data into R from a variety of sources and parse variable types.
+
+### Slide Deck
+
+<div class="vid_container">
+  <iframe 
+    src="https://speakerdeck.com/player/d59e5ea4d1674e6785ec9aea6620b7b2" 
+    allowfullscreen 
+    frameborder="0"
+    class="video">
+  </iframe>
+</div>
+
+<div style="margin-bottom:5px"> <strong> <a href="https://speakerdeck.com/jeffgoldsmith/p8105-data-import" title="Data Import" target="_blank">Data Import</a> </strong> from <strong><a href="https://speakerdeck.com/jeffgoldsmith" target="_blank">Jeff Goldsmith</a></strong>. </div><br>
+
+***
+
+### Video Lecture
+
+<div class="vid_container">
+  <iframe 
+    src="https://www.youtube.com/embed/71pMVzk_KEE"
+    frameborder="0" allowfullscreen class="video">
+  </iframe>
+</div>
+
+***
+
+## Example
+
+We're going to figure out how to import the datasets in [this zip file](./resources/data_import_examples.zip). First, create a GitHub repo + local R project for today's work (I'm calling mine `data_wrangling_i`). Move the datasets to your repo / directory (perhaps in a sub-directory called `data`), and start an R Markdown; I'm reusing this [template](resources/template.Rmd). We're also going to be making extensive use of the `tidyverse` package, so go ahead and load that in a "setup" code chunk. 
+
+```{r}
+library(tidyverse)
+```
+
+### Paths
+
+We've mentioned paths and your working directory in passing (when talking about [best practices](best_practices.html)). A firmer understanding is helpful when you start loading data into R, because to load data R will have to know where to find it. 
+
+There are two kinds of paths:
+
+* Absolute: a file or folder's "full address" on your computer
+* Relative: directions to a file or folder from your current working directory
+
+Absolute paths are often conceptually easier, because you don't really have to _think_ about them -- you're just giving the complete address, starting from the root directory. These work from any current working directory on the machine. However, absolute paths make your code extremely fragile: if you move your directory, or share your project with someone else, the **absolute** path to files will change and your code won't work. 
+
+An absolute path example is below:
+
+```
+"/Users/jeffgoldsmith/Dropbox/Work/Teaching/P8105/fall_2023/p8105.github.io/data/FAS_litters.csv"
+```
+
+Relative paths, meanwhile, navigate from your current working directory. Relative paths are portable, in that if you move your directory or share it with someone else, the **relative** path to files in the directory will stay the same and your code will work. For both of these reasons, relative paths are preferred in almost every setting. 
+
+(Hint: if you ever use `setwd()`, you're using absolute paths and [taking big risks](https://twitter.com/hadleywickham/status/940021008764846080)...)
+
+The code below finds my current working directory:
+
+```{r}
+getwd()
+```
+
+A relative path to the same file as the absolute path above is
+
+```
+"./data/FAS_litters.csv"
+```
+
+The table below, copied from [R Programming for Research](https://geanders.github.io/RProgrammingForResearch/entering-and-cleaning-data-1.html#file-and-directory-pathnames), gives useful shorthand notation for relative pathnames.
+
+```{r echo = FALSE}
+dirpath_shortcuts <- data.frame(abbr = c("`~`", "`.`", "`..`", "`../..`"),
+                                meaning = c("Home directory",
+                                            "Current working directory",
+                                            "One directory up from current working directory",
+                                            "Two directories up from current working directory"))
+knitr::kable(dirpath_shortcuts, col.names = c("Shorthand", "Meaning"))
+```
+
+Tabbed autocomplete in RStudio works with both absolute and relative paths. 
+
+One note: by default, R Markdown files treat whatever directory they're in as the starting point for relative paths. For now, putting your R Markdown file in the same directory as you .RProj file will save a lot of headaches -- the same path will work when you knit the document and when you write / edit code interactive in the console. For larger projects, you might want to have a separate directory with several R Markdown files. In that case using [`here::here()`](https://github.com/jennybc/here_here) to identify and navigate from the _project_ top-level directory is great, but you need a reasonable understanding of paths before jumping into that. You can also modify the behavior of R Markdown files (in Global Options) to evaluate code chunks in the project directory, which alleviates most of the issues. But honestly, at that point, just learn how `here::here()` works ... 
+
+One caveat: if you're going to both share code and use confidential data, you have to take extra steps to ensure data security (especially if that directory lives on GitHub). One option is to use the `.gitignore` file to ensure data aren't uploaded inadvertently. Alternatively, you can store data outside of your shared project directory. In both cases there are ways to make you paths "stable". 
+
+### Importing data tables
+
+Now that we have paths handled, we can start loading data. We're going to start with rectangular data tables (data in rows and columns, with data separated by a delimiter) saved in a plain text format. Of these, CSV (comma separated value) files are most common, and others are handled in basically the same way. To import a CSV, we'll use a function from `readr` (included in the tidyverse):
+
+```{r}
+litters_data = read_csv(file = "./data/FAS_litters.csv")
+```
+
+Great -- we've imported data! The first argument to `read_csv` is the path to the data, and the line above assigns the result of `read_csv` to `litters_data`. This function call also prints information about the column parsing. We'll talk more about both of these shortly.
+
+I (almost always) use `janitor::clean_names()` to clean up variable names after importing data. Doing so will take whatever the column names are and convert them to lower snake case.
+
+```{r}
+names(litters_data)
+litters_data = janitor::clean_names(litters_data)
+names(litters_data)
+```
+
+The `package::function` syntax lets you use a function from a package without loading the whole library. That's really helpful, because some packages have functions with the same name (e.g. `dplyr::filter` and `stats::filter`), and R has to choose which one you mean. In general, only load the packages you need to prevent this kind of confusion. You can even use the [`conflicted`](https://github.com/r-lib/conflicted) package if you want to force yourself into using good habits!
+
+**_Learning Assessment:_** Make sure you are able to load the `FAS_pups.csv` dataset. Use both absolute and relative paths. Quit R Studio and move the directory containing your project, data, and R Markdown document. Repeat the previous data import process; do both absolute and relative paths still work?
+
+<details>
+<summary> Solution </summary>
+
+For me, loading the data with absolute and relative paths might look like the following:
+
+```{r, eval = FALSE}
+pups_data = read_csv(file = "./data/FAS_pups.csv")
+pups_data = read_csv(file = "~/Desktop/data_wranging_i/data/FAS_litters.csv")
+```
+
+If I move the directory holding this example, the relatitve path works and the absolute path is broken.
+
+</details>
+
+### Looking at data
+
+The first thing to do after importing the data (unless `read_csv` gives warnings) is to look at it. If there are unexpected results during data import, you'll catch a lot of them here. In addition to printing the data (which is my first step), I often use `View` / `view`, `str`, `head`, and `tail`:
+
+```{r}
+litters_data
+tail(litters_data, 5)
+```
+
+Another tool that I use sometimes is `skimr::skim`, although for me it's more "neat" than useful.
+
+```{r}
+skimr::skim(litters_data)
+```
+
+I'm not going to show the output of the line below, because `View` / `view` don't work well inside of .Rmd files. Instead, call these functions from the console, and be sure to remove them from any code chunks in your .Rmd.
+
+```{r, eval = FALSE}
+view(litters_data)
+```
+
+
+### Arguments to `read_*`
+
+In the best case, the data are stored in the csv without any weirdness -- there are no blank lines or columns, the first row is the variable name, missing values are stored in sensible ways. When this isn't the case, arguments to `read_csv` are helpful. The ones I use most frequently are:
+
+* `col_names`: usually `TRUE`. If `FALSE`, column names are `X1`, `X1`, ... . You can also supply column names.
+* `na`: string vector containing character expressions for missing values. 
+* `skip`: number of rows to skip before reading data.
+
+For example, the call below will skip the first 50 lines of data and not assume the first row are variable names:
+
+```{r}
+litters_data = read_csv(file = "./data/FAS_litters.csv",
+  skip = 10, col_names = FALSE)
+head(litters_data)
+```
+
+These arguments generally work for other members of the `read_*` family of functions. 
+
+### Parsing columns
+
+I skipped the `col_types` argument because it's worth talking about in some detail. The `read_*` functions will attempt to guess the data type stored in each column; by default, these guesses are based on the first 1000 rows. The guesses are also usually pretty good. In some cases, though, you'll want to give explicit column specifications. This is done using the `cols` function, where you can give each column a type:
+
+```{r}
+litters_data = read_csv(file = "./data/FAS_litters.csv",
+  col_types = cols(
+    Group = col_character(),
+    `Litter Number` = col_character(),
+    `GD0 weight` = col_double(),
+    `GD18 weight` = col_double(),
+    `GD of Birth` = col_integer(),
+    `Pups born alive` = col_integer(),
+    `Pups dead @ birth` = col_integer(),
+    `Pups survive` = col_integer()
+  )
+)
+tail(litters_data)
+```
+
+Note that you don't have to specify the variable type for every column, and can only focus on ones that are difficult:
+
+```{r}
+litters_data = read_csv(file = "./data/FAS_litters.csv",
+  col_types = cols(
+    Group = col_factor()
+  )
+)
+head(litters_data)
+```
+
+
+**_Learning Assessment:_** Repeat the data import process above for the file `FAS_pups.csv`. Make sure the column names are reasonable, and take some quick looks at the dataset. What happens if your specifications for column parsing aren't reasonable (e.g. character instead of double, or vice versa)?
+
+<details>
+<summary> Solution </summary>
+
+After some tinkering, the code I'd use to import and view the pups dataset is below.
+
+```{r, eval = FALSE}
+pups_data = read_csv("./data/FAS_pups.csv", col_types = "ciiiii")
+skimr::skim(pups_data)
+```
+
+If I move the directory holding this example, the relatitve path works and the absolute path is broken.
+
+</details>
+
+### Other file formats
+
+Non-CSV plain text files (e.g. tab delimited files) can be handled using `read_delim()`. This is very similar to `read_csv`, but you have to specify a delimiter.
+
+CSV format is great, but you'll encounter a lot of Excel files too. Although you can export these to a CSV, don't -- use the `readxl` package instead! This is tidyverse-adjacent but you'll have to download and install it separately. The `read_excel` function in this package has many of the same arguments as `read_csv`, including `col_names`, `na`, `skip`, and `col_types`, and can be used in basically the same way. There is also a `sheet` option (useful when there are multiple sheets in the Excel file) and the `range` option (when you want to read in a specific data rectangle). Lastly, in RStudio you can use File > Import Dataset > From Excel for a GUI interface. The code below illustrates `read_excel`.
+
+```{r}
+library(readxl)
+mlb11_data = read_excel("data/mlb11.xlsx", n_max = 20)
+head(mlb11_data, 5)
+```
+
+The last tidyverse package for data import we'll note is `haven`, which is used to import into R data files from SAS, Stata, and SPSS. An example for reading data from SAS follows.
+
+```{r}
+library(haven)
+pulse_data = read_sas("./data/public_pulse_data.sas7bdat")
+head(pulse_data, 5)
+```
+
+You can read in data that isn't coming as a flat file (think data rectangle), but it's beyond our current scope. 
+
+
+### Comparison with Base R
+
+The functions in `readr` are relatively new, and can be used in place of base R's `read.csv`, `read.table`, and so on. The base R versions tend to be slower (very noticeably for large datasets), and the default options can make less sense for modern datasets. Meanwhile, the `readr` functions export tibbles, and keep characters as characters (instead of converting to factors ...).
+
+**_Learning Assessment:_** Import the `FAS_pups.csv` dataset using `read.csv`. Compare the class of this dataset to the one produced by `read_csv`. Try printing both in the console -- what happens? After cleaning up the names, try accessing the `Sex` variable using `S` (e.g., `pups_data$S`). What happens?
+
+<details>
+<summary> Solution </summary>
+
+The code below shows how I might load the dataset using different import functions, and how I might compare the results.
+
+```{r, eval = FALSE}
+pups_base = read.csv("./data/FAS_pups.csv")
+pups_readr = read_csv("./data/FAS_pups.csv")
+
+View(pups_base)
+View(pups_readr)
+
+pups_base
+pups_readr
+
+pups_base$S
+pups_readr$S
+```
+
+In short, `read_csv` produces tibbles which are very similar to the base R data frames produced by `read.csv`. However, tibbles have some features that can help prevent mistakes and unwanted behavior.
+</details>
+
+
+### Importing using File > Import
+
+You can open many data files using RStudio’s drop-down menus. To import an excel spreadsheet, for example, you can use File > Import Dataset > From Excel. This allows several import options, previews the data, and shows the code necessary for importing. Importing in this way will load the data into your current session, but you’ll have to copy the import code to your RMarkdown file to ensure reproducibility. This approach to importing data can be helpful when you’re getting started, but gaining proficiency with writing code directly will be helpful in the long term and is more consistent with the goals of the course.
+
+
+### Exporting data
+
+As a final point, you will sometimes need to export data after you have imported and cleaned it. The `write_*` functions in `readr` address this problem.
+
+
+## Other materials
+
+The content in this page draws heavily from several sources; each of the things below goes into more detail in one way or another.
+
+* If you haven't already, read up on a [project-oriented workflow](https://www.tidyverse.org/articles/2017/12/workflow-vs-script/) 
+* You can learn more about tibbles from [R for Data Science](http://r4ds.had.co.nz/tibbles.html) or the tidyverse [page](http://tibble.tidyverse.org/index.html)
+* R for Data Science has a chapter on [data import](http://r4ds.had.co.nz/data-import.html)
+* R Programming for Data Science gives more detail on data import in [base R](https://bookdown.org/rdpeng/rprogdatascience/getting-data-in-and-out-of-r.html) with some information about [readr](https://bookdown.org/rdpeng/rprogdatascience/using-the-readr-package.html)
+* R Programming for Research also discusses [entering data](https://geanders.github.io/RProgrammingForResearch/entering-and-cleaning-data-1.html); the section on pathnames and directories is nicely detailed
+* RStudio has recordings of webinars on [Getting data into R](https://www.rstudio.com/resources/webinars/getting-your-data-into-r/) and [What's new with readxl](https://www.rstudio.com/resources/webinars/whats-new-with-readxl/)
+* There are pages on the tidyverse website for [readr](https://readr.tidyverse.org), [readxl](https://readxl.tidyverse.org), and [haven](https://haven.tidyverse.org)
+* The [data import cheatsheet](https://rstudio.github.io/cheatsheets/data-import.pdf) is handy once you have a good handle on things
+
+The code that I produced working examples in lecture is [here](https://github.com/P8105/data_wrangling_i).

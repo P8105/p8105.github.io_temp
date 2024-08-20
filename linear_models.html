@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Linear models</title>
+
+<script src="site_libs/header-attrs-2.24/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" />
+<script defer src="https://use.fontawesome.com/releases/v5.0.3/js/all.js"></script>
+<script defer src="https://use.fontawesome.com/releases/v5.0.0/js/v4-shims.js"></script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-151578452-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-151578452-1');
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">P8105</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="schedule.html">Schedule</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Topics
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="topic_what_is_data_science.html">What is Data Science?</a>
+    </li>
+    <li>
+      <a href="topic_building_blocks.html">Building Blocks</a>
+    </li>
+    <li>
+      <a href="topic_data_wrangling_i.html">Data Wrangling I</a>
+    </li>
+    <li>
+      <a href="topic_visualization_and_eda.html">Visualization and EDA</a>
+    </li>
+    <li>
+      <a href="topic_data_wrangling_ii.html">Data Wrangling II</a>
+    </li>
+    <li>
+      <a href="topic_interactivity.html">Interactivity</a>
+    </li>
+    <li>
+      <a href="topic_iteration.html">Iteration</a>
+    </li>
+    <li>
+      <a href="topic_linear_models.html">Linear Models</a>
+    </li>
+    <li>
+      <a href="topic_other_material.html">Other Materials</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Datasets
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="dataset_airbnb.html">Airbnb</a>
+    </li>
+    <li>
+      <a href="dataset_brfss.html">BRFSS</a>
+    </li>
+    <li>
+      <a href="dataset_fivethirtyeight.html">FiveThirtyEight</a>
+    </li>
+    <li>
+      <a href="dataset_instacart.html">Instacart</a>
+    </li>
+    <li>
+      <a href="dataset_mr_trash_wheel.html">Mr. Trash Wheel</a>
+    </li>
+    <li>
+      <a href="dataset_noaa.html">NOAA</a>
+    </li>
+    <li>
+      <a href="dataset_restaurant_inspections.html">NYC Restaurant Inspections</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="homework_and_projects.html">Homework and Projects</a>
+</li>
+<li>
+  <a href="course_communication.html">Communication</a>
+</li>
+<li>
+  <a href="https://github.com/P8105/p8105.github.io">
+    <span class="fa fa-github"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Linear models</h1>
+
+</div>
+
+
+<p>Linear regression models are fundamental in statistics and data
+science. When seeking to understand how covariates are associated with
+outcomes, linear models are among the first, best options. Although
+other regression approaches are possible, the flexibility and
+interpretability and of linear models make them essential.</p>
+<p>This content assumes some familiarity with linear models, and focuses
+on the implementation of models in R rather than on the theory or
+interpretation of the models themselves.</p>
+<p>This is the first module in the <a
+href="topic_linear_models.html">Linear Models</a> topic.</p>
+<div id="overview" class="section level2 tabset tabset-pills">
+<h2 class="tabset tabset-pills">Overview</h2>
+<div id="learning-objectives" class="section level3">
+<h3>Learning Objectives</h3>
+<p>Review fundamentals of linear and generalized linear models, fit
+models in R, and tidy results for further analysis.</p>
+</div>
+<div id="slide-deck" class="section level3">
+<h3>Slide Deck</h3>
+<div class="vid_container">
+<p><iframe 
+    src="https://speakerdeck.com/player/3d7ef29c65ab4412a21c18ad2711dca2" 
+    allowfullscreen 
+    frameborder="0"
+    class="video"> </iframe></p>
+</div>
+<div style="margin-bottom:5px">
+<strong>
+<a href="https://speakerdeck.com/jeffgoldsmith/p8105-linear-models" title="Linear models" target="_blank">Linear
+Models</a> </strong> from
+<strong><a href="https://speakerdeck.com/jeffgoldsmith" target="_blank">Jeff
+Goldsmith</a></strong>.
+</div>
+<p><br></p>
+<hr />
+</div>
+<div id="video-lecture" class="section level3">
+<h3>Video Lecture</h3>
+<div class="vid_container">
+<p><iframe 
+    src="https://www.youtube.com/embed/nW796MKc2AE"
+    frameborder="0" allowfullscreen class="video"> </iframe></p>
+</div>
+<hr />
+</div>
+</div>
+<div id="example" class="section level2">
+<h2>Example</h2>
+<p>I’ll write code for today’s content in a new R Markdown document
+called <code>linear_models.Rmd</code> in a <code>linear_models</code>
+directory / repo. The code chunk below loads some usual packages and
+sets a seed for reproducibility.</p>
+<pre class="r"><code>library(tidyverse)
+library(p8105.datasets)
+
+set.seed(1)</code></pre>
+<div id="model-fitting" class="section level3">
+<h3>Model fitting</h3>
+<p>The code below loads and cleans the <a
+href="dataset_airbnb.html">Airbnb</a> data, which we’ll use as a primary
+example for fitting linear models.</p>
+<pre class="r"><code>data(&quot;nyc_airbnb&quot;)
+
+nyc_airbnb = 
+  nyc_airbnb |&gt; 
+  mutate(stars = review_scores_location / 2) |&gt; 
+  rename(
+    borough = neighbourhood_group,
+    neighborhood = neighbourhood) |&gt; 
+  filter(borough != &quot;Staten Island&quot;) |&gt; 
+  select(price, stars, borough, neighborhood, room_type)</code></pre>
+<p>An good place to start is to consider price as an outcome that may
+depend on rating and borough. We fit that initial model in the following
+code.</p>
+<pre class="r"><code>fit = lm(price ~ stars + borough, data = nyc_airbnb)</code></pre>
+<p>The <code>lm</code> function begins with the formula specification –
+outcome on the left of the <code>~</code> and predictors separated by
+<code>+</code> on the right. As we’ll see shortly, interactions between
+variables can be specified using <code>*</code>. You can also specify an
+intercept-only model (<code>outcome ~ 1</code>), a model with no
+intercept (<code>outcome ~ 0 + ...</code>), and a model using all
+available predictors (<code>outcome ~ .</code>).</p>
+<p>R will treat categorical (factor) covariates appropriately and
+predictably: indicator variables are created for each non-reference
+category and included in your model, and the factor level is treated as
+the reference. As with <code>ggplot</code>, being careful with factors
+is therefore critical!</p>
+<pre class="r"><code>nyc_airbnb = 
+  nyc_airbnb |&gt; 
+  mutate(
+    borough = fct_infreq(borough),
+    room_type = fct_infreq(room_type))
+
+fit = lm(price ~ stars + borough, data = nyc_airbnb)</code></pre>
+<p>It’s important to note that changing reference categories won’t
+change “fit” or statistical sigificance, but can affect ease of
+interpretation.</p>
+</div>
+<div id="tidying-output" class="section level3">
+<h3>Tidying output</h3>
+<p>The output of a <code>lm</code> is an object of class <code>lm</code>
+– a very specific list that isn’t a dataframe but that can be
+manipulated using other functions. Some common functions for interacting
+with <code>lm</code> fits are below, although we omit the output.</p>
+<pre class="r"><code>summary(fit)
+summary(fit)$coef
+coef(fit)
+fitted.values(fit)</code></pre>
+<p>The reason that we omit the output is that it’s a huge pain to deal
+with. <code>summary</code> produces an object of class
+<code>summary.lm</code>, which is also a list – that’s how we extracted
+the coefficients using <code>summary(fit)$coef</code>. <code>coef</code>
+produces a vector of coefficient values, and <code>fitted.values</code>
+is a vector of fitted values. None of this is tidy.</p>
+<p>It’s helpful to know about the products of <code>lm</code> and to
+know there are a range of ways to interact with models in base R. That
+said, for the most part it’s easiest to use tidy tools.</p>
+<p>The <code>broom</code> package has functions for obtaining a quick
+summary of the model and for cleaning up the coefficient table.</p>
+<pre class="r"><code>fit |&gt; 
+  broom::glance()</code></pre>
+<pre><code>## # A tibble: 1 × 12
+##   r.squared adj.r.squared sigma statistic   p.value    df   logLik    AIC    BIC
+##       &lt;dbl&gt;         &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;
+## 1    0.0342        0.0341  182.      271. 6.73e-229     4 -202113. 4.04e5 4.04e5
+## # ℹ 3 more variables: deviance &lt;dbl&gt;, df.residual &lt;int&gt;, nobs &lt;int&gt;</code></pre>
+<pre class="r"><code>fit |&gt; 
+  broom::tidy()</code></pre>
+<pre><code>## # A tibble: 5 × 5
+##   term            estimate std.error statistic   p.value
+##   &lt;chr&gt;              &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
+## 1 (Intercept)         19.8     12.2       1.63 1.04e-  1
+## 2 stars               32.0      2.53     12.7  1.27e- 36
+## 3 boroughBrooklyn    -49.8      2.23    -22.3  6.32e-109
+## 4 boroughQueens      -77.0      3.73    -20.7  2.58e- 94
+## 5 boroughBronx       -90.3      8.57    -10.5  6.64e- 26</code></pre>
+<p>Both of these functions produce data frames, which makes it
+straightforward to include the results in subsequent steps.</p>
+<pre class="r"><code>fit |&gt; 
+  broom::tidy() |&gt; 
+  select(term, estimate, p.value) |&gt; 
+  mutate(term = str_replace(term, &quot;^borough&quot;, &quot;Borough: &quot;)) |&gt; 
+  knitr::kable(digits = 3)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">estimate</th>
+<th align="right">p.value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">19.839</td>
+<td align="right">0.104</td>
+</tr>
+<tr class="even">
+<td align="left">stars</td>
+<td align="right">31.990</td>
+<td align="right">0.000</td>
+</tr>
+<tr class="odd">
+<td align="left">Borough: Brooklyn</td>
+<td align="right">-49.754</td>
+<td align="right">0.000</td>
+</tr>
+<tr class="even">
+<td align="left">Borough: Queens</td>
+<td align="right">-77.048</td>
+<td align="right">0.000</td>
+</tr>
+<tr class="odd">
+<td align="left">Borough: Bronx</td>
+<td align="right">-90.254</td>
+<td align="right">0.000</td>
+</tr>
+</tbody>
+</table>
+<p>As an aside, <code>broom::tidy</code> works with lots of things,
+including most of the functions for model fitting you’re likely to run
+into (survival, mixed models, additive models, …).</p>
+</div>
+<div id="diagnostics" class="section level3">
+<h3>Diagnostics</h3>
+<p>Regression diagnostics can identify issues in model fit, especially
+related to certain failures in model assumptions. Examining residuals
+and fitted values are therefore an imporant component of any modeling
+exercise.</p>
+<p>The <code>modelr</code> package can be used to add residuals and
+fitted values to a dataframe.</p>
+<pre class="r"><code>modelr::add_residuals(nyc_airbnb, fit)</code></pre>
+<pre><code>## # A tibble: 40,492 × 6
+##    price stars borough neighborhood room_type        resid
+##    &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt;   &lt;chr&gt;        &lt;fct&gt;            &lt;dbl&gt;
+##  1    99   5   Bronx   City Island  Private room      9.47
+##  2   200  NA   Bronx   City Island  Private room     NA   
+##  3   300  NA   Bronx   City Island  Entire home/apt  NA   
+##  4   125   5   Bronx   City Island  Entire home/apt  35.5 
+##  5    69   5   Bronx   City Island  Private room    -20.5 
+##  6   125   5   Bronx   City Island  Entire home/apt  35.5 
+##  7    85   5   Bronx   City Island  Entire home/apt  -4.53
+##  8    39   4.5 Bronx   Allerton     Private room    -34.5 
+##  9    95   5   Bronx   Allerton     Entire home/apt   5.47
+## 10   125   4.5 Bronx   Allerton     Entire home/apt  51.5 
+## # ℹ 40,482 more rows</code></pre>
+<pre class="r"><code>modelr::add_predictions(nyc_airbnb, fit)</code></pre>
+<pre><code>## # A tibble: 40,492 × 6
+##    price stars borough neighborhood room_type        pred
+##    &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt;   &lt;chr&gt;        &lt;fct&gt;           &lt;dbl&gt;
+##  1    99   5   Bronx   City Island  Private room     89.5
+##  2   200  NA   Bronx   City Island  Private room     NA  
+##  3   300  NA   Bronx   City Island  Entire home/apt  NA  
+##  4   125   5   Bronx   City Island  Entire home/apt  89.5
+##  5    69   5   Bronx   City Island  Private room     89.5
+##  6   125   5   Bronx   City Island  Entire home/apt  89.5
+##  7    85   5   Bronx   City Island  Entire home/apt  89.5
+##  8    39   4.5 Bronx   Allerton     Private room     73.5
+##  9    95   5   Bronx   Allerton     Entire home/apt  89.5
+## 10   125   4.5 Bronx   Allerton     Entire home/apt  73.5
+## # ℹ 40,482 more rows</code></pre>
+<p>Like many things in the tidyverse, the first argument is a dataframe.
+That makes it easy to included steps adding residuals or predictions in
+pipeline of commands to conduct inspections and perform diagnostics.</p>
+<pre class="r"><code>nyc_airbnb |&gt; 
+  modelr::add_residuals(fit) |&gt; 
+  ggplot(aes(x = borough, y = resid)) + geom_violin()</code></pre>
+<p><img src="linear_models_files/figure-html/unnamed-chunk-10-1.png" width="90%" /></p>
+<pre class="r"><code>nyc_airbnb |&gt; 
+  modelr::add_residuals(fit) |&gt; 
+  ggplot(aes(x = stars, y = resid)) + geom_point()</code></pre>
+<p><img src="linear_models_files/figure-html/unnamed-chunk-10-2.png" width="90%" /></p>
+<p>This example has some obvious issues, most notably the presence of
+extremely large outliers in price and a generally skewed residual
+distribution. There are a few things we might try to do here – including
+creating a formal rule for the exclusion of outliers, transforming the
+price variable (e.g. using a log transformation), or fitting a model
+that is robust to outliers. Dealing with these issues isn’t really the
+purpose of this class, though, so we’ll note the issues and move on;
+shortly we’ll look at using the <a
+href="bootstrapping.html">bootstrap</a> for inference in cases like
+this, where standard approaches to inference may fail.</p>
+<p>(For what it’s worth, I’d probably use a combination of median
+regression, which is less sensitive to outliers than OLS, and maybe
+bootstrapping for inference. If that’s not feasible, I’d omit rentals
+with price over $1000 (&lt; 0.5% of the sample) from the primary
+analysis and examine these separately. I usually avoid transforming the
+outcome, because the results model is difficult to interpret.)</p>
+</div>
+<div id="hypothesis-testing" class="section level3">
+<h3>Hypothesis testing</h3>
+<p>We’ll comment briefly on hypothesis testing. Model summaries include
+results of t-tests for single coefficients, and are the standard way of
+assessing statistical significance.</p>
+<p>Testing multiple coefficients is somewhat more complicated. A useful
+approach is to use nested models, meaning that the terms in a simple
+“null” model are a subset of the terms in a more complex “alternative”
+model. The are formal tests for comparing the null and alternative
+models, even when several coefficients are added in the alternative
+model. Tests of this kind are required to assess the significance of a
+categorical predictor with more than two levels, as in the example
+below.</p>
+<pre class="r"><code>fit_null = lm(price ~ stars + borough, data = nyc_airbnb)
+fit_alt = lm(price ~ stars + borough + room_type, data = nyc_airbnb)</code></pre>
+<p>The test of interest is implemented in the <code>anova()</code>
+function which, of course, can be summarized using
+<code>broom::tidy()</code>.</p>
+<pre class="r"><code>anova(fit_null, fit_alt) |&gt; 
+  broom::tidy()</code></pre>
+<pre><code>## # A tibble: 2 × 7
+##   term                        df.residual    rss    df   sumsq statistic p.value
+##   &lt;chr&gt;                             &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
+## 1 price ~ stars + borough           30525 1.01e9    NA NA            NA       NA
+## 2 price ~ stars + borough + …       30523 9.21e8     2  8.42e7     1394.       0</code></pre>
+<p>Note that this works for <em>nested</em> models only. Comparing
+non-nested models is a common problem that requires other methods; we’ll
+see one approach in <a href="cross_validation.html">cross
+validation</a>.</p>
+</div>
+<div id="nesting-data" class="section level3">
+<h3>Nesting data</h3>
+<p>We’ll now turn our attention to fitting models to datasets nested
+within variables – meaning, essentially, that we’ll use
+<code>nest()</code> to create a list column containing datasets and fit
+separate models to each. This is very different from fitting <em>nested
+models</em>, even though the terminology is similar.</p>
+<p>In the airbnb data, we might think that star ratings and room type
+affects price differently in each borough. One way to allow this kind of
+effect modification is through interaction terms:</p>
+<pre class="r"><code>nyc_airbnb |&gt; 
+  lm(price ~ stars * borough + room_type * borough, data = _) |&gt; 
+  broom::tidy() |&gt; 
+  knitr::kable(digits = 3)</code></pre>
+<table>
+<colgroup>
+<col width="50%" />
+<col width="12%" />
+<col width="13%" />
+<col width="13%" />
+<col width="10%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">estimate</th>
+<th align="right">std.error</th>
+<th align="right">statistic</th>
+<th align="right">p.value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">95.694</td>
+<td align="right">19.184</td>
+<td align="right">4.988</td>
+<td align="right">0.000</td>
+</tr>
+<tr class="even">
+<td align="left">stars</td>
+<td align="right">27.110</td>
+<td align="right">3.965</td>
+<td align="right">6.838</td>
+<td align="right">0.000</td>
+</tr>
+<tr class="odd">
+<td align="left">boroughBrooklyn</td>
+<td align="right">-26.066</td>
+<td align="right">25.080</td>
+<td align="right">-1.039</td>
+<td align="right">0.299</td>
+</tr>
+<tr class="even">
+<td align="left">boroughQueens</td>
+<td align="right">-4.118</td>
+<td align="right">40.674</td>
+<td align="right">-0.101</td>
+<td align="right">0.919</td>
+</tr>
+<tr class="odd">
+<td align="left">boroughBronx</td>
+<td align="right">-5.627</td>
+<td align="right">77.808</td>
+<td align="right">-0.072</td>
+<td align="right">0.942</td>
+</tr>
+<tr class="even">
+<td align="left">room_typePrivate room</td>
+<td align="right">-124.188</td>
+<td align="right">2.996</td>
+<td align="right">-41.457</td>
+<td align="right">0.000</td>
+</tr>
+<tr class="odd">
+<td align="left">room_typeShared room</td>
+<td align="right">-153.635</td>
+<td align="right">8.692</td>
+<td align="right">-17.676</td>
+<td align="right">0.000</td>
+</tr>
+<tr class="even">
+<td align="left">stars:boroughBrooklyn</td>
+<td align="right">-6.139</td>
+<td align="right">5.237</td>
+<td align="right">-1.172</td>
+<td align="right">0.241</td>
+</tr>
+<tr class="odd">
+<td align="left">stars:boroughQueens</td>
+<td align="right">-17.455</td>
+<td align="right">8.539</td>
+<td align="right">-2.044</td>
+<td align="right">0.041</td>
+</tr>
+<tr class="even">
+<td align="left">stars:boroughBronx</td>
+<td align="right">-22.664</td>
+<td align="right">17.099</td>
+<td align="right">-1.325</td>
+<td align="right">0.185</td>
+</tr>
+<tr class="odd">
+<td align="left">boroughBrooklyn:room_typePrivate room</td>
+<td align="right">31.965</td>
+<td align="right">4.328</td>
+<td align="right">7.386</td>
+<td align="right">0.000</td>
+</tr>
+<tr class="even">
+<td align="left">boroughQueens:room_typePrivate room</td>
+<td align="right">54.933</td>
+<td align="right">7.459</td>
+<td align="right">7.365</td>
+<td align="right">0.000</td>
+</tr>
+<tr class="odd">
+<td align="left">boroughBronx:room_typePrivate room</td>
+<td align="right">71.273</td>
+<td align="right">18.002</td>
+<td align="right">3.959</td>
+<td align="right">0.000</td>
+</tr>
+<tr class="even">
+<td align="left">boroughBrooklyn:room_typeShared room</td>
+<td align="right">47.797</td>
+<td align="right">13.895</td>
+<td align="right">3.440</td>
+<td align="right">0.001</td>
+</tr>
+<tr class="odd">
+<td align="left">boroughQueens:room_typeShared room</td>
+<td align="right">58.662</td>
+<td align="right">17.897</td>
+<td align="right">3.278</td>
+<td align="right">0.001</td>
+</tr>
+<tr class="even">
+<td align="left">boroughBronx:room_typeShared room</td>
+<td align="right">83.089</td>
+<td align="right">42.451</td>
+<td align="right">1.957</td>
+<td align="right">0.050</td>
+</tr>
+</tbody>
+</table>
+<p>This works, but the output takes time to think through – the expected
+change in price comparing an entire apartment to a private room in
+Queens, for example, involves the main effect of room type and the
+Queens / private room interaction.</p>
+<p>Alternatively, we can nest within boroughs and fit borough-specific
+models associating price with rating and room type:</p>
+<pre class="r"><code>nest_lm_res =
+  nyc_airbnb |&gt; 
+  nest(data = -borough) |&gt; 
+  mutate(
+    models = map(data, \(df) lm(price ~ stars + room_type, data = df)),
+    results = map(models, broom::tidy)) |&gt; 
+  select(-data, -models) |&gt; 
+  unnest(results)</code></pre>
+<p>The results of this approach are given in the table below.</p>
+<pre class="r"><code>nest_lm_res |&gt; 
+  select(borough, term, estimate) |&gt; 
+  mutate(term = fct_inorder(term)) |&gt; 
+  pivot_wider(
+    names_from = term, values_from = estimate) |&gt; 
+  knitr::kable(digits = 3)</code></pre>
+<table>
+<colgroup>
+<col width="13%" />
+<col width="16%" />
+<col width="9%" />
+<col width="30%" />
+<col width="29%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">borough</th>
+<th align="right">(Intercept)</th>
+<th align="right">stars</th>
+<th align="right">room_typePrivate room</th>
+<th align="right">room_typeShared room</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Bronx</td>
+<td align="right">90.067</td>
+<td align="right">4.446</td>
+<td align="right">-52.915</td>
+<td align="right">-70.547</td>
+</tr>
+<tr class="even">
+<td align="left">Queens</td>
+<td align="right">91.575</td>
+<td align="right">9.654</td>
+<td align="right">-69.255</td>
+<td align="right">-94.973</td>
+</tr>
+<tr class="odd">
+<td align="left">Brooklyn</td>
+<td align="right">69.627</td>
+<td align="right">20.971</td>
+<td align="right">-92.223</td>
+<td align="right">-105.839</td>
+</tr>
+<tr class="even">
+<td align="left">Manhattan</td>
+<td align="right">95.694</td>
+<td align="right">27.110</td>
+<td align="right">-124.188</td>
+<td align="right">-153.635</td>
+</tr>
+</tbody>
+</table>
+<p>The estimates here are the same as those in the model containing
+interactions, but are easier to extract from the output.</p>
+<p>Fitting models to nested datasets is a way of performing stratified
+analyses. These have a tradeoff: stratified models make it easy to
+interpret covariate effects in each stratum, but don’t provide a
+mechanism for assessing the significance of differences across
+strata.</p>
+<p>An even more extreme example is the assessment of neighborhood
+effects in Manhattan. The code chunk below fits neighborhood-specific
+models:</p>
+<pre class="r"><code>manhattan_airbnb =
+  nyc_airbnb |&gt; 
+  filter(borough == &quot;Manhattan&quot;)
+
+manhattan_nest_lm_res =
+  manhattan_airbnb |&gt; 
+  nest(data = -neighborhood) |&gt; 
+  mutate(
+    models = map(data, \(df) lm(price ~ stars + room_type, data = df)),
+    results = map(models, broom::tidy)) |&gt; 
+  select(-data, -models) |&gt; 
+  unnest(results)</code></pre>
+<p>And the chunk below shows neighborhood-specific estimates for the
+coefficients related to room type.</p>
+<pre class="r"><code>manhattan_nest_lm_res |&gt; 
+  filter(str_detect(term, &quot;room_type&quot;)) |&gt; 
+  ggplot(aes(x = neighborhood, y = estimate)) + 
+  geom_point() + 
+  facet_wrap(~term) + 
+  theme(axis.text.x = element_text(angle = 80, hjust = 1))</code></pre>
+<p><img src="linear_models_files/figure-html/unnamed-chunk-17-1.png" width="90%" /></p>
+<p>There is, generally speaking, a reduction in room price for a private
+room or a shared room compared to an entire apartment, but this varies
+quite a bit across neighborhoods.</p>
+<p>With this many factor levels, it really isn’t a good idea to fit
+models with main effects or interactions for each. Instead, you’d be
+best-off using a mixed model, with random intercepts and slopes for each
+neighborhood. Although it’s well beyond the scope of this class, code to
+fit a mixed model with neighborhood-level random intercepts and random
+slopes for room type is below. And, of course, we can tidy the results
+using a mixed-model spinoff of the <code>broom</code> package.</p>
+<pre class="r"><code>manhattan_airbnb |&gt; 
+  lme4::lmer(price ~ stars + room_type + (1 + room_type | neighborhood), data = _) |&gt; 
+  broom.mixed::tidy()</code></pre>
+<pre><code>## boundary (singular) fit: see help(&#39;isSingular&#39;)</code></pre>
+<pre><code>## # A tibble: 11 × 6
+##    effect   group        term                       estimate std.error statistic
+##    &lt;chr&gt;    &lt;chr&gt;        &lt;chr&gt;                         &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
+##  1 fixed    &lt;NA&gt;         (Intercept)                 250.        26.6      9.41 
+##  2 fixed    &lt;NA&gt;         stars                        -3.16       5.00    -0.631
+##  3 fixed    &lt;NA&gt;         room_typePrivate room      -124.         7.80   -15.9  
+##  4 fixed    &lt;NA&gt;         room_typeShared room       -157.        12.9    -12.2  
+##  5 ran_pars neighborhood sd__(Intercept)              59.3       NA       NA    
+##  6 ran_pars neighborhood cor__(Intercept).room_typ…   -0.987     NA       NA    
+##  7 ran_pars neighborhood cor__(Intercept).room_typ…   -1.00      NA       NA    
+##  8 ran_pars neighborhood sd__room_typePrivate room    36.7       NA       NA    
+##  9 ran_pars neighborhood cor__room_typePrivate roo…    0.992     NA       NA    
+## 10 ran_pars neighborhood sd__room_typeShared room     43.6       NA       NA    
+## 11 ran_pars Residual     sd__Observation             198.        NA       NA</code></pre>
+<p>Mixed models are pretty great!</p>
+</div>
+<div id="binary-outcomes" class="section level3">
+<h3>Binary outcomes</h3>
+<p>Linear models are appropriate for outcomes that follow a continuous
+distribution, but binary outcomes are common. In these cases, logistic
+regression is a useful analytic framework.</p>
+<p>The <em>Washington Post</em> has gathered data on homicides in 50
+large U.S. cities and made the data available through a <a
+href="https://github.com/washingtonpost/data-homicides">GitHub
+repository</a>; the final CSV is <a
+href="data/homicide-data.csv">here</a>. You can read their accompanying
+article <a
+href="https://www.washingtonpost.com/graphics/2018/investigations/where-murders-go-unsolved/">here</a>.
+We’ll use data on unresolved murders in Baltimore, MD to illustrate
+logistic regression in R. The code below imports, cleans, and generally
+wrangles the data for analysis.</p>
+<pre class="r"><code>baltimore_df = 
+  read_csv(&quot;data/homicide-data.csv&quot;) |&gt; 
+  filter(city == &quot;Baltimore&quot;) |&gt; 
+  mutate(
+    resolved = as.numeric(disposition == &quot;Closed by arrest&quot;),
+    victim_age = as.numeric(victim_age),
+    victim_race = fct_relevel(victim_race, &quot;White&quot;)) |&gt; 
+  select(resolved, victim_age, victim_race, victim_sex)</code></pre>
+<pre><code>## Rows: 52179 Columns: 12
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## chr (9): uid, victim_last, victim_first, victim_race, victim_age, victim_sex...
+## dbl (3): reported_date, lat, lon
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<p>Using these data, we can fit a logistic regression for the binary
+“resolved” outcome and victim demographics as predictors. This uses the
+<code>glm</code> function with the family specified to account for the
+non-Gaussian outcome distribution.</p>
+<pre class="r"><code>fit_logistic = 
+  baltimore_df |&gt; 
+  glm(resolved ~ victim_age + victim_race + victim_sex, data = _, family = binomial()) </code></pre>
+<p>Many of the same tools we used to work with <code>lm</code> fits can
+be used for <code>glm</code> fits. The table below summaries the
+coefficients from the model fit; because logistic model estimates are
+log odds ratios, we include a step to compute odds ratios as well.</p>
+<pre class="r"><code>fit_logistic |&gt; 
+  broom::tidy() |&gt; 
+  mutate(OR = exp(estimate)) |&gt;
+  select(term, log_OR = estimate, OR, p.value) |&gt; 
+  knitr::kable(digits = 3)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">log_OR</th>
+<th align="right">OR</th>
+<th align="right">p.value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">1.190</td>
+<td align="right">3.287</td>
+<td align="right">0.000</td>
+</tr>
+<tr class="even">
+<td align="left">victim_age</td>
+<td align="right">-0.007</td>
+<td align="right">0.993</td>
+<td align="right">0.027</td>
+</tr>
+<tr class="odd">
+<td align="left">victim_raceAsian</td>
+<td align="right">0.296</td>
+<td align="right">1.345</td>
+<td align="right">0.653</td>
+</tr>
+<tr class="even">
+<td align="left">victim_raceBlack</td>
+<td align="right">-0.842</td>
+<td align="right">0.431</td>
+<td align="right">0.000</td>
+</tr>
+<tr class="odd">
+<td align="left">victim_raceHispanic</td>
+<td align="right">-0.265</td>
+<td align="right">0.767</td>
+<td align="right">0.402</td>
+</tr>
+<tr class="even">
+<td align="left">victim_raceOther</td>
+<td align="right">-0.768</td>
+<td align="right">0.464</td>
+<td align="right">0.385</td>
+</tr>
+<tr class="odd">
+<td align="left">victim_sexMale</td>
+<td align="right">-0.880</td>
+<td align="right">0.415</td>
+<td align="right">0.000</td>
+</tr>
+</tbody>
+</table>
+<p>Homicides in which the victim is Black are substantially less likely
+to be resolved that those in which the victim is white; for other races
+the effects are not significant, possible due to small sample sizes.
+Homicides in which the victim is male are significantly less like to be
+resolved than those in which the victim is female. The effect of age is
+statistically significant, but careful data inspections should be
+conducted before interpreting too deeply.</p>
+<p>We can also compute fitted values; similarly to the estimates in the
+model summary, these are expressed as log odds and can be transformed to
+produce probabilities for each subject.</p>
+<pre class="r"><code>baltimore_df |&gt; 
+  modelr::add_predictions(fit_logistic) |&gt; 
+  mutate(fitted_prob = boot::inv.logit(pred))</code></pre>
+<pre><code>## # A tibble: 2,827 × 6
+##    resolved victim_age victim_race victim_sex    pred fitted_prob
+##       &lt;dbl&gt;      &lt;dbl&gt; &lt;fct&gt;       &lt;chr&gt;        &lt;dbl&gt;       &lt;dbl&gt;
+##  1        0         17 Black       Male       -0.654        0.342
+##  2        0         26 Black       Male       -0.720        0.327
+##  3        0         21 Black       Male       -0.683        0.335
+##  4        1         61 White       Male       -0.131        0.467
+##  5        1         46 Black       Male       -0.864        0.296
+##  6        1         27 Black       Male       -0.727        0.326
+##  7        1         21 Black       Male       -0.683        0.335
+##  8        1         16 Black       Male       -0.647        0.344
+##  9        1         21 Black       Male       -0.683        0.335
+## 10        1         44 Black       Female      0.0297       0.507
+## # ℹ 2,817 more rows</code></pre>
+</div>
+</div>
+<div id="other-materials" class="section level2">
+<h2>Other materials</h2>
+<ul>
+<li>This page touches on ideas that arise in several chapters on
+modeling in R for Data Science. These tend to assume that this is your
+first exposure to linear models but good reading:
+<ul>
+<li><a href="https://r4ds.had.co.nz/model-intro.html">Intro to
+modeling</a></li>
+<li><a href="https://r4ds.had.co.nz/model-basics.html">Basics</a></li>
+<li><a href="https://r4ds.had.co.nz/many-models.html">Many
+models</a></li>
+</ul></li>
+<li>The <code>modelr</code> package also has a <a
+href="https://modelr.tidyverse.org">website</a></li>
+</ul>
+<p>The code that I produced working examples in lecture is <a
+href="https://github.com/P8105/linear_models">here</a>.</p>
+</div>
+
+<br><br>
+<footer>
+  <img src="images/p8105_stickers.png" alt="stickers" style="width:30%">
+  <br>
+  <p class="copyright text-muted" align="center">Copyright &copy; 2019 Jeff Goldsmith</p>
+</footer>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

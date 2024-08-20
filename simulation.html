@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Simulation</title>
+
+<script src="site_libs/header-attrs-2.24/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" />
+<script defer src="https://use.fontawesome.com/releases/v5.0.3/js/all.js"></script>
+<script defer src="https://use.fontawesome.com/releases/v5.0.0/js/v4-shims.js"></script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-151578452-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-151578452-1');
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">P8105</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="schedule.html">Schedule</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Topics
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="topic_what_is_data_science.html">What is Data Science?</a>
+    </li>
+    <li>
+      <a href="topic_building_blocks.html">Building Blocks</a>
+    </li>
+    <li>
+      <a href="topic_data_wrangling_i.html">Data Wrangling I</a>
+    </li>
+    <li>
+      <a href="topic_visualization_and_eda.html">Visualization and EDA</a>
+    </li>
+    <li>
+      <a href="topic_data_wrangling_ii.html">Data Wrangling II</a>
+    </li>
+    <li>
+      <a href="topic_interactivity.html">Interactivity</a>
+    </li>
+    <li>
+      <a href="topic_iteration.html">Iteration</a>
+    </li>
+    <li>
+      <a href="topic_linear_models.html">Linear Models</a>
+    </li>
+    <li>
+      <a href="topic_other_material.html">Other Materials</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Datasets
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="dataset_airbnb.html">Airbnb</a>
+    </li>
+    <li>
+      <a href="dataset_brfss.html">BRFSS</a>
+    </li>
+    <li>
+      <a href="dataset_fivethirtyeight.html">FiveThirtyEight</a>
+    </li>
+    <li>
+      <a href="dataset_instacart.html">Instacart</a>
+    </li>
+    <li>
+      <a href="dataset_mr_trash_wheel.html">Mr. Trash Wheel</a>
+    </li>
+    <li>
+      <a href="dataset_noaa.html">NOAA</a>
+    </li>
+    <li>
+      <a href="dataset_restaurant_inspections.html">NYC Restaurant Inspections</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="homework_and_projects.html">Homework and Projects</a>
+</li>
+<li>
+  <a href="course_communication.html">Communication</a>
+</li>
+<li>
+  <a href="https://github.com/P8105/p8105.github.io">
+    <span class="fa fa-github"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Simulation</h1>
+
+</div>
+
+
+<p>We’ve noted that functions are helpful when you repeat code more than
+twice; we’ve also noted that a lot of statistical methods involve doing
+the same thing a large number of times. Simulation is a common
+statistical approach that takes advantage of the ability to iterate many
+times using computers.</p>
+<p>This is the third module in the <a
+href="topic_iteration.html">Iteration</a> topic.</p>
+<div id="overview" class="section level2 tabset tabset-pills">
+<h2 class="tabset tabset-pills">Overview</h2>
+<div id="learning-objectives" class="section level3">
+<h3>Learning Objectives</h3>
+<p>Use iteration methods to simulate data, and explore statistical
+properties of common estimation methods under repeated sampling using
+simulations.</p>
+</div>
+<div id="slide-deck" class="section level3">
+<h3>Slide Deck</h3>
+<div class="vid_container">
+<p><iframe 
+    src="https://speakerdeck.com/player/285289b17d194a4282d53f1800d37199" 
+    allowfullscreen 
+    frameborder="0"
+    class="video"> </iframe></p>
+</div>
+<div style="margin-bottom:5px">
+<strong>
+<a href="https://speakerdeck.com/jeffgoldsmith/p8105-simulation" title="Simulation and Bootstrapping" target="_blank">Simulation</a>
+</strong> from
+<strong><a href="https://speakerdeck.com/jeffgoldsmith" target="_blank">Jeff
+Goldsmith</a></strong>.
+</div>
+<p><br></p>
+<hr />
+</div>
+<div id="video-lecture" class="section level3">
+<h3>Video Lecture</h3>
+<div class="vid_container">
+<p><iframe 
+    src="https://www.youtube.com/embed/CFOjyOIST9w"
+    frameborder="0" allowfullscreen class="video"> </iframe></p>
+</div>
+<hr />
+</div>
+</div>
+<div id="example" class="section level2">
+<h2>Example</h2>
+<p>I’ll write code for today’s content in a new R Markdown document
+called <code>simulation.Rmd</code> in the <code>iteration</code>
+directory / repo. The code chunk below loads the usual packages and sets
+a seed for reproducibility.</p>
+<pre class="r"><code>library(tidyverse)
+
+set.seed(1)</code></pre>
+<div id="simulation-mean-and-sd-for-one-n" class="section level3">
+<h3>Simulation: Mean and SD for one <span
+class="math inline">\(n\)</span></h3>
+<p>In <a href="writing_functions.html">writing functions</a> we wrote a
+short function to simulate data from a normal distribution, and return
+estimates of the mean and standard deviation. Specifically, we generate
+data from <span class="math display">\[ x_i \sim N[\mu, \sigma]
+\]</span></p>
+<p>for subjects <span class="math inline">\(1 \leq i \leq n\)</span> and
+return estimates</p>
+<p><span class="math inline">\(\hat{\mu}, \hat{\sigma}\)</span>. That
+function is below.</p>
+<pre class="r"><code>sim_mean_sd = function(n, mu = 2, sigma = 3) {
+  
+  sim_data = tibble(
+    x = rnorm(n, mean = mu, sd = sigma),
+  )
+  
+  sim_data |&gt; 
+    summarize(
+      mu_hat = mean(x),
+      sigma_hat = sd(x)
+    )
+}</code></pre>
+<p>Important statistical properties of estimates <span
+class="math inline">\(\hat{\mu}\)</span> are established under the
+conceptual framework of repeated sampling. If you could draw from a
+population over and over, your estimates will have a known
+distribution:</p>
+<p><span class="math display">\[ \hat{\mu} \sim
+\left[\mu,\frac{\sigma}{\sqrt{n}} \right]\]</span></p>
+<p>Because our simulation design generates observations from a Normal
+distribution we also know that the estimates follow a Normal
+distribution, although that’s not guaranteed in general. You can do some
+work to understand the distribution of <span
+class="math inline">\(\hat{\sigma}\)</span>, but it’s … messier.</p>
+<p>In the real world, drawing samples is time consuming and costly, so
+“repeated sampling” remains conceptual. On a computer, though, drawing
+samples is pretty easy. That makes simulation an appealing way to
+examine the statistical properties of your estimators.</p>
+<p>Let’s run <code>sim_mean_sd()</code> 100 times to see the effect of
+randomness in <span class="math inline">\(x_i\)</span> on estimates
+<span class="math inline">\(\hat{\mu}, \hat{\sigma}\)</span>.</p>
+<pre class="r"><code>output = vector(&quot;list&quot;, 100)
+
+for (i in 1:100) {
+  output[[i]] = sim_mean_sd(30)
+}
+
+sim_results = bind_rows(output)</code></pre>
+<p>Taking a look at the <code>for</code> loop we used to create these
+results, you might notice that there’s no <code>input</code> list – the
+sequence is used to keep track of the output but doesn’t affect the
+computation performed inside the <code>for</code> loop. We can still use
+<code>map</code> to carry this out, of course – we’ll just be mapping
+over something that doesn’t change.</p>
+<p>In the code below, I create a data frame with rows for 100
+iterations; the sample size column is fixed at 30 in every row. Then,
+using ideas from <a href="iteration_and_listcols.html">iteration and
+list columns</a>, I’ll map my <code>sim_mean_sd</code> function over the
+<code>sample_size</code> column to replicate the simulation in the
+previous loop.</p>
+<pre class="r"><code>sim_results_df = 
+  expand_grid(
+    sample_size = 30,
+    iter = 1:100
+  ) |&gt; 
+  mutate(
+    estimate_df = map(sample_size, sim_mean_sd)
+  ) |&gt; 
+  unnest(estimate_df)</code></pre>
+<p>Critically, the result is a dataframe which can be manipulated or
+used in ways we’re now pretty familiar with. Let’s make some quick plots
+and compute some summaries for our simulation results.</p>
+<pre class="r"><code>sim_results_df |&gt; 
+  ggplot(aes(x = mu_hat)) + 
+  geom_density()</code></pre>
+<p><img src="simulation_files/figure-html/unnamed-chunk-5-1.png" width="90%" /></p>
+<pre class="r"><code>sim_results_df |&gt; 
+  pivot_longer(
+    mu_hat:sigma_hat,
+    names_to = &quot;parameter&quot;, 
+    values_to = &quot;estimate&quot;) |&gt; 
+  group_by(parameter) |&gt; 
+  summarize(
+    emp_mean = mean(estimate),
+    emp_sd = sd(estimate)) |&gt; 
+  knitr::kable(digits = 3)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">parameter</th>
+<th align="right">emp_mean</th>
+<th align="right">emp_sd</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">mu_hat</td>
+<td align="right">1.985</td>
+<td align="right">0.567</td>
+</tr>
+<tr class="even">
+<td align="left">sigma_hat</td>
+<td align="right">2.979</td>
+<td align="right">0.384</td>
+</tr>
+</tbody>
+</table>
+<p>This is <strong><em>great</em></strong>! We’ve seen how our estimates
+are distributed under our simulation scenario, and can compare empirical
+results to theoretical ones. In this way, we can build intuition for
+fundamental statistical procedures under repeated sampling in a way
+that’s not possible with single data sets.</p>
+<p>In cases like this, where the inputs to the function don’t change,
+using an “anonymous” function can be a helpful shorthand. Here the
+syntax <code>(i)</code> defines a function with the input
+<code>i</code>, and that function just runs
+<code>sim_mean_sd(30, 2, 3)</code> without actually using
+<code>i</code>.</p>
+<pre class="r"><code>sim_results_df =   
+  map(1:100, \(i) sim_mean_sd(30, 2, 3)) |&gt; 
+  bind_rows()</code></pre>
+</div>
+<div id="simulation-mean-for-several-ns" class="section level3">
+<h3>Simulation: Mean for several <span
+class="math inline">\(n\)</span>s</h3>
+<p>Sample size makes a huge difference on the variance of estimates in
+SLR (and pretty much every statistical method). Let’s try to clarify
+that effect through simulating at a few sample sizes.</p>
+<p>Building on the code above, I’ll set up a tibble with iterations and
+the sample sizes I want to investigate using <code>expand_grid</code>.
+From there, the steps are similar to they were before – we’ll apply the
+<code>sim_mean_sd</code> function to each iteration of each sample size
+and <code>unnest</code> the result.</p>
+<pre class="r"><code>sim_results_df = 
+  expand_grid(
+    sample_size = c(30, 60, 120, 240),
+    iter = 1:1000
+  ) |&gt; 
+  mutate(
+    estimate_df = map(sample_size, sim_mean_sd)
+  ) |&gt; 
+  unnest(estimate_df)</code></pre>
+<p>Let’s take a look at what we’ve accomplished in our simulations!
+First I’ll take a look at the distribution of mean estimates across
+sample sizes.</p>
+<pre class="r"><code>sim_results_df |&gt; 
+  mutate(
+    sample_size = str_c(&quot;n = &quot;, sample_size),
+    sample_size = fct_inorder(sample_size)) |&gt; 
+  ggplot(aes(x = sample_size, y = mu_hat, fill = sample_size)) + 
+  geom_violin()</code></pre>
+<p><img src="simulation_files/figure-html/unnamed-chunk-8-1.png" width="90%" /></p>
+<p>These estimates are centered around the truth (2) for each sample
+size, and the width of the distribution shrinks as sample size
+grows.</p>
+<p>Lastly I’ll look at the empirical mean and variance of these
+estimates.</p>
+<pre class="r"><code>sim_results_df |&gt; 
+  pivot_longer(
+    mu_hat:sigma_hat,
+    names_to = &quot;parameter&quot;, 
+    values_to = &quot;estimate&quot;) |&gt; 
+  group_by(parameter, sample_size) |&gt; 
+  summarize(
+    emp_mean = mean(estimate),
+    emp_var = var(estimate)) |&gt; 
+  knitr::kable(digits = 3)</code></pre>
+<pre><code>## `summarise()` has grouped output by &#39;parameter&#39;. You can override using the
+## `.groups` argument.</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">parameter</th>
+<th align="right">sample_size</th>
+<th align="right">emp_mean</th>
+<th align="right">emp_var</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">mu_hat</td>
+<td align="right">30</td>
+<td align="right">2.001</td>
+<td align="right">0.289</td>
+</tr>
+<tr class="even">
+<td align="left">mu_hat</td>
+<td align="right">60</td>
+<td align="right">1.992</td>
+<td align="right">0.147</td>
+</tr>
+<tr class="odd">
+<td align="left">mu_hat</td>
+<td align="right">120</td>
+<td align="right">2.005</td>
+<td align="right">0.079</td>
+</tr>
+<tr class="even">
+<td align="left">mu_hat</td>
+<td align="right">240</td>
+<td align="right">1.999</td>
+<td align="right">0.038</td>
+</tr>
+<tr class="odd">
+<td align="left">sigma_hat</td>
+<td align="right">30</td>
+<td align="right">2.974</td>
+<td align="right">0.154</td>
+</tr>
+<tr class="even">
+<td align="left">sigma_hat</td>
+<td align="right">60</td>
+<td align="right">2.999</td>
+<td align="right">0.068</td>
+</tr>
+<tr class="odd">
+<td align="left">sigma_hat</td>
+<td align="right">120</td>
+<td align="right">2.996</td>
+<td align="right">0.039</td>
+</tr>
+<tr class="even">
+<td align="left">sigma_hat</td>
+<td align="right">240</td>
+<td align="right">2.994</td>
+<td align="right">0.018</td>
+</tr>
+</tbody>
+</table>
+<p>These values are consistent with the formula presented for the
+distribution of the sample mean. This kind of check is a useful way to
+support derivations (although they don’t serve as a formal proof in any
+way).</p>
+</div>
+<div id="simulation-slr-for-one-n" class="section level3">
+<h3>Simulation: SLR for one <span class="math inline">\(n\)</span></h3>
+<p>The distribution of the sample mean is critical in statistics, but
+behaves in often familiar ways. Next we’ll use simulations to explore
+another very important setting that is sometimes surprising. In
+particular, we’ll use a function to we generate data from <span
+class="math display">\[ y_i = \beta_0 + \beta_1 x_i + \epsilon_i
+\]</span></p>
+<p>for subjects <span class="math inline">\(1 \leq i \leq n\)</span>
+with <span class="math inline">\(\epsilon_i \sim N[0,1]\)</span> and
+return estimates</p>
+<p><span class="math inline">\(\hat{\beta}_0,
+\hat{\beta}_1\)</span>.</p>
+<p>One implementation of this goal is shown below. This takes the sample
+size and true regression coefficients as inputs; simulates both
+<code>x</code> and <code>y</code>; fits the regression; and returns the
+estimated coefficients.</p>
+<pre class="r"><code>sim_regression = function(n, beta0 = 2, beta1 = 3) {
+  
+  sim_data = 
+    tibble(
+      x = rnorm(n, mean = 1, sd = 1),
+      y = beta0 + beta1 * x + rnorm(n, 0, 1)
+    )
+  
+  ls_fit = lm(y ~ x, data = sim_data)
+  
+  tibble(
+    beta0_hat = coef(ls_fit)[1],
+    beta1_hat = coef(ls_fit)[2]
+  )
+}</code></pre>
+<p>As for the sample mean, the repeated sampling framework can be used
+to establish properties of estimates <span
+class="math inline">\(\hat{\beta}_0, \hat{\beta}_1\)</span>. If you
+could draw repeatedly from the population, your estimates will have a
+known mean and covariance:</p>
+<p><span class="math display">\[ \hat{\beta}_0 \sim \left[\beta_0,
+\sigma^2 \left(\frac{1}{n} + \frac{\bar{x}}{\sum (x_i -
+\bar{x})^2}\right) \right] \mbox{ and } \hat{\beta}_1 \sim
+\left[\beta_1,\frac{\sigma^2}{\sum (x_i - \bar{x})^2} \right]
+\]</span></p>
+<p>(Because our simulation design generates errors from a Normal
+distribution we also know that the estimates follow a Normal
+distribution, although that’s not guaranteed by least squares
+estimation.)</p>
+<p>Again, though, “repeated sampling” remains conceptual for regression
+– but we can draw samples easily in simulations. We’ll use
+<code>map</code> to run <code>sim_regression()</code> 500 times and show
+the effect of randomness in <span
+class="math inline">\(\epsilon\)</span> on estimates <span
+class="math inline">\(\hat{\beta}_0, \hat{\beta}_1\)</span>.</p>
+<pre class="r"><code>sim_results_df = 
+  expand_grid(
+    sample_size = 30,
+    iter = 1:500
+  ) |&gt; 
+  mutate(
+    estimate_df = map(sample_size, sim_regression)
+  ) |&gt; 
+  unnest(estimate_df)</code></pre>
+<p>Next we’ll plot the estimated coefficients against each other (<span
+class="math inline">\(\hat{\beta}_0\)</span> on the x axis and <span
+class="math inline">\(\hat{\beta}_1\)</span> on the y axis). Both
+estimators are “unbiased”, meaning that on average you get the right
+answer. But what’s striking about this plot is that the estimated
+coefficients are inversely correlated – a lower estimate of the
+intercept tends to imply a higher estimate of the slope.</p>
+<pre class="r"><code>sim_results_df |&gt; 
+  ggplot(aes(x = beta0_hat, y = beta1_hat)) + 
+  geom_point()</code></pre>
+<p><img src="simulation_files/figure-html/unnamed-chunk-11-1.png" width="90%" /></p>
+</div>
+<div id="varying-two-simulation-parameters" class="section level3">
+<h3>Varying two simulation parameters</h3>
+<p>In our last example, we’ll consider varying two parameters – the
+sample size and the true standard deviation in our simulation looking at
+the mean and SD. We can use <code>expand_grid()</code> again to consider
+all possible combinations of sample size and true SD, while also
+defining a variable to look at 1000 iterations of each combination.</p>
+<p>The key step in this code chunk is the use of <code>map2</code>,
+which allows mapping over two inputs to a function. We can also use an
+“anonymous” function which passes inputs <code>n</code> and
+<code>sd</code> to specific arguments in the <code>sim_mean_sd()</code>
+function.</p>
+<pre class="r"><code>sim_results_df = 
+  expand_grid(
+    sample_size = c(30, 60, 120, 240),
+    true_sd = c(6, 3),
+    iter = 1:1000
+  ) |&gt; 
+  mutate(
+    estimate_df = 
+      map2(sample_size, true_sd, \(n, sd) sim_mean_sd(n = n, sigma = sd))
+  ) |&gt; 
+  unnest(estimate_df)</code></pre>
+<p>As before, once we have the results of this simulation, we can use
+graphical summaries to understand how the sample size and true SD relate
+to the distribution of the sample mean. For both true SDs, increasing
+the sample size results in a narrower distribution, and the distribution
+of the sample mean is wider when the true SD is larger.</p>
+<pre class="r"><code>sim_results_df |&gt; 
+  mutate(
+    true_sd = str_c(&quot;True SD: &quot;, true_sd),
+    true_sd = fct_inorder(true_sd),
+    sample_size = str_c(&quot;n = &quot;, sample_size),
+    sample_size = fct_inorder(sample_size)) |&gt; 
+  ggplot(aes(x = sample_size, y = mu_hat, fill = sample_size)) + 
+  geom_violin() + 
+  facet_grid(. ~ true_sd)</code></pre>
+<p><img src="simulation_files/figure-html/unnamed-chunk-13-1.png" width="90%" /></p>
+</div>
+</div>
+<div id="other-materials" class="section level2">
+<h2>Other materials</h2>
+<ul>
+<li>Problem of small power leading to over estimation has been discussed
+<a href="https://www.nature.com/articles/nrn3475">here</a> among other
+places</li>
+</ul>
+<p>The code that I produced working examples in lecture is <a
+href="https://github.com/p8105/iteration">here</a>.</p>
+</div>
+
+<br><br>
+<footer>
+  <img src="images/p8105_stickers.png" alt="stickers" style="width:30%">
+  <br>
+  <p class="copyright text-muted" align="center">Copyright &copy; 2019 Jeff Goldsmith</p>
+</footer>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

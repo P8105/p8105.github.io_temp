@@ -1,0 +1,17 @@
+---
+title: "Data Wrangling I"
+---
+
+You can't do data science without data, and data aren't going to wrangle themselves...
+
+Data wrangling is the process of getting data in whatever form they exist and, through a variety of processes, turning those data into a form that suits your current needs. We'll talk about how to get data in several common formats into R; how to transform, manage, and manipulate data in a cohesive way using `dplyr`; what it means for data to be "tidy" and how to make them so; and what to do when your data are spread across multiple tables.
+
+The topic is made up of the following components:
+
+* [Data import with `readr` et al](data_import.html)
+* [Data manipulation with `dplyr`](data_manipulation.html)
+* [Tidy data and relational datasets](tidy_data.html)
+
+It has been argued that [data carpentry](http://www.mimno.org/articles/carpentry/) is a better term than data wrangling. I only sorta like that, although it's a useful analogy to consider.
+
+The code that I produced working examples in lecture is [here](https://github.com/P8105/data_wrangling_i).

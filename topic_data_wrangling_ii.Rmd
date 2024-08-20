@@ -1,0 +1,13 @@
+---
+title: "Data Wrangling II"
+---
+
+Data wrangling is the process of getting data in whatever form they exist and, through a variety of processes, turning those data into a form that suits your current needs. Our first look at data wrangling focused on data that were pretty clean to start with, and avoided some of the trickier data classes. Now we'll discuss ways of getting data from the web, and take a closer look at strings and factors.
+
+The topic is made up of the following components:
+
+* [Reading data from the web](reading_data_from_the_web.html)
+* [Strings and factors](strings_and_factors.html)
+
+The code that I produced working examples in lecture is [here](https://github.com/P8105/data_wrangling_ii).
+

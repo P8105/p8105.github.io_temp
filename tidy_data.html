@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Tidy data and relational datasets</title>
+
+<script src="site_libs/header-attrs-2.24/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" />
+<script defer src="https://use.fontawesome.com/releases/v5.0.3/js/all.js"></script>
+<script defer src="https://use.fontawesome.com/releases/v5.0.0/js/v4-shims.js"></script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-151578452-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-151578452-1');
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">P8105</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="schedule.html">Schedule</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Topics
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="topic_what_is_data_science.html">What is Data Science?</a>
+    </li>
+    <li>
+      <a href="topic_building_blocks.html">Building Blocks</a>
+    </li>
+    <li>
+      <a href="topic_data_wrangling_i.html">Data Wrangling I</a>
+    </li>
+    <li>
+      <a href="topic_visualization_and_eda.html">Visualization and EDA</a>
+    </li>
+    <li>
+      <a href="topic_data_wrangling_ii.html">Data Wrangling II</a>
+    </li>
+    <li>
+      <a href="topic_interactivity.html">Interactivity</a>
+    </li>
+    <li>
+      <a href="topic_iteration.html">Iteration</a>
+    </li>
+    <li>
+      <a href="topic_linear_models.html">Linear Models</a>
+    </li>
+    <li>
+      <a href="topic_other_material.html">Other Materials</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Datasets
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="dataset_airbnb.html">Airbnb</a>
+    </li>
+    <li>
+      <a href="dataset_brfss.html">BRFSS</a>
+    </li>
+    <li>
+      <a href="dataset_fivethirtyeight.html">FiveThirtyEight</a>
+    </li>
+    <li>
+      <a href="dataset_instacart.html">Instacart</a>
+    </li>
+    <li>
+      <a href="dataset_mr_trash_wheel.html">Mr. Trash Wheel</a>
+    </li>
+    <li>
+      <a href="dataset_noaa.html">NOAA</a>
+    </li>
+    <li>
+      <a href="dataset_restaurant_inspections.html">NYC Restaurant Inspections</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="homework_and_projects.html">Homework and Projects</a>
+</li>
+<li>
+  <a href="course_communication.html">Communication</a>
+</li>
+<li>
+  <a href="https://github.com/P8105/p8105.github.io">
+    <span class="fa fa-github"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Tidy data and relational datasets</h1>
+
+</div>
+
+
+<p>The overarching goal of data wrangling is to have a tidy, easy-to-use
+dataset.</p>
+<p>This is the third module in the <a
+href="topic_data_wrangling_i.html">Data Wrangling I</a> topic.</p>
+<div id="overview" class="section level2 tabset tabset-pills">
+<h2 class="tabset tabset-pills">Overview</h2>
+<div id="learning-objectives" class="section level3">
+<h3>Learning Objectives</h3>
+<p>Understanding principles of “tidy” data, using relational databases,
+and merging datasets.</p>
+</div>
+<div id="slide-deck" class="section level3">
+<h3>Slide Deck</h3>
+<div class="vid_container">
+<p><iframe 
+    src="https://speakerdeck.com/player/77a37cf3dcb945a9abd2e09439158d07" 
+    allowfullscreen 
+    frameborder="0"
+    class="video"> </iframe></p>
+</div>
+<div style="margin-bottom:5px">
+<strong>
+<a href="https://speakerdeck.com/jeffgoldsmith/dsi-tidy-data" title="Tidy Data" target="_blank">Tidy
+Data</a> </strong> from
+<strong><a href="https://speakerdeck.com/jeffgoldsmith" target="_blank">Jeff
+Goldsmith</a></strong>.
+</div>
+<p><br></p>
+<hr />
+</div>
+<div id="video-lecture" class="section level3">
+<h3>Video Lecture</h3>
+<div class="vid_container">
+<p><iframe 
+    src="https://www.youtube.com/embed/CnRgc-2WVRU"
+    frameborder="0" allowfullscreen class="video"> </iframe></p>
+</div>
+<hr />
+</div>
+</div>
+<div id="example" class="section level2">
+<h2>Example</h2>
+<p>I’ll keep using the same repo / project as in <a
+href="data_import.html">data import</a> and <a
+href="data_manipulation.html">data manipulation</a>, but create a new
+.Rmd for tidying. I’m also going to load some relevant packages, and
+limit the number of lines printed in a tibble.</p>
+<pre class="r"><code>library(tidyverse)
+## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+## ✔ dplyr     1.1.2     ✔ readr     2.1.4
+## ✔ forcats   1.0.0     ✔ stringr   1.5.0
+## ✔ ggplot2   3.4.3     ✔ tibble    3.2.1
+## ✔ lubridate 1.9.2     ✔ tidyr     1.3.0
+## ✔ purrr     1.0.2     
+## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+## ✖ dplyr::filter() masks stats::filter()
+## ✖ dplyr::lag()    masks stats::lag()
+## ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors
+
+options(tibble.print_min = 5)</code></pre>
+<div id="pivot_longer" class="section level3">
+<h3><code>pivot_longer</code></h3>
+<p>In <a href="data_import.html">data import</a>, we used the
+<code>haven</code> package to load the PULSE biomarkers dataset from a
+.sas7bdat. Let’s reload those data and take a closer look:</p>
+<pre class="r"><code>pulse_df = 
+  haven::read_sas(&quot;./data/public_pulse_data.sas7bdat&quot;) |&gt;
+  janitor::clean_names()
+
+pulse_df
+## # A tibble: 1,087 × 7
+##      id   age sex   bdi_score_bl bdi_score_01m bdi_score_06m bdi_score_12m
+##   &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;        &lt;dbl&gt;         &lt;dbl&gt;         &lt;dbl&gt;         &lt;dbl&gt;
+## 1 10003  48.0 male             7             1             2             0
+## 2 10015  72.5 male             6            NA            NA            NA
+## 3 10022  58.5 male            14             3             8            NA
+## 4 10026  72.7 male            20             6            18            16
+## 5 10035  60.4 male             4             0             1             2
+## # ℹ 1,082 more rows</code></pre>
+<p>With our new understanding of tidy data, we quickly recognize a
+problem: the BDI score is spread across four columns, which correspond
+to four observation times. We can fix this problem using
+<code>pivot_longer</code>:</p>
+<pre class="r"><code>pulse_tidy_data = 
+  pivot_longer(
+    pulse_df, 
+    bdi_score_bl:bdi_score_12m,
+    names_to = &quot;visit&quot;, 
+    values_to = &quot;bdi&quot;)
+
+pulse_tidy_data
+## # A tibble: 4,348 × 5
+##      id   age sex   visit           bdi
+##   &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;         &lt;dbl&gt;
+## 1 10003  48.0 male  bdi_score_bl      7
+## 2 10003  48.0 male  bdi_score_01m     1
+## 3 10003  48.0 male  bdi_score_06m     2
+## 4 10003  48.0 male  bdi_score_12m     0
+## 5 10015  72.5 male  bdi_score_bl      6
+## # ℹ 4,343 more rows</code></pre>
+<p>This looks much better! However, now <code>visit</code> is an issue.
+The original column names were informative but we probably don’t need to
+keep the <code>bdi_score_</code> prefix in each case. I’ll use an
+additional option in <code>pivot_longer</code> to address this:</p>
+<pre class="r"><code>pulse_tidy_data = 
+  pivot_longer(
+    pulse_df, 
+    bdi_score_bl:bdi_score_12m,
+    names_to = &quot;visit&quot;, 
+    names_prefix = &quot;bdi_score_&quot;,
+    values_to = &quot;bdi&quot;)
+
+pulse_tidy_data
+## # A tibble: 4,348 × 5
+##      id   age sex   visit   bdi
+##   &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt; &lt;dbl&gt;
+## 1 10003  48.0 male  bl        7
+## 2 10003  48.0 male  01m       1
+## 3 10003  48.0 male  06m       2
+## 4 10003  48.0 male  12m       0
+## 5 10015  72.5 male  bl        6
+## # ℹ 4,343 more rows</code></pre>
+<p>In the preceding I’ve saved intermediate datasets to make each step
+clear. While this can be a helpful crutch as you’re trying out code, it
+is generally bad practice. There are also some additional
+transformations needed to wrap up the data wrangling process, like
+changing <code>bl</code> to <code>00m</code> for consistency across
+visits and converting <code>visit</code> to a factor variable. (It’s
+possible that you would want <code>visit</code> to be a numeric variable
+instead, which could be done with a different call to
+<code>mutate</code>.)</p>
+<p>Altogether, then, the code below will import, tidy, and transform the
+PULSE dataset into a usable format:</p>
+<pre class="r"><code>pulse_df = 
+  haven::read_sas(&quot;./data/public_pulse_data.sas7bdat&quot;) |&gt;
+  janitor::clean_names() |&gt;
+  pivot_longer(
+    bdi_score_bl:bdi_score_12m,
+    names_to = &quot;visit&quot;, 
+    names_prefix = &quot;bdi_score_&quot;,
+    values_to = &quot;bdi&quot;) |&gt;
+  mutate(
+    visit = replace(visit, visit == &quot;bl&quot;, &quot;00m&quot;),
+    visit = factor(visit)) 
+
+print(pulse_df, n = 12)
+## # A tibble: 4,348 × 5
+##       id   age sex   visit   bdi
+##    &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; &lt;fct&gt; &lt;dbl&gt;
+##  1 10003  48.0 male  00m       7
+##  2 10003  48.0 male  01m       1
+##  3 10003  48.0 male  06m       2
+##  4 10003  48.0 male  12m       0
+##  5 10015  72.5 male  00m       6
+##  6 10015  72.5 male  01m      NA
+##  7 10015  72.5 male  06m      NA
+##  8 10015  72.5 male  12m      NA
+##  9 10022  58.5 male  00m      14
+## 10 10022  58.5 male  01m       3
+## 11 10022  58.5 male  06m       8
+## 12 10022  58.5 male  12m      NA
+## # ℹ 4,336 more rows</code></pre>
+<p>Now we’re in pretty okay shape :-).</p>
+<p><strong><em>Learning Assessment:</em></strong> In the litters data,
+the variables <code>gd0_weight</code> and <code>gd18_weight</code> give
+the weight of the mother mouse on gestational days 0 and 18. Write a
+data cleaning chain that retains only <code>litter_number</code> and
+these columns; produces new variables <code>gd</code> and
+<code>weight</code>; and makes <code>gd</code> a numeric variable taking
+values <code>0</code> and <code>18</code> (for the last part, you might
+want to use <code>recode</code> …). Is this version “tidy”?</p>
+<details>
+<summary>
+Solution
+</summary>
+<p>The code below shows one approach to this data cleaning process:</p>
+<pre class="r"><code>litters_wide = 
+  read_csv(&quot;./data/FAS_litters.csv&quot;) |&gt;
+  janitor::clean_names() |&gt;
+  select(litter_number, ends_with(&quot;weight&quot;)) |&gt; 
+  pivot_longer(
+    gd0_weight:gd18_weight,
+    names_to = &quot;gd&quot;, 
+    values_to = &quot;weight&quot;) |&gt; 
+  mutate(
+    gd = case_match(
+      gd,
+      &quot;gd0_weight&quot;  ~ 0,
+      &quot;gd18_weight&quot; ~ 18
+    ))
+## Rows: 49 Columns: 8
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## chr (2): Group, Litter Number
+## dbl (6): GD0 weight, GD18 weight, GD of Birth, Pups born alive, Pups dead @ ...
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<p>In one sense, this is “tidy” because I have a variable for day and a
+variable for weight rather that using values in my variable names.
+However, it’s less useful if I’m interested in computing or analyzing
+weight gain during pregnancy.</p>
+</details>
+</div>
+<div id="pivot_wider" class="section level3">
+<h3><code>pivot_wider</code></h3>
+<p>We’ve been exclusively interested in tidying data, but we’ve admitted
+that sometimes untidy is better for human consumption. For that reason
+we’re going to take a short digression into untidying your tidy
+data.</p>
+<p>The code below creates a tidy dataset that could result from an
+analysis. This is the correct format for additional analysis or
+visualization, but doesn’t facilitate quick comparisons for human
+readers.</p>
+<pre class="r"><code>analysis_result = 
+  tibble(
+    group = c(&quot;treatment&quot;, &quot;treatment&quot;, &quot;placebo&quot;, &quot;placebo&quot;),
+    time = c(&quot;pre&quot;, &quot;post&quot;, &quot;pre&quot;, &quot;post&quot;),
+    mean = c(4, 8, 3.5, 4)
+  )
+
+analysis_result
+## # A tibble: 4 × 3
+##   group     time   mean
+##   &lt;chr&gt;     &lt;chr&gt; &lt;dbl&gt;
+## 1 treatment pre     4  
+## 2 treatment post    8  
+## 3 placebo   pre     3.5
+## 4 placebo   post    4</code></pre>
+<p>An alternative presentation of the same data might have groups in
+rows, times in columns, and mean values in table cells. This is
+decidedly non-tidy; to get there from here we’ll need to use
+<code>pivot_wider</code>, which is the inverse of
+<code>pivot_longer</code>:</p>
+<pre class="r"><code>pivot_wider(
+  analysis_result, 
+  names_from = &quot;time&quot;, 
+  values_from = &quot;mean&quot;)
+## # A tibble: 2 × 3
+##   group       pre  post
+##   &lt;chr&gt;     &lt;dbl&gt; &lt;dbl&gt;
+## 1 treatment   4       8
+## 2 placebo     3.5     4</code></pre>
+<p>We’re pretty much there now – in some cases you might use
+<code>select</code> to reorder columns, and (depending on your goal) use
+<code>knitr::kable()</code> to produce a nicer table for reading.</p>
+</div>
+<div id="binding-rows" class="section level3">
+<h3>Binding rows</h3>
+<p>We’ve looked at single-table non-tidy data, but non-tidiness often
+stems from relevant data spread across multiple tables. In the simplest
+case, these tables are basically the same and can be stacked to produce
+a tidy dataset. That’s the setting in <code>LotR_words.xlsx</code>,
+where the word counts for different races and genders in each movie in
+the trilogy are spread across distinct data rectangles (these data are
+based on <a
+href="https://github.com/jennybc/lotr-tidy/blob/master/01-intro.md">this
+example</a>).</p>
+<p>To produce the desired tidy dataset, we first need to read each table
+and do some cleaning.</p>
+<pre class="r"><code>fellowship_ring = 
+  readxl::read_excel(&quot;./data/LotR_Words.xlsx&quot;, range = &quot;B3:D6&quot;) |&gt;
+  mutate(movie = &quot;fellowship_ring&quot;)
+
+two_towers = 
+  readxl::read_excel(&quot;./data/LotR_Words.xlsx&quot;, range = &quot;F3:H6&quot;) |&gt;
+  mutate(movie = &quot;two_towers&quot;)
+
+return_king = 
+  readxl::read_excel(&quot;./data/LotR_Words.xlsx&quot;, range = &quot;J3:L6&quot;) |&gt;
+  mutate(movie = &quot;return_king&quot;)</code></pre>
+<p>Here it was necessary to add a variable to each dataframe indicating
+the movie; that information had stored elsewhere in the original
+spreadsheet. As an aside, the three code snippets above are all
+basically the same except for the range and the movie name – later we’ll
+see a better way to handle cases like this by <a
+href="writing_functions.html">writing our own functions</a>, but this
+works for now.</p>
+<p>Once each table is ready to go, we can stack them up using
+<code>bind_rows</code> and tidy the result:</p>
+<pre class="r"><code>lotr_tidy = 
+  bind_rows(fellowship_ring, two_towers, return_king) |&gt;
+  janitor::clean_names() |&gt;
+  pivot_longer(
+    female:male,
+    names_to = &quot;gender&quot;, 
+    values_to = &quot;words&quot;) |&gt;
+  mutate(race = str_to_lower(race)) |&gt; 
+  select(movie, everything()) 
+
+lotr_tidy
+## # A tibble: 18 × 4
+##    movie           race   gender words
+##    &lt;chr&gt;           &lt;chr&gt;  &lt;chr&gt;  &lt;dbl&gt;
+##  1 fellowship_ring elf    female  1229
+##  2 fellowship_ring elf    male     971
+##  3 fellowship_ring hobbit female    14
+##  4 fellowship_ring hobbit male    3644
+##  5 fellowship_ring man    female     0
+##  6 fellowship_ring man    male    1995
+##  7 two_towers      elf    female   331
+##  8 two_towers      elf    male     513
+##  9 two_towers      hobbit female     0
+## 10 two_towers      hobbit male    2463
+## 11 two_towers      man    female   401
+## 12 two_towers      man    male    3589
+## 13 return_king     elf    female   183
+## 14 return_king     elf    male     510
+## 15 return_king     hobbit female     2
+## 16 return_king     hobbit male    2673
+## 17 return_king     man    female   268
+## 18 return_king     man    male    2459</code></pre>
+<p>Having the data in this form will make it easier to make comparisons
+across movies, aggregate within races across the trilogy, and perform
+other analyses.</p>
+</div>
+<div id="joining-datasets" class="section level3">
+<h3>Joining datasets</h3>
+<p>Data can be spread across multiple related tables, in which case it
+is necessary to combine or <strong>join</strong> them prior to analysis.
+We’ll focus on the problem of combining two tables only; combining three
+or more is done step-by-step using the same ideas.</p>
+<p>There are four major ways join dataframes <code>x</code> and
+<code>y</code>:</p>
+<ul>
+<li>Inner: keeps data that appear in both <code>x</code> and
+<code>y</code></li>
+<li>Left: keeps data that appear in <code>x</code></li>
+<li>Right: keeps data that appear in <code>y</code></li>
+<li>Full: keeps data that appear in either <code>x</code> or
+<code>y</code></li>
+</ul>
+<p>Left joins are the most common, because they add data from a smaller
+table <code>y</code> into a larger table <code>x</code> without removing
+anything from <code>x</code>.</p>
+<p>As an example, consider the data tables in <code>FAS_pups.csv</code>
+and <code>FAS_litters.csv</code>, which are related through the
+<code>Litter Number</code> variable. The former contains data unique to
+each pup, and the latter contains data unique to each litter. We can
+combine these using a left join of litter data into pup data; doing so
+retains data on each pup and adds data in new columns.</p>
+<p>(While revisiting this example, take a look at the <code>group</code>
+variable in the litters dataset: this encodes both dose and day of
+treatment! We’ll fix that bit of untidiness as part of the processing
+pipeline. I’m also going to address a pet peeve of mine, which is coding
+sex as an ambiguous numeric variable.)</p>
+<pre class="r"><code>pup_data = 
+  read_csv(&quot;./data/FAS_pups.csv&quot;) |&gt;
+  janitor::clean_names() |&gt;
+  mutate(
+    sex = 
+      case_match(
+        sex, 
+        1 ~ &quot;male&quot;, 
+        2 ~ &quot;female&quot;),
+    sex = as.factor(sex)) 
+## Rows: 313 Columns: 6
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## chr (1): Litter Number
+## dbl (5): Sex, PD ears, PD eyes, PD pivot, PD walk
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+litter_data = 
+  read_csv(&quot;./data/FAS_litters.csv&quot;) |&gt;
+  janitor::clean_names() |&gt;
+  separate(group, into = c(&quot;dose&quot;, &quot;day_of_tx&quot;), sep = 3) |&gt;
+  relocate(litter_number) |&gt;
+  mutate(
+    wt_gain = gd18_weight - gd0_weight,
+    dose = str_to_lower(dose))
+## Rows: 49 Columns: 8
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## chr (2): Group, Litter Number
+## dbl (6): GD0 weight, GD18 weight, GD of Birth, Pups born alive, Pups dead @ ...
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+fas_data = 
+  left_join(pup_data, litter_data, by = &quot;litter_number&quot;)
+
+fas_data
+## # A tibble: 313 × 15
+##   litter_number sex   pd_ears pd_eyes pd_pivot pd_walk dose  day_of_tx
+##   &lt;chr&gt;         &lt;fct&gt;   &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;    
+## 1 #85           male        4      13        7      11 con   7        
+## 2 #85           male        4      13        7      12 con   7        
+## 3 #1/2/95/2     male        5      13        7       9 con   7        
+## 4 #1/2/95/2     male        5      13        8      10 con   7        
+## 5 #5/5/3/83/3-3 male        5      13        8      10 con   7        
+## # ℹ 308 more rows
+## # ℹ 7 more variables: gd0_weight &lt;dbl&gt;, gd18_weight &lt;dbl&gt;, gd_of_birth &lt;dbl&gt;,
+## #   pups_born_alive &lt;dbl&gt;, pups_dead_birth &lt;dbl&gt;, pups_survive &lt;dbl&gt;,
+## #   wt_gain &lt;dbl&gt;</code></pre>
+<p>We made the key explicit in the join. By default, the
+<code>*_join</code> functions in <code>dplyr</code> will try to
+determine the key(s) based on variable names in the datasets you want to
+join. This is often but not always sufficient, and an extra step to make
+the key clear will help you and others reading your code.</p>
+<p>Note that joining is not particularly amenable to the
+<code>|&gt;</code> operator because it is fundamentally non-linear: two
+separate datasets are coming together, rather than a single dataset
+being processed in a step-by-step fashion.</p>
+<p>As a final point, the <code>*_join</code> functions are very much
+related to SQL syntax, but emphasize operations common to data
+analysis.</p>
+<p><strong><em>Learning Assessment:</em></strong> The datasets in <a
+href="data/survey_results.zip">this zip file</a> contain de-identified
+responses to surveys included in past years of this course. Both contain
+a unique student identifier; the first has responses to a question about
+operating systems, and the second has responses to questions about
+degree program and git experience. Write a code chunk that imports and
+cleans both datasets, and then joins them.</p>
+<details>
+<summary>
+Solution
+</summary>
+<p>I put both datasets in the <code>data</code> directory in my repo /
+project. The code below imports both datasets, cleans up variable names,
+and joins the datasets using <code>left_join</code>,
+<code>inner_join</code>, and <code>anti_join</code>.</p>
+<pre class="r"><code>surv_os = read_csv(&quot;data/surv_os.csv&quot;) |&gt; 
+  janitor::clean_names() |&gt; 
+  rename(id = what_is_your_uni, os = what_operating_system_do_you_use)
+
+surv_pr_git = read_csv(&quot;data/surv_program_git.csv&quot;) |&gt; 
+  janitor::clean_names() |&gt; 
+  rename(
+    id = what_is_your_uni, 
+    prog = what_is_your_degree_program,
+    git_exp = which_most_accurately_describes_your_experience_with_git)
+
+left_join(surv_os, surv_pr_git)
+inner_join(surv_os, surv_pr_git)
+anti_join(surv_os, surv_pr_git)
+anti_join(surv_pr_git, surv_os)</code></pre>
+</details>
+</div>
+<div id="a-quick-note-on-names" class="section level3">
+<h3>A quick note on names</h3>
+<p>For a while, folks were using <code>gather</code> and
+<code>spread</code> instead of <code>pivot_longer</code> and
+<code>pivot_wider</code>. The new functions were updated <a
+href="https://tidyr.tidyverse.org/dev/articles/pivot.html">for good
+reasons</a>; <code>gather</code> and <code>spread</code> will still
+exist, but they’re going to be less common over time and you may never
+see them.</p>
+</div>
+</div>
+<div id="other-materials" class="section level2">
+<h2>Other materials</h2>
+<ul>
+<li>R for Data Science, of course, has a chapter on <a
+href="http://r4ds.had.co.nz/tidy-data.html">tidy data</a>. The <a
+href="http://www.jstatsoft.org/v59/i10/paper">paper</a> that lays out
+the underlying ideas may also be useful.</li>
+<li>R for Data Science also has an excellent and very detailed
+presentation of <a
+href="http://r4ds.had.co.nz/relational-data.html">joins</a>.</li>
+<li>Jenny Bryan’s <a href="http://stat545.com">Stat 545</a> class has
+content on tidy data – parts <a
+href="https://github.com/jennybc/lotr-tidy/blob/master/01-intro.md">1</a>,
+<a
+href="https://github.com/jennybc/lotr-tidy/blob/master/02-gather.md">2</a>,
+<a
+href="https://github.com/jennybc/lotr-tidy/blob/master/03-spread.md">3</a>,
+and <a
+href="https://github.com/jennybc/lotr-tidy/blob/master/04-tidy-bonus-content.md">4</a>
+are all good (some of the content above is very much related to
+this).</li>
+<li>You should revisit the data import <a
+href="https://github.com/rstudio/cheatsheets/raw/master/data-import.pdf">cheatsheet</a>,
+which also has some tips for tidying.</li>
+</ul>
+<p>The code that I produced working examples in lecture is <a
+href="https://github.com/P8105/data_wrangling_i">here</a>.</p>
+</div>
+
+<br><br>
+<footer>
+  <img src="images/p8105_stickers.png" alt="stickers" style="width:30%">
+  <br>
+  <p class="copyright text-muted" align="center">Copyright &copy; 2019 Jeff Goldsmith</p>
+</footer>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

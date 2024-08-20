@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Strings and factors</title>
+
+<script src="site_libs/header-attrs-2.24/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" />
+<script defer src="https://use.fontawesome.com/releases/v5.0.3/js/all.js"></script>
+<script defer src="https://use.fontawesome.com/releases/v5.0.0/js/v4-shims.js"></script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-151578452-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-151578452-1');
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">P8105</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="schedule.html">Schedule</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Topics
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="topic_what_is_data_science.html">What is Data Science?</a>
+    </li>
+    <li>
+      <a href="topic_building_blocks.html">Building Blocks</a>
+    </li>
+    <li>
+      <a href="topic_data_wrangling_i.html">Data Wrangling I</a>
+    </li>
+    <li>
+      <a href="topic_visualization_and_eda.html">Visualization and EDA</a>
+    </li>
+    <li>
+      <a href="topic_data_wrangling_ii.html">Data Wrangling II</a>
+    </li>
+    <li>
+      <a href="topic_interactivity.html">Interactivity</a>
+    </li>
+    <li>
+      <a href="topic_iteration.html">Iteration</a>
+    </li>
+    <li>
+      <a href="topic_linear_models.html">Linear Models</a>
+    </li>
+    <li>
+      <a href="topic_other_material.html">Other Materials</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Datasets
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="dataset_airbnb.html">Airbnb</a>
+    </li>
+    <li>
+      <a href="dataset_brfss.html">BRFSS</a>
+    </li>
+    <li>
+      <a href="dataset_fivethirtyeight.html">FiveThirtyEight</a>
+    </li>
+    <li>
+      <a href="dataset_instacart.html">Instacart</a>
+    </li>
+    <li>
+      <a href="dataset_mr_trash_wheel.html">Mr. Trash Wheel</a>
+    </li>
+    <li>
+      <a href="dataset_noaa.html">NOAA</a>
+    </li>
+    <li>
+      <a href="dataset_restaurant_inspections.html">NYC Restaurant Inspections</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="homework_and_projects.html">Homework and Projects</a>
+</li>
+<li>
+  <a href="course_communication.html">Communication</a>
+</li>
+<li>
+  <a href="https://github.com/P8105/p8105.github.io">
+    <span class="fa fa-github"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Strings and factors</h1>
+
+</div>
+
+
+<p>Most of the tools we examined in <a
+href="topic_data_wrangling_i.html">Data Wrangling I</a> were general
+purpose things – what tidy data is, using <code>dplyr</code> and
+<code>tidyr</code> for manipulation of data tables. Two variable types,
+strings and factors, present enough challenges to examine in some
+detail. Now might also be a good time to read up on the <a
+href="https://simplystatistics.org/2015/07/24/stringsasfactors-an-unauthorized-biography/">history</a>
+of strings and factors in R!</p>
+<p>This is the second module in the <a
+href="topic_data_wrangling_ii.html">Data Wrangling II</a> topic.</p>
+<div id="overview" class="section level2 tabset tabset-pills">
+<h2 class="tabset tabset-pills">Overview</h2>
+<div id="learning-objectives" class="section level3">
+<h3>Learning Objectives</h3>
+<p>Edit/manipulate strings and take control of factors.</p>
+</div>
+<div id="slide-deck" class="section level3">
+<h3>Slide Deck</h3>
+<div class="vid_container">
+<p><iframe 
+    src="https://speakerdeck.com/player/bfb454627b71408889958f0893413097" 
+    allowfullscreen 
+    frameborder="0"
+    class="video"> </iframe></p>
+</div>
+<div style="margin-bottom:5px">
+<strong>
+<a href="https://speakerdeck.com/jeffgoldsmith/p8105-strings-and-factors" title="Strings and Factors" target="_blank">Strings
+and Factors</a> </strong> from
+<strong><a href="https://speakerdeck.com/jeffgoldsmith" target="_blank">Jeff
+Goldsmith</a></strong>.
+</div>
+<p><br></p>
+<hr />
+</div>
+<div id="video-lecture" class="section level3">
+<h3>Video Lecture</h3>
+<div class="vid_container">
+<p><iframe 
+    src="https://www.youtube.com/embed/xFwrGu8FPRc"
+    frameborder="0" allowfullscreen class="video"> </iframe></p>
+</div>
+<hr />
+</div>
+</div>
+<div id="example" class="section level2">
+<h2>Example</h2>
+<p>I’ll write code for today’s content in a new R Markdown document
+called <code>strings_and_factors.Rmd</code>, and put it in the same
+directory / GitHub repo as <code>reading_data.Rmd</code>. Since we’ll
+revisit some scraped examples, I’ll load <code>rvest</code> now; we’ll
+also use some datasets in <code>p8105.datasets</code> so I’ll load that
+as well. And finally, we’ll use some of <a
+href="./resources/data_import_examples.zip">these examples</a>, so I’ll
+make sure I have them in a <code>data</code> subdirectory..</p>
+<pre class="r"><code>library(rvest)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;rvest&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:readr&#39;:
+## 
+##     guess_encoding</code></pre>
+<pre class="r"><code>library(p8105.datasets)</code></pre>
+<div id="strings-and-regex" class="section level3">
+<h3>Strings and regex</h3>
+<p>Lots of the examples below are drawn from materials by <a
+href="https://docs.google.com/presentation/d/1rLNJVyWuIEQqkqTWUlCY4G-l7H610wM1IRz3CL67Gec">Jeff
+Leek</a>.</p>
+<p>The most frequent operation involving strings is to search for an
+exact match. You can use <code>str_detect</code> to find cases where the
+match exists (often useful in conjunction with <code>filter</code>), and
+you can use <code>str_replace</code> to replace an instance of a match
+with something else (often useful in conjunction with
+<code>mutate</code>). In the following examples we’ll mostly focus on
+vectors to avoid the complication of data frames, but we’ll see those
+shortly.</p>
+<pre class="r"><code>string_vec = c(&quot;my&quot;, &quot;name&quot;, &quot;is&quot;, &quot;jeff&quot;)
+
+str_detect(string_vec, &quot;jeff&quot;)</code></pre>
+<pre><code>## [1] FALSE FALSE FALSE  TRUE</code></pre>
+<pre class="r"><code>str_replace(string_vec, &quot;jeff&quot;, &quot;Jeff&quot;)</code></pre>
+<pre><code>## [1] &quot;my&quot;   &quot;name&quot; &quot;is&quot;   &quot;Jeff&quot;</code></pre>
+<p>For exact matches, you can designate matches at the beginning or end
+of a line.</p>
+<pre class="r"><code>string_vec = c(
+  &quot;i think we all rule for participating&quot;,
+  &quot;i think i have been caught&quot;,
+  &quot;i think this will be quite fun actually&quot;,
+  &quot;it will be fun, i think&quot;
+  )
+
+str_detect(string_vec, &quot;^i think&quot;)</code></pre>
+<pre><code>## [1]  TRUE  TRUE  TRUE FALSE</code></pre>
+<pre class="r"><code>str_detect(string_vec, &quot;i think$&quot;)</code></pre>
+<pre><code>## [1] FALSE FALSE FALSE  TRUE</code></pre>
+<p>You can designate a list of characters that will count as a
+match.</p>
+<pre class="r"><code>string_vec = c(
+  &quot;Time for a Pumpkin Spice Latte!&quot;,
+  &quot;went to the #pumpkinpatch last weekend&quot;,
+  &quot;Pumpkin Pie is obviously the best pie&quot;,
+  &quot;SMASHING PUMPKINS -- LIVE IN CONCERT!!&quot;
+  )
+
+str_detect(string_vec,&quot;[Pp]umpkin&quot;)</code></pre>
+<pre><code>## [1]  TRUE  TRUE  TRUE FALSE</code></pre>
+<p>You don’t have to list these; instead, you can provide a range of
+letters or numbers that count as a match.</p>
+<pre class="r"><code>string_vec = c(
+  &#39;7th inning stretch&#39;,
+  &#39;1st half soon to begin. Texas won the toss.&#39;,
+  &#39;she is 5 feet 4 inches tall&#39;,
+  &#39;3AM - cant sleep :(&#39;
+  )
+
+str_detect(string_vec, &quot;^[0-9][a-zA-Z]&quot;)</code></pre>
+<pre><code>## [1]  TRUE  TRUE FALSE  TRUE</code></pre>
+<p>The character <code>.</code> matches anything.</p>
+<pre class="r"><code>string_vec = c(
+  &#39;Its 7:11 in the evening&#39;,
+  &#39;want to go to 7-11?&#39;,
+  &#39;my flight is AA711&#39;,
+  &#39;NetBios: scanning ip 203.167.114.66&#39;
+  )
+
+str_detect(string_vec, &quot;7.11&quot;)</code></pre>
+<pre><code>## [1]  TRUE  TRUE FALSE  TRUE</code></pre>
+<p>Some characters are “special”. These include <code>[</code> and
+<code>]</code>, <code>(</code> and <code>)</code>, and <code>.</code>.
+If you want to search for these, you have to indicate they’re special
+using <code>\</code>. Unfortunately, <code>\</code> is also special, so
+things get weird.</p>
+<pre class="r"><code>string_vec = c(
+  &#39;The CI is [2, 5]&#39;,
+  &#39;:-]&#39;,
+  &#39;:-[&#39;,
+  &#39;I found the answer on pages [6-7]&#39;
+  )
+
+str_detect(string_vec, &quot;\\[&quot;)</code></pre>
+<pre><code>## [1]  TRUE FALSE  TRUE  TRUE</code></pre>
+<p>There are a lot of other regular expression resources; we’re really
+only scratching the surface. The stuff we have already will be useful
+and it’s probably not worth going down the regex rabbit hole. That said,
+it’s helpful to know what other functions exist in <code>stringr</code>
+– you should at least know they exist even if you don’t know exactly how
+they work right now!</p>
+</div>
+<div id="thoughts-on-factors" class="section level3">
+<h3>Thoughts on factors</h3>
+<p>Factors are maybe the least intuitive of <code>R</code>’s data types.
+They are very useful, but they also do things you don’t expect; this is
+especially bad when you have factors but think you have characters –
+which happens more than you’d expect, because R uses factors a lot (<a
+href="https://simplystatistics.org/2015/07/24/stringsasfactors-an-unauthorized-biography/">mostly
+for historical reasons</a>). Folks get pretty <a
+href="https://twitter.com/JennyBryan/status/630052228624068609/photo/1">riled</a>
+<a
+href="https://cran.r-project.org/web/packages/hellno/hellno.pdf">up</a>
+about factors.</p>
+<p>Factors are the way to store categorical variables in R. They can
+take on specific levels (e.g. male and female) which are usually
+presented as characters but are, in fact, stored by R as integers. These
+integer values are used by functions throughout R – in making plots, in
+organizing tables, in determining the “reference” category – but most of
+the time are hidden by easier-to-read character string labels. This
+close relationship to strings, when in fact there is a lot of added
+structure, is why factors can be so confusing.</p>
+<p>This is the kind of thing that can get you in trouble.</p>
+<pre class="r"><code>vec_sex = factor(c(&quot;male&quot;, &quot;male&quot;, &quot;female&quot;, &quot;female&quot;))
+vec_sex</code></pre>
+<pre><code>## [1] male   male   female female
+## Levels: female male</code></pre>
+<pre class="r"><code>as.numeric(vec_sex)</code></pre>
+<pre><code>## [1] 2 2 1 1</code></pre>
+<pre class="r"><code>vec_sex = fct_relevel(vec_sex, &quot;male&quot;)
+vec_sex</code></pre>
+<pre><code>## [1] male   male   female female
+## Levels: male female</code></pre>
+<pre class="r"><code>as.numeric(vec_sex)</code></pre>
+<pre><code>## [1] 1 1 2 2</code></pre>
+<p>The previous code also illustrates <a
+href="http://r4ds.had.co.nz/vectors.html#coercion"><em>coersion</em></a>:
+forcing a variable from one type (e.g. factor) to another
+(e.g. numeric). Understanding how R coerces variables is important,
+because it sometimes happens unintentionally and can break your code or
+impact your analyses.</p>
+<p>For this reason, it’s important to be deliberate factors,
+particularly by using functions in <a
+href="https://forcats.tidyverse.org"><code>forcats</code></a>.</p>
+</div>
+<div id="nsduh" class="section level3">
+<h3>NSDUH</h3>
+<p>We’ll revisit the table scraped from the National Survey on Drug Use
+and Health data on <a
+href="http://samhda.s3-us-gov-west-1.amazonaws.com/s3fs-public/field-uploads/2k15StateFiles/NSDUHsaeShortTermCHG2015.htm">this
+page</a>. In <a href="reading_data_from_the_web.html">reading data from
+the web</a>, we loaded this data using the code below, but noted it
+wasn’t tidy.</p>
+<pre class="r"><code>nsduh_url = &quot;http://samhda.s3-us-gov-west-1.amazonaws.com/s3fs-public/field-uploads/2k15StateFiles/NSDUHsaeShortTermCHG2015.htm&quot;
+
+table_marj = 
+  read_html(nsduh_url) |&gt; 
+  html_table() |&gt; 
+  first() |&gt;
+  slice(-1)</code></pre>
+<p>There are a few steps we need to implement to tidy these data. For
+now I’m not interested in the p-values (I’d rather just see the data);
+we also have age groups and year ranges in column titles, both of which
+are, in fact, variables. Lastly, the table includes letters as
+superscripts next to table entries; if we only want the percents we’ll
+need to strip these out.</p>
+<pre class="r"><code>data_marj = 
+  table_marj |&gt;
+  select(-contains(&quot;P Value&quot;)) |&gt;
+  pivot_longer(
+    -State,
+    names_to = &quot;age_year&quot;, 
+    values_to = &quot;percent&quot;) |&gt;
+  separate(age_year, into = c(&quot;age&quot;, &quot;year&quot;), sep = &quot;\\(&quot;) |&gt;
+  mutate(
+    year = str_replace(year, &quot;\\)&quot;, &quot;&quot;),
+    percent = str_replace(percent, &quot;[a-c]$&quot;, &quot;&quot;),
+    percent = as.numeric(percent)) |&gt;
+  filter(!(State %in% c(&quot;Total U.S.&quot;, &quot;Northeast&quot;, &quot;Midwest&quot;, &quot;South&quot;, &quot;West&quot;)))</code></pre>
+<p>We used <code>stringr</code> and regular expressions a couple of
+times above:</p>
+<ul>
+<li>in <code>separate</code>, we split age and year at the open
+parentheses using <code>"\\("</code></li>
+<li>we stripped out the close parenthesis in <code>mutate</code></li>
+<li>to remove character superscripts, we replaced any character using
+<code>"[a-c]$"</code></li>
+</ul>
+<p>Let’s quickly visualize these data for the 12-17 age group; to make
+the plot readable, we’ll treat <code>State</code> as a factor are
+reorder according to the median <code>percent</code> value.</p>
+<pre class="r"><code>data_marj |&gt;
+  filter(age == &quot;12-17&quot;) |&gt; 
+  mutate(State = fct_reorder(State, percent)) |&gt; 
+  ggplot(aes(x = State, y = percent, color = year)) + 
+    geom_point() + 
+    theme(axis.text.x = element_text(angle = 90, hjust = 1))</code></pre>
+<p><img src="strings_and_factors_files/figure-html/unnamed-chunk-12-1.png" width="90%" /></p>
+</div>
+<div id="restaurant-inspections" class="section level3">
+<h3>Restaurant inspections</h3>
+<p>As a kind of involved example of strings and factors, we’ll take a
+look at the <a href="dataset_restaurant_inspections.html">NYC Restuarant
+Inspections</a> data. Although we won’t talk about this in detail now,
+it’s worth mentioning that these data were collected using the NYC Open
+Data API; code is available with the data description.</p>
+<p>First we’ll import the data and take a look.</p>
+<pre class="r"><code>data(&quot;rest_inspec&quot;)
+
+rest_inspec |&gt; 
+  group_by(boro, grade) |&gt; 
+  summarize(n = n()) |&gt; 
+  pivot_wider(names_from = grade, values_from = n)</code></pre>
+<pre><code>## `summarise()` has grouped output by &#39;boro&#39;. You can override using the
+## `.groups` argument.</code></pre>
+<pre><code>## # A tibble: 6 × 8
+## # Groups:   boro [6]
+##   boro              A     B     C `Not Yet Graded`     P     Z  `NA`
+##   &lt;chr&gt;         &lt;int&gt; &lt;int&gt; &lt;int&gt;            &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;
+## 1 BRONX         13688  2801   701              200   163   351 16833
+## 2 BROOKLYN      37449  6651  1684              702   416   977 51930
+## 3 MANHATTAN     61608 10532  2689              765   508  1237 80615
+## 4 Missing           4    NA    NA               NA    NA    NA    13
+## 5 QUEENS        35952  6492  1593              604   331   913 45816
+## 6 STATEN ISLAND  5215   933   207               85    47   149  6730</code></pre>
+<p>To simplify things, I’ll remove inspections with scores other than
+<code>A</code>, <code>B</code>, or <code>C</code>, and also remove the
+restaurants with missing boro information. I’ll also clean up boro names
+a bit.</p>
+<pre class="r"><code>rest_inspec =
+  rest_inspec |&gt;
+  filter(grade %in% c(&quot;A&quot;, &quot;B&quot;, &quot;C&quot;), boro != &quot;Missing&quot;) |&gt; 
+  mutate(boro = str_to_title(boro))</code></pre>
+<p>Let’s focus only on pizza places for now, and re-examine grades by
+borough.</p>
+<pre class="r"><code>rest_inspec |&gt; 
+  filter(str_detect(dba, &quot;Pizza&quot;)) |&gt; 
+  group_by(boro, grade) |&gt; 
+  summarize(n = n()) |&gt; 
+  pivot_wider(names_from = grade, values_from = n)</code></pre>
+<pre><code>## `summarise()` has grouped output by &#39;boro&#39;. You can override using the
+## `.groups` argument.</code></pre>
+<pre><code>## # A tibble: 5 × 3
+## # Groups:   boro [5]
+##   boro              A     B
+##   &lt;chr&gt;         &lt;int&gt; &lt;int&gt;
+## 1 Bronx             9     3
+## 2 Brooklyn          6    NA
+## 3 Manhattan        26     8
+## 4 Queens           17    NA
+## 5 Staten Island     5    NA</code></pre>
+<p>That doesn’t look right – for sure there are more pizza place ratings
+than that! The problem is that the match in <code>str_detect</code> is
+case-sensitive until we tell it not to be:</p>
+<pre class="r"><code>rest_inspec |&gt; 
+  filter(str_detect(dba, &quot;[Pp][Ii][Zz][Zz][Aa]&quot;)) |&gt; 
+  group_by(boro, grade) |&gt; 
+  summarize(n = n()) |&gt; 
+  pivot_wider(names_from = grade, values_from = n)</code></pre>
+<pre><code>## `summarise()` has grouped output by &#39;boro&#39;. You can override using the
+## `.groups` argument.</code></pre>
+<pre><code>## # A tibble: 5 × 4
+## # Groups:   boro [5]
+##   boro              A     B     C
+##   &lt;chr&gt;         &lt;int&gt; &lt;int&gt; &lt;int&gt;
+## 1 Bronx          1170   305    56
+## 2 Brooklyn       1948   296    61
+## 3 Manhattan      1983   420    76
+## 4 Queens         1647   259    48
+## 5 Staten Island   323   127    21</code></pre>
+<p>The table is okay but I’d like to visualize this.</p>
+<pre class="r"><code>rest_inspec |&gt; 
+  filter(str_detect(dba, &quot;[Pp][Ii][Zz][Zz][Aa]&quot;)) |&gt;
+  ggplot(aes(x = boro, fill = grade)) + 
+  geom_bar() </code></pre>
+<p><img src="strings_and_factors_files/figure-html/unnamed-chunk-17-1.png" width="90%" /></p>
+<p>Might help to have things in a different order – maybe number of
+pizza places? Fortunately this can be done using
+<code>fct_infreq</code>.</p>
+<pre class="r"><code>rest_inspec |&gt; 
+  filter(str_detect(dba, &quot;[Pp][Ii][Zz][Zz][Aa]&quot;)) |&gt;
+  mutate(boro = fct_infreq(boro)) |&gt;
+  ggplot(aes(x = boro, fill = grade)) + 
+  geom_bar() </code></pre>
+<p><img src="strings_and_factors_files/figure-html/unnamed-chunk-18-1.png" width="90%" /></p>
+<p>Suppose I want to rename a borough. I could try using
+<code>str_replace</code>.</p>
+<pre class="r"><code>rest_inspec |&gt; 
+  filter(str_detect(dba, &quot;[Pp][Ii][Zz][Zz][Aa]&quot;)) |&gt;
+  mutate(
+    boro = fct_infreq(boro),
+    boro = str_replace(boro, &quot;Manhattan&quot;, &quot;The City&quot;)) |&gt;
+  ggplot(aes(x = boro, fill = grade)) + 
+  geom_bar() </code></pre>
+<p><img src="strings_and_factors_files/figure-html/unnamed-chunk-19-1.png" width="90%" /></p>
+<p>This renamed the borough, but then converted the result back to a
+string – which, when plotted, was implicitly made a factor and ordered
+alphabetically. I could switch the order in which I rename and encode
+the factor order I want, but that might not always work.</p>
+<p>If I tried base R (maybe because I found some code online), I might
+try to do this using <code>replace</code>.</p>
+<pre class="r"><code>rest_inspec |&gt; 
+  filter(str_detect(dba, &quot;[Pp][Ii][Zz][Zz][Aa]&quot;)) |&gt;
+  mutate(
+    boro = fct_infreq(boro),
+    boro = replace(boro, which(boro == &quot;Manhattan&quot;), &quot;The City&quot;)) |&gt;
+  ggplot(aes(x = boro, fill = grade)) + 
+  geom_bar()</code></pre>
+<pre><code>## Warning: There was 1 warning in `mutate()`.
+## ℹ In argument: `boro = replace(boro, which(boro == &quot;Manhattan&quot;), &quot;The City&quot;)`.
+## Caused by warning in `[&lt;-.factor`:
+## ! invalid factor level, NA generated</code></pre>
+<p><img src="strings_and_factors_files/figure-html/unnamed-chunk-20-1.png" width="90%" /></p>
+<p>That didn’t work at all! Factors have very specific values, trying to
+use a value that is not an existing factor level won’t work.</p>
+<p>Fortunately there is a dedicated function for renaming factor
+levels:</p>
+<pre class="r"><code>rest_inspec |&gt; 
+  filter(str_detect(dba, regex(&quot;pizza&quot;, ignore_case = TRUE))) |&gt;
+  mutate(
+    boro = fct_infreq(boro),
+    boro = fct_recode(boro, &quot;The City&quot; = &quot;Manhattan&quot;)) |&gt;
+  ggplot(aes(x = boro, fill = grade)) + 
+  geom_bar()</code></pre>
+<p><img src="strings_and_factors_files/figure-html/unnamed-chunk-21-1.png" width="90%" /></p>
+<p>Success!</p>
+</div>
+<div id="weather-data" class="section level3">
+<h3>Weather data</h3>
+<p>We saw factors in in <a href="visualization_pt2.html">Viz Pt 2</a>.
+In that case, we were interested in reordering a factor variable in
+order to produce clearer plots – <code>ggplot</code> uses factor levels
+to determine the order in which categories appear. Let’s revisit those
+examples now.</p>
+<p>Our first step is to load the data we used.</p>
+<pre class="r"><code>weather_df = 
+  rnoaa::meteo_pull_monitors(
+    c(&quot;USW00094728&quot;, &quot;USW00022534&quot;, &quot;USS0023B17S&quot;),
+    var = c(&quot;PRCP&quot;, &quot;TMIN&quot;, &quot;TMAX&quot;), 
+    date_min = &quot;2021-01-01&quot;,
+    date_max = &quot;2023-12-31&quot;) |&gt;
+  mutate(
+    name = recode(
+      id, 
+      USW00094728 = &quot;CentralPark_NY&quot;, 
+      USW00022534 = &quot;Molokai_HI&quot;,
+      USS0023B17S = &quot;Waterhole_WA&quot;),
+    tmin = tmin / 10,
+    tmax = tmax / 10) |&gt;
+  select(name, id, everything())</code></pre>
+<pre><code>## Registered S3 method overwritten by &#39;hoardr&#39;:
+##   method           from
+##   print.cache_info httr</code></pre>
+<pre><code>## using cached file: /Users/jeffgoldsmith/Library/Caches/org.R-project.R/R/rnoaa/noaa_ghcnd/USW00094728.dly</code></pre>
+<pre><code>## date created (size, mb): 2023-09-28 10:20:04.003054 (8.524)</code></pre>
+<pre><code>## file min/max dates: 1869-01-01 / 2023-09-30</code></pre>
+<pre><code>## using cached file: /Users/jeffgoldsmith/Library/Caches/org.R-project.R/R/rnoaa/noaa_ghcnd/USW00022534.dly</code></pre>
+<pre><code>## date created (size, mb): 2023-09-28 10:20:09.885503 (3.83)</code></pre>
+<pre><code>## file min/max dates: 1949-10-01 / 2023-09-30</code></pre>
+<pre><code>## using cached file: /Users/jeffgoldsmith/Library/Caches/org.R-project.R/R/rnoaa/noaa_ghcnd/USS0023B17S.dly</code></pre>
+<pre><code>## date created (size, mb): 2023-09-28 10:20:11.8066 (0.994)</code></pre>
+<pre><code>## file min/max dates: 1999-09-01 / 2023-09-30</code></pre>
+<pre class="r"><code>weather_df</code></pre>
+<pre><code>## # A tibble: 3,009 × 6
+##    name           id          date        prcp  tmax  tmin
+##    &lt;chr&gt;          &lt;chr&gt;       &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+##  1 CentralPark_NY USW00094728 2021-01-01   157   4.4   0.6
+##  2 CentralPark_NY USW00094728 2021-01-02    13  10.6   2.2
+##  3 CentralPark_NY USW00094728 2021-01-03    56   3.3   1.1
+##  4 CentralPark_NY USW00094728 2021-01-04     5   6.1   1.7
+##  5 CentralPark_NY USW00094728 2021-01-05     0   5.6   2.2
+##  6 CentralPark_NY USW00094728 2021-01-06     0   5     1.1
+##  7 CentralPark_NY USW00094728 2021-01-07     0   5    -1  
+##  8 CentralPark_NY USW00094728 2021-01-08     0   2.8  -2.7
+##  9 CentralPark_NY USW00094728 2021-01-09     0   2.8  -4.3
+## 10 CentralPark_NY USW00094728 2021-01-10     0   5    -1.6
+## # ℹ 2,999 more rows</code></pre>
+<p>Our first example reordered <code>name</code> “by hand” using
+<code>fct_relevel</code>:</p>
+<pre class="r"><code>weather_df |&gt;
+  mutate(name = forcats::fct_relevel(name, c(&quot;Molokai_HI&quot;, &quot;CentralPark_NY&quot;, &quot;Waterhole_WA&quot;))) |&gt; 
+  ggplot(aes(x = name, y = tmax)) + 
+  geom_violin(aes(fill = name), color = &quot;blue&quot;, alpha = .5) + 
+  theme(legend.position = &quot;bottom&quot;)</code></pre>
+<p><img src="strings_and_factors_files/figure-html/unnamed-chunk-22-1.png" width="90%" /></p>
+<p>We could instead reorder <code>name</code> according to
+<code>tmax</code> values in each name using
+<code>fct_reorder</code>:</p>
+<pre class="r"><code>weather_df |&gt;
+  mutate(name = forcats::fct_reorder(name, tmax)) |&gt; 
+  ggplot(aes(x = name, y = tmax)) + 
+  geom_violin(aes(fill = name), color = &quot;blue&quot;, alpha = .5) + 
+  theme(legend.position = &quot;bottom&quot;)</code></pre>
+<p><img src="strings_and_factors_files/figure-html/unnamed-chunk-23-1.png" width="90%" /></p>
+<p>Although you may not have seen linear regression previously, the
+ordering of factor variables play an important in this case as well.
+Specifically, the ordering determines the “reference” category, and is
+something that can be adjusted as needed.</p>
+<pre class="r"><code>weather_df |&gt;
+  lm(tmax ~ name, data = _)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = tmax ~ name, data = weather_df)
+## 
+## Coefficients:
+##      (Intercept)    nameMolokai_HI  nameWaterhole_WA  
+##            18.26             10.11            -10.51</code></pre>
+<pre class="r"><code>weather_df |&gt;
+  mutate(name = forcats::fct_relevel(name, c(&quot;Molokai_HI&quot;, &quot;CentralPark_NY&quot;, &quot;Waterhole_WA&quot;))) |&gt; 
+  lm(tmax ~ name, data = _)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = tmax ~ name, data = mutate(weather_df, name = forcats::fct_relevel(name, 
+##     c(&quot;Molokai_HI&quot;, &quot;CentralPark_NY&quot;, &quot;Waterhole_WA&quot;))))
+## 
+## Coefficients:
+##        (Intercept)  nameCentralPark_NY    nameWaterhole_WA  
+##              28.37              -10.11              -20.63</code></pre>
+<p>In this example, we’re also using a feature of <code>|&gt;</code>
+that allows us to specify where the tibble goes: <code>_</code> is a
+placeholder for the result of the preceding call.</p>
+</div>
+<div id="pulse-data" class="section level3">
+<h3>PULSE data</h3>
+<p>Let’s revisit a <a
+href="./data/public_pulse_data.sas7bdat">dataset</a> we’ve seen a few
+times now. In <a href="tidy_data.html">tidy data</a> we spent some time
+tidying the PULSE dataset. As part of that we used tools available to us
+at the time, but now we have some better tools.</p>
+<p>The code below updates the data processing pipeline for the PULSE
+data using <code>stringr</code> and <code>forcats</code>. The result is
+the same, and the differences are pretty small, but this is a bit
+cleaner.</p>
+<pre class="r"><code>pulse_data = 
+  haven::read_sas(&quot;./data/public_pulse_data.sas7bdat&quot;) |&gt;
+  janitor::clean_names() |&gt;
+  pivot_longer(
+    bdi_score_bl:bdi_score_12m,
+    names_to = &quot;visit&quot;, 
+    names_prefix = &quot;bdi_score_&quot;,
+    values_to = &quot;bdi&quot;) |&gt;
+  select(id, visit, everything()) |&gt;
+  mutate(
+    visit = str_replace(visit, &quot;bl&quot;, &quot;00m&quot;),
+    visit = factor(visit)) |&gt;
+  arrange(id, visit)
+
+print(pulse_data, n = 12)</code></pre>
+<pre><code>## # A tibble: 4,348 × 5
+##       id visit   age sex     bdi
+##    &lt;dbl&gt; &lt;fct&gt; &lt;dbl&gt; &lt;chr&gt; &lt;dbl&gt;
+##  1 10003 00m    48.0 male      7
+##  2 10003 01m    48.0 male      1
+##  3 10003 06m    48.0 male      2
+##  4 10003 12m    48.0 male      0
+##  5 10015 00m    72.5 male      6
+##  6 10015 01m    72.5 male     NA
+##  7 10015 06m    72.5 male     NA
+##  8 10015 12m    72.5 male     NA
+##  9 10022 00m    58.5 male     14
+## 10 10022 01m    58.5 male      3
+## 11 10022 06m    58.5 male      8
+## 12 10022 12m    58.5 male     NA
+## # ℹ 4,336 more rows</code></pre>
+</div>
+<div id="airbnb" class="section level3">
+<h3>Airbnb</h3>
+<p>We could also use factors in an exploratory analysis of the <a
+href="dataset_airbnb.html">Airbnb</a> data, for example when looking at
+the distribution of prices in various neighborhoods. Ordering these
+according to the median price makes for clearer plots than ordering
+neighborhoods alphabetically.</p>
+<pre class="r"><code>data(&quot;nyc_airbnb&quot;)
+
+nyc_airbnb |&gt;
+  filter(neighbourhood_group == &quot;Manhattan&quot;) |&gt; 
+  mutate(
+    neighbourhood = fct_reorder(neighbourhood, price)) |&gt; 
+  ggplot(aes(x = neighbourhood, y = price)) +
+  geom_boxplot() +
+  coord_flip() + 
+  ylim(0, 1000)</code></pre>
+<p><img src="strings_and_factors_files/figure-html/unnamed-chunk-26-1.png" width="90%" /></p>
+</div>
+</div>
+<div id="other-materials" class="section level2">
+<h2>Other materials</h2>
+<ul>
+<li>R for Data Science has chapters on both <a
+href="http://r4ds.had.co.nz/strings.html">strings / regex</a> and <a
+href="http://r4ds.had.co.nz/factors.html">factors</a></li>
+<li>There are useful materials by Jenny Bryan on <a
+href="http://stat545.com/block022_regular-expression.html">strings /
+regex</a> and <a
+href="http://stat545.com/block029_factors.html">factors</a> as well</li>
+<li>Dealing with text entries can be a <a
+href="https://www.youtube.com/watch?v=15nNY7uofNw">real
+challenge</a></li>
+<li>Cheatsheet for <a
+href="https://github.com/rstudio/cheatsheets/blob/main/strings.pdf">stringr</a></li>
+</ul>
+<p>The code that I produced working examples in lecture is <a
+href="https://github.com/P8105/data_wrangling_ii">here</a>.</p>
+</div>
+
+<br><br>
+<footer>
+  <img src="images/p8105_stickers.png" alt="stickers" style="width:30%">
+  <br>
+  <p class="copyright text-muted" align="center">Copyright &copy; 2019 Jeff Goldsmith</p>
+</footer>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

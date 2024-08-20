@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Visualization with ggplot2</title>
+
+<script src="site_libs/header-attrs-2.24/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" />
+<script defer src="https://use.fontawesome.com/releases/v5.0.3/js/all.js"></script>
+<script defer src="https://use.fontawesome.com/releases/v5.0.0/js/v4-shims.js"></script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-151578452-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-151578452-1');
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">P8105</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="schedule.html">Schedule</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Topics
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="topic_what_is_data_science.html">What is Data Science?</a>
+    </li>
+    <li>
+      <a href="topic_building_blocks.html">Building Blocks</a>
+    </li>
+    <li>
+      <a href="topic_data_wrangling_i.html">Data Wrangling I</a>
+    </li>
+    <li>
+      <a href="topic_visualization_and_eda.html">Visualization and EDA</a>
+    </li>
+    <li>
+      <a href="topic_data_wrangling_ii.html">Data Wrangling II</a>
+    </li>
+    <li>
+      <a href="topic_interactivity.html">Interactivity</a>
+    </li>
+    <li>
+      <a href="topic_iteration.html">Iteration</a>
+    </li>
+    <li>
+      <a href="topic_linear_models.html">Linear Models</a>
+    </li>
+    <li>
+      <a href="topic_other_material.html">Other Materials</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Datasets
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="dataset_airbnb.html">Airbnb</a>
+    </li>
+    <li>
+      <a href="dataset_brfss.html">BRFSS</a>
+    </li>
+    <li>
+      <a href="dataset_fivethirtyeight.html">FiveThirtyEight</a>
+    </li>
+    <li>
+      <a href="dataset_instacart.html">Instacart</a>
+    </li>
+    <li>
+      <a href="dataset_mr_trash_wheel.html">Mr. Trash Wheel</a>
+    </li>
+    <li>
+      <a href="dataset_noaa.html">NOAA</a>
+    </li>
+    <li>
+      <a href="dataset_restaurant_inspections.html">NYC Restaurant Inspections</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="homework_and_projects.html">Homework and Projects</a>
+</li>
+<li>
+  <a href="course_communication.html">Communication</a>
+</li>
+<li>
+  <a href="https://github.com/P8105/p8105.github.io">
+    <span class="fa fa-github"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Visualization with
+<code>ggplot2</code></h1>
+<h3 class="subtitle">Part 1</h3>
+
+</div>
+
+
+<p>Good visualization is a critical step in data analysis.</p>
+<p>This is the first module in the <a
+href="topic_visualization_and_eda.html">Visualization and EDA</a>
+topic.</p>
+<div id="overview" class="section level2 tabset tabset-pills">
+<h2 class="tabset tabset-pills">Overview</h2>
+<div id="learning-objectives" class="section level3">
+<h3>Learning Objectives</h3>
+<p>Create effective graphics using ggplot and implement best practices
+for effective graphical communication.</p>
+</div>
+<div id="slide-deck" class="section level3">
+<h3>Slide Deck</h3>
+<div class="vid_container">
+<p><iframe 
+    src="https://speakerdeck.com/player/7272d2325e0d4f27a6bca25afbf149ce" 
+    allowfullscreen 
+    frameborder="0"
+    class="video"> </iframe></p>
+</div>
+<div style="margin-bottom:5px">
+<strong>
+<a href="https://speakerdeck.com/jeffgoldsmith/p8105-visualization-i" title="Visualization" target="_blank">Visualization</a>
+</strong> from
+<strong><a href="https://speakerdeck.com/jeffgoldsmith" target="_blank">Jeff
+Goldsmith</a></strong>.
+</div>
+<p><br></p>
+<hr />
+</div>
+<div id="video-lecture" class="section level3">
+<h3>Video Lecture</h3>
+<div class="vid_container">
+<p><iframe 
+    src="https://www.youtube.com/embed/32RI5q1IXAI"
+    frameborder="0" allowfullscreen class="video"> </iframe></p>
+</div>
+<hr />
+</div>
+</div>
+<div id="example" class="section level2">
+<h2>Example</h2>
+<p>First, I’ll create a GitHub repo + local R project for today’s work
+(I’m calling mine <code>viz_and_eda</code>). Occasionally, we’ll use the
+same datasets we saw in <a href="topic_data_wrangling_i.html">Data
+Wrangling I</a>, so I’ll add sub-directory called <code>data</code> and
+put <a href="./resources/data_import_examples.zip">these datasets</a> in
+there. Lastly I’ll start an R Markdown file for today, and load the
+<code>tidyverse</code> package in “setup” code chunk.</p>
+<pre class="r"><code>library(tidyverse)
+library(ggridges)</code></pre>
+<p>We’ll be working with NOAA weather data, which is downloaded using
+<code>rnoaa::meteo_pull_monitors</code> function in the code chunk
+below; similar code underlies the weather dataset used elsewhere in the
+course. Because this process can take some time, I’ll cache the code
+chunk.</p>
+<pre class="r"><code>weather_df = 
+  rnoaa::meteo_pull_monitors(
+    c(&quot;USW00094728&quot;, &quot;USW00022534&quot;, &quot;USS0023B17S&quot;),
+    var = c(&quot;PRCP&quot;, &quot;TMIN&quot;, &quot;TMAX&quot;), 
+    date_min = &quot;2021-01-01&quot;,
+    date_max = &quot;2022-12-31&quot;) |&gt;
+  mutate(
+    name = recode(
+      id, 
+      USW00094728 = &quot;CentralPark_NY&quot;, 
+      USW00022534 = &quot;Molokai_HI&quot;,
+      USS0023B17S = &quot;Waterhole_WA&quot;),
+    tmin = tmin / 10,
+    tmax = tmax / 10) |&gt;
+  select(name, id, everything())
+## using cached file: /Users/jeffgoldsmith/Library/Caches/org.R-project.R/R/rnoaa/noaa_ghcnd/USW00094728.dly
+## date created (size, mb): 2023-09-19 15:41:55.07359 (8.524)
+## file min/max dates: 1869-01-01 / 2023-09-30
+## using cached file: /Users/jeffgoldsmith/Library/Caches/org.R-project.R/R/rnoaa/noaa_ghcnd/USW00022534.dly
+## date created (size, mb): 2023-09-25 10:06:23.827176 (3.83)
+## file min/max dates: 1949-10-01 / 2023-09-30
+## using cached file: /Users/jeffgoldsmith/Library/Caches/org.R-project.R/R/rnoaa/noaa_ghcnd/USS0023B17S.dly
+## date created (size, mb): 2023-09-19 15:42:03.139582 (0.994)
+## file min/max dates: 1999-09-01 / 2023-09-30
+
+weather_df
+## # A tibble: 2,190 × 6
+##    name           id          date        prcp  tmax  tmin
+##    &lt;chr&gt;          &lt;chr&gt;       &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+##  1 CentralPark_NY USW00094728 2021-01-01   157   4.4   0.6
+##  2 CentralPark_NY USW00094728 2021-01-02    13  10.6   2.2
+##  3 CentralPark_NY USW00094728 2021-01-03    56   3.3   1.1
+##  4 CentralPark_NY USW00094728 2021-01-04     5   6.1   1.7
+##  5 CentralPark_NY USW00094728 2021-01-05     0   5.6   2.2
+##  6 CentralPark_NY USW00094728 2021-01-06     0   5     1.1
+##  7 CentralPark_NY USW00094728 2021-01-07     0   5    -1  
+##  8 CentralPark_NY USW00094728 2021-01-08     0   2.8  -2.7
+##  9 CentralPark_NY USW00094728 2021-01-09     0   2.8  -4.3
+## 10 CentralPark_NY USW00094728 2021-01-10     0   5    -1.6
+## # ℹ 2,180 more rows</code></pre>
+<p>We’ll start with a basic scatterplot to develop our understanding of
+<code>ggplot</code>’s data + mappings + geoms approach, and build
+quickly from there.</p>
+<div id="basic-scatterplot" class="section level3">
+<h3>Basic scatterplot</h3>
+<p>We’ll use the <code>weather_df</code> data throughout, so we’ll move
+straight into defining aesthetic mappings. To create a basic
+scatterplot, we need to map variables to the X and Y coordinate
+aesthetics:</p>
+<pre class="r"><code>ggplot(weather_df, aes(x = tmin, y = tmax))</code></pre>
+<p><img src="visualization_pt1_files/figure-html/unnamed-chunk-3-1.png" width="90%" /></p>
+<p>Well, my “scatterplot” is blank. That’s because I’ve defined the data
+and the aesthetic mappings, but haven’t added any geoms:
+<code>ggplot</code> knows what data I want to plot and how I want to map
+variables, but not what I want to show. Below I add a <code>geom</code>
+to define my first scatterplot.</p>
+<pre class="r"><code>ggplot(weather_df, aes(x = tmin, y = tmax)) + 
+  geom_point()
+## Warning: Removed 17 rows containing missing values (`geom_point()`).</code></pre>
+<p><img src="visualization_pt1_files/figure-html/unnamed-chunk-4-1.png" width="90%" /></p>
+<p>The code below could be used instead to produce the same figure.
+Using this style can be helpful if you want to do some pre-processing
+before making your plot but don’t want to save the intermediate data.
+It’s also consistent with many other pipelines: you start with a data
+frame, <em>and then</em> do stuff by piping the dataframe into the next
+function. Most of my plotting code is written like this.</p>
+<pre class="r"><code>weather_df |&gt;
+  ggplot(aes(x = tmin, y = tmax)) + 
+  geom_point()</code></pre>
+<p>Notice that we try to use good styling practices here as well – new
+plot elements are added on new lines, code that’s part of the same
+sequence is indented, we’re making use of whitespace, etc.</p>
+<p>You can also save the output of <code>ggplot()</code> to an object
+and modify / print it later. This is often helpful, although it’s not my
+default approach to making plots.</p>
+<pre class="r"><code>ggp_weather = 
+  weather_df |&gt;
+  ggplot(aes(x = tmin, y = tmax)) 
+
+ggp_weather + geom_point()</code></pre>
+</div>
+<div id="advanced-scatterplot" class="section level3">
+<h3>Advanced scatterplot</h3>
+<p>The basic scatterplot gave some useful information – the variables
+are related roughly as we’d expect, and there aren’t any obvious
+outliers to investigate before moving on. We do, however, have other
+variables to learn about using additional aesthetic mappings.</p>
+<p>Let’s start with <code>name</code>, which I can incorporate using the
+<code>color</code> aesthetic:</p>
+<pre class="r"><code>ggplot(weather_df, aes(x = tmin, y = tmax)) + 
+  geom_point(aes(color = name))
+## Warning: Removed 17 rows containing missing values (`geom_point()`).</code></pre>
+<p><img src="visualization_pt1_files/figure-html/unnamed-chunk-7-1.png" width="90%" /></p>
+<p>Nice! We get colors and have a handly legend. Maybe next I’ll add a
+smooth curve and make the data points a bit transparent.</p>
+<pre class="r"><code>ggplot(weather_df, aes(x = tmin, y = tmax)) + 
+  geom_point(aes(color = name), alpha = .5) +
+  geom_smooth(se = FALSE)
+## `geom_smooth()` using method = &#39;gam&#39; and formula = &#39;y ~ s(x, bs = &quot;cs&quot;)&#39;
+## Warning: Removed 17 rows containing non-finite values (`stat_smooth()`).
+## Warning: Removed 17 rows containing missing values (`geom_point()`).</code></pre>
+<p><img src="visualization_pt1_files/figure-html/unnamed-chunk-8-1.png" width="90%" /></p>
+<p>Neat! The curve gives a sense of the relationship between variables,
+and the transparency shows where data are overlapping. I can’t help but
+notice, though, that the smooth curve is for all the data but the colors
+are only for the scatterplot. Turns out that this is due to where I
+defined the mappings. The X and Y mappings apply to the whole graphic,
+but color is currently geom-specific. Sometimes you want or need to do
+this, but for now I don’t like it. If I’m honest, I’m also having a hard
+time seeing everything on one plot, so I’m going to add facet based on
+name as well.</p>
+<pre class="r"><code>ggplot(weather_df, aes(x = tmin, y = tmax, color = name)) + 
+  geom_point(alpha = .5) +
+  geom_smooth(se = FALSE) + 
+  facet_grid(. ~ name)
+## `geom_smooth()` using method = &#39;loess&#39; and formula = &#39;y ~ x&#39;
+## Warning: Removed 17 rows containing non-finite values (`stat_smooth()`).
+## Warning: Removed 17 rows containing missing values (`geom_point()`).</code></pre>
+<p><img src="visualization_pt1_files/figure-html/unnamed-chunk-9-1.png" width="90%" /></p>
+<p>Awesome! I’ve learned a lot about these data. However, the
+relationship between minimum and maximum temperature is now kinda
+boring, so I’d prefer something that shows the time of year. Also I want
+to learn about precipitation, so let’s do that.</p>
+<pre class="r"><code>ggplot(weather_df, aes(x = date, y = tmax, color = name)) + 
+  geom_point(aes(size = prcp), alpha = .5) +
+  geom_smooth(se = FALSE) + 
+  facet_grid(. ~ name)
+## `geom_smooth()` using method = &#39;loess&#39; and formula = &#39;y ~ x&#39;
+## Warning: Removed 17 rows containing non-finite values (`stat_smooth()`).
+## Warning: Removed 19 rows containing missing values (`geom_point()`).</code></pre>
+<p><img src="visualization_pt1_files/figure-html/unnamed-chunk-10-1.png" width="90%" /></p>
+<p>Way more interesting! You get a whole range of temperatures in
+Central Park (sometimes it’s maybe too hot); it’s more temperate near
+Seattle but it rains <em>all the time</em>; and Molokai is great except
+for that a few (relatively) cold, rainy days.</p>
+<p><strong><em>Learning Assessment:</em></strong> Write a code chain
+that starts with <code>weather_df</code>; focuses only on Central Park,
+converts temperatures to Fahrenheit, makes a scatterplot of min vs. max
+temperature, and overlays a linear regression line (using options in
+<code>geom_smooth()</code>).</p>
+<details>
+<summary>
+Solution
+</summary>
+<p>I can produce the desired plot using the code below:</p>
+<pre class="r"><code>weather_df |&gt; 
+  filter(name == &quot;CentralPark_NY&quot;) |&gt; 
+  mutate(
+    tmax_fahr = tmax * (9 / 5) + 32,
+    tmin_fahr = tmin * (9 / 5) + 32) |&gt; 
+  ggplot(aes(x = tmin_fahr, y = tmax_fahr)) +
+  geom_point(alpha = .5) + 
+  geom_smooth(method = &quot;lm&quot;, se = FALSE)</code></pre>
+<p>Looks like there’s a pretty linear relationship between min and max
+temperatures in Central Park.</p>
+</details>
+</div>
+<div id="odds-and-ends" class="section level3">
+<h3>Odds and ends</h3>
+<p>There are lots of ways you can mix and match elements, depending on
+your goals. I don’t like the following plot as much (it doesn’t show the
+data and omits precipitation), but it illustrates that you have lots of
+freedom in determining which geoms to include and how to compare your
+groups. If nothing else, you should be starting to get a sense for why
+you create way more plots for yourself than for others.</p>
+<pre class="r"><code>ggplot(weather_df, aes(x = date, y = tmax, color = name)) + 
+  geom_smooth(se = FALSE) 
+## `geom_smooth()` using method = &#39;loess&#39; and formula = &#39;y ~ x&#39;
+## Warning: Removed 17 rows containing non-finite values (`stat_smooth()`).</code></pre>
+<p><img src="visualization_pt1_files/figure-html/unnamed-chunk-12-1.png" width="90%" /></p>
+<p>When you’re making a scatterplot with lots of data, there’s a limit
+to how much you can avoid overplotting using alpha levels and
+transparency. In these cases <code>geom_hex()</code>,
+<code>geom_bin2d()</code>, or <code>geom_density2d()</code> can be
+handy:</p>
+<pre class="r"><code>ggplot(weather_df, aes(x = tmax, y = tmin)) + 
+  geom_hex()
+## Warning: Removed 17 rows containing non-finite values (`stat_binhex()`).</code></pre>
+<p><img src="visualization_pt1_files/figure-html/unnamed-chunk-13-1.png" width="90%" /></p>
+<p>There are lots of aesthetics, and these depend to some extent on the
+geom – <code>color</code> worked for both <code>geom_point()</code> and
+<code>geom_smooth()</code>, but <code>shape</code> only applies to
+points. The help page for each geom includes a list of understood
+aesthetics.</p>
+<p><strong><em>Learning Assessment:</em></strong> In the preceding, we
+set the alpha aesthetic “by hand” instead of mapping it to a variable.
+This is possible for other aesthetics too. To check your understanding
+of this point, try to explain why the two lines below don’t produce the
+same result:</p>
+<pre class="r"><code>ggplot(weather_df) + geom_point(aes(x = tmax, y = tmin), color = &quot;blue&quot;)
+ggplot(weather_df) + geom_point(aes(x = tmax, y = tmin, color = &quot;blue&quot;))</code></pre>
+<details>
+<summary>
+Solution
+</summary>
+<p>In the first attempt, we’re defining the color of the points by hand;
+in the second attempt, we’re implicitly creating a color variable that
+has the value <code>blue</code> everywhere; <code>ggplot</code> is then
+assigning colors according to this variable using the default color
+scheme.</p>
+</details>
+</div>
+<div id="univariate-plots" class="section level3">
+<h3>Univariate plots</h3>
+<p>Scatterplots are great, but sometimes you need to carefully
+understand the distribution of single variables – we’ll tackle that now.
+This is primarily an issue of learning some new geoms and, where
+necessary, some new aesthetics.</p>
+<p>First up is the histogram.</p>
+<pre class="r"><code>ggplot(weather_df, aes(x = tmax)) + 
+  geom_histogram()
+## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+## Warning: Removed 17 rows containing non-finite values (`stat_bin()`).</code></pre>
+<p><img src="visualization_pt1_files/figure-html/unnamed-chunk-15-1.png" width="90%" /></p>
+<p>You can play around with things like the bin width and set the fill
+color using an aesthetic mapping.</p>
+<pre class="r"><code>ggplot(weather_df, aes(x = tmax, fill = name)) + 
+  geom_histogram(position = &quot;dodge&quot;, binwidth = 2)
+## Warning: Removed 17 rows containing non-finite values (`stat_bin()`).</code></pre>
+<p><img src="visualization_pt1_files/figure-html/unnamed-chunk-16-1.png" width="90%" /></p>
+<p>The <code>position = "dodge"</code> places the bars for each group
+side-by-side, but this gets sort of hard to understand. I often prefer
+density plots in place of histograms.</p>
+<pre class="r"><code>ggplot(weather_df, aes(x = tmax, fill = name)) + 
+  geom_density(alpha = .4, adjust = .5, color = &quot;blue&quot;)
+## Warning: Removed 17 rows containing non-finite values (`stat_density()`).</code></pre>
+<p><img src="visualization_pt1_files/figure-html/unnamed-chunk-17-1.png" width="90%" /></p>
+<p>The <code>adjust</code> parameter in density plots is similar to the
+<code>binwidth</code> parameter in histograms, and it helps to try a few
+values. I set the transparency level to .4 to make sure all densities
+appear. You should also note the distinction between <code>fill</code>
+and <code>color</code> aesthetics here. You could facet by
+<code>name</code> as above but would have to ask if that makes
+comparisons easier or harder. Lastly, adding <code>geom_rug()</code> to
+a density plot can be a helpful way to show the raw data in addition to
+the density.</p>
+<p>Histograms and densities are one way of investigating univariate
+distributions; boxplots are another.</p>
+<pre class="r"><code>ggplot(weather_df, aes(x = name, y = tmax)) + geom_boxplot()
+## Warning: Removed 17 rows containing non-finite values (`stat_boxplot()`).</code></pre>
+<p><img src="visualization_pt1_files/figure-html/unnamed-chunk-18-1.png" width="90%" /></p>
+<p>Violin plots are sometimes nice, but folks complain that they don’t
+<a
+href="https://simplystatistics.org/2017/07/13/the-joy-of-no-more-violin-plots/">look
+like violins</a>.</p>
+<pre class="r"><code>ggplot(weather_df, aes(x = name, y = tmax)) + 
+  geom_violin(aes(fill = name), alpha = .5) + 
+  stat_summary(fun = &quot;median&quot;, color = &quot;blue&quot;)
+## Warning: Removed 17 rows containing non-finite values (`stat_ydensity()`).
+## Warning: Removed 17 rows containing non-finite values (`stat_summary()`).
+## Warning: Removed 3 rows containing missing values (`geom_segment()`).</code></pre>
+<p><img src="visualization_pt1_files/figure-html/unnamed-chunk-19-1.png" width="90%" /></p>
+<p>Ridge plots were the trendiest plot of 2017, and were a replacement
+for both boxplots and violin plots. They’re implemented in the <a
+href="https://github.com/clauswilke/ggridges"><code>ggridges</code></a>
+package, and are nice if you have lots of categories in which the shape
+of the distribution matters.</p>
+<pre class="r"><code>ggplot(weather_df, aes(x = tmax, y = name)) + 
+  geom_density_ridges(scale = .85)
+## Picking joint bandwidth of 1.54
+## Warning: Removed 17 rows containing non-finite values
+## (`stat_density_ridges()`).</code></pre>
+<p><img src="visualization_pt1_files/figure-html/unnamed-chunk-20-1.png" width="90%" /></p>
+<p><strong><em>Learning Assessment:</em></strong> Make plots that
+compare precipitation across locations. Try a histogram, a density plot,
+a boxplot, a violin plot, and a ridgeplot; use aesthetic mappings to
+make your figure readable.</p>
+<details>
+<summary>
+Solution
+</summary>
+<p>I’ll show a few possibilities, although this is by no means
+exhaustive!</p>
+<p>First a density plot:</p>
+<pre class="r"><code>ggplot(weather_df, aes(x = prcp)) + 
+  geom_density(aes(fill = name), alpha = .5) </code></pre>
+<p>Next a ridge plot:</p>
+<pre class="r"><code>ggplot(weather_df, aes(x = prcp, y = name)) + 
+  geom_density_ridges(scale = .85)</code></pre>
+<p>Last a boxplot:</p>
+<pre class="r"><code>ggplot(weather_df, aes(y = prcp, x = name)) + 
+  geom_boxplot() </code></pre>
+<p>This is a tough variable to plot because of the highly skewed
+distribution in each location. Of these, I’d probably choose the boxplot
+because it shows the outliers most clearly. If the “bulk” of the data
+were interesting, I’d probably compliment this with a plot showing data
+for all precipitation less than 100, or for a data omitting days with no
+precipitation.</p>
+<pre class="r"><code>weather_df |&gt; 
+  filter(prcp &gt; 0) |&gt; 
+  ggplot(aes(x = prcp, y = name)) + 
+  geom_density_ridges(scale = .85)</code></pre>
+</details>
+</div>
+<div id="saving-and-embedding-plots" class="section level3">
+<h3>Saving and embedding plots</h3>
+<p>You will, on occasion, need to save a plot to a specific file.
+<strong>Don’t</strong> use the built-in “Export” button! If you do, your
+figure is not reproducible – no one will know how your plot was
+exported. Instead, use <code>ggsave()</code> by explicitly creating the
+figure and exporting; <code>ggsave</code> will guess the file type you
+prefer and has options for specifying features of the plot. In this
+setting, it’s often helpful to save the <code>ggplot</code> object
+explicitly and then export it (using relative paths!).</p>
+<pre class="r"><code>ggp_weather = 
+  ggplot(weather_df, aes(x = tmin, y = tmax)) + 
+  geom_point(aes(color = name), alpha = .5) 
+
+ggsave(&quot;ggp_weather.pdf&quot;, ggp_weather, width = 8, height = 5)</code></pre>
+<p>Embedding plots in an R Markdown document can also take a while to
+get used to, because there are several things to adjust. First is the
+size of the figure created by R, which is controlled using two of the
+three chunk options <code>fig.width</code>, <code>fig.height</code>, and
+<code>fig.asp</code>. I prefer a common width and plots that are a
+little wider than they are tall, so I set options to
+<code>fig.width = 6</code> and <code>fig.asp = .6</code>. Second is the
+size of the figure inserted into your document, which is controlled
+using <code>out.width</code> or <code>out.height</code>. I like to have
+a little padding around the sides of my figures, so I set
+<code>out.width = "90%"</code>. I do all this by including the following
+in a code snippet at the outset of my R Markdown documents.</p>
+<pre class="r"><code>knitr::opts_chunk$set(
+  fig.width = 6,
+  fig.asp = .6,
+  out.width = &quot;90%&quot;
+)</code></pre>
+<p>What makes embedding figures difficult at first is that things like
+the font and point size in the figures generated by R are constant –
+that is, they don’t scale with the overall size of the figure. As a
+result, text in a figure with width 12 will <em>look</em> smaller than
+text in a figure with width 6 after both have been embedded in a
+document. As an example, the code chunk below has set
+<code>fig.width = 12</code>.</p>
+<pre class="r"><code>ggplot(weather_df, aes(x = tmin, y = tmax)) + 
+  geom_point(aes(color = name))
+## Warning: Removed 17 rows containing missing values (`geom_point()`).</code></pre>
+<p><img src="visualization_pt1_files/figure-html/unnamed-chunk-27-1.png" width="90%" /></p>
+<p>Usually you can get by with setting reasonable defaults, but keep a
+careful eye on figures you intend to show others – everything should be
+legible!</p>
+<p><strong><em>Learning Assessment:</em></strong> Set global options for
+your figure sizes in the “setup” code chunk and re-knit your document.
+What happens when you change <code>fig.asp</code>? What about
+<code>out.width</code>?</p>
+</div>
+</div>
+<div id="other-materials" class="section level2">
+<h2>Other materials</h2>
+<p>Oh goodness is there a lot of stuff about visualization …</p>
+<ul>
+<li>There are overviews on good and bad graphics
+<ul>
+<li>Including an early paper on <a
+href="http://www.jstor.org/stable/2683253?seq=1#page_scan_tab_contents">“How
+to display data badly”</a></li>
+<li>Karl Broman’s <a
+href="https://www.biostat.wisc.edu/~kbroman/topten_worstgraphs/">top ten
+worst graphs</a></li>
+<li>… and Karl’s talk on <a
+href="https://www.biostat.wisc.edu/~kbroman/presentations/graphs2017.pdf">creating
+effective figures and table</a></li>
+<li>Also Hadley Wickham’s <a
+href="http://vita.had.co.nz/papers/layered-grammar.pdf">paper</a> on the
+philosophy underlying <code>ggplot</code></li>
+</ul></li>
+<li>There are tutorials on making graphics using <code>ggplot</code>
+<ul>
+<li>From R for Data Science: <a
+href="http://r4ds.had.co.nz/data-visualisation.html">basics</a> and <a
+href="and%20http://r4ds.had.co.nz/graphics-for-communication.html">advanced
+stuff</a></li>
+<li>Jenny Bryan’s <a
+href="http://stat545.com/cm006_tibbles-dplyr-ggplot2.html">intro to
+ggplot</a> and her <a
+href="https://github.com/jennybc/ggplot2-tutorial">ggplot tutorial</a>
+(with a <a href="https://www.youtube.com/watch?v=4MfUCX_KpdE">video
+presentation</a> of the ggplot2 tutorial slides)</li>
+<li>From <a
+href="https://geanders.github.io/RProgrammingForResearch/exploring-data-1.html#plots-to-explore-data">R
+Programming for Research</a></li>
+<li>The <a href="http://www.cookbook-r.com/Graphs/">Graphs</a> chapter
+in the R Cookbook by Winston Chang</li>
+<li>… and his <a
+href="http://shop.oreilly.com/product/0636920023135.do">R Graphics
+Cookbook</a></li>
+<li>And, of course, a <a
+href="https://www.rstudio.com/wp-content/uploads/2016/11/ggplot2-cheatsheet-2.1.pdf">cheatsheet</a></li>
+</ul></li>
+<li>There are arguments about ggplot vs base R graphics
+<ul>
+<li><a
+href="https://simplystatistics.org/2016/02/11/why-i-dont-use-ggplot2/">Why
+I don’t use ggplot2</a></li>
+<li><a
+href="https://flowingdata.com/2016/03/22/comparing-ggplot2-and-r-base-graphics/">Comparing
+ggplot2 and R Base Graphics</a></li>
+<li><a href="http://varianceexplained.org/r/why-I-use-ggplot2/">Why I
+use ggplot2</a></li>
+</ul></li>
+</ul>
+<p>The code that I produced working examples in lecture is <a
+href="https://github.com/P8105/viz_and_eda">here</a>.</p>
+</div>
+
+<br><br>
+<footer>
+  <img src="images/p8105_stickers.png" alt="stickers" style="width:30%">
+  <br>
+  <p class="copyright text-muted" align="center">Copyright &copy; 2019 Jeff Goldsmith</p>
+</footer>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

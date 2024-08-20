@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Making websites</title>
+
+<script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" />
+<script defer src="https://use.fontawesome.com/releases/v5.0.3/js/all.js"></script>
+<script defer src="https://use.fontawesome.com/releases/v5.0.0/js/v4-shims.js"></script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-151578452-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-151578452-1');
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">P8105</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="schedule.html">Schedule</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Topics
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="topic_what_is_data_science.html">What is Data Science?</a>
+    </li>
+    <li>
+      <a href="topic_building_blocks.html">Building Blocks</a>
+    </li>
+    <li>
+      <a href="topic_data_wrangling_i.html">Data Wrangling I</a>
+    </li>
+    <li>
+      <a href="topic_visualization_and_eda.html">Visualization and EDA</a>
+    </li>
+    <li>
+      <a href="topic_data_wrangling_ii.html">Data Wrangling II</a>
+    </li>
+    <li>
+      <a href="topic_interactivity.html">Interactivity</a>
+    </li>
+    <li>
+      <a href="topic_iteration.html">Iteration</a>
+    </li>
+    <li>
+      <a href="topic_linear_models.html">Linear Models</a>
+    </li>
+    <li>
+      <a href="topic_other_material.html">Other Materials</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Datasets
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="dataset_airbnb.html">Airbnb</a>
+    </li>
+    <li>
+      <a href="dataset_brfss.html">BRFSS</a>
+    </li>
+    <li>
+      <a href="dataset_fivethirtyeight.html">FiveThirtyEight</a>
+    </li>
+    <li>
+      <a href="dataset_instacart.html">Instacart</a>
+    </li>
+    <li>
+      <a href="dataset_mr_trash_wheel.html">Mr. Trash Wheel</a>
+    </li>
+    <li>
+      <a href="dataset_noaa.html">NOAA</a>
+    </li>
+    <li>
+      <a href="dataset_restaurant_inspections.html">NYC Restaurant Inspections</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="homework_and_projects.html">Homework and Projects</a>
+</li>
+<li>
+  <a href="course_communication.html">Communication</a>
+</li>
+<li>
+  <a href="https://github.com/P8105/p8105.github.io">
+    <span class="fa fa-github"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Making websites</h1>
+
+</div>
+
+
+<p>This page outlines the process of making a basic website using R
+Markdown, and hosting that website on GitHub – the content assumes
+familiarity with both .Rmd and GitHub.</p>
+<p>This is the first module in the <a
+href="topic_interactivity.html">Interactivity</a> topic.</p>
+<div id="overview" class="section level2 tabset tabset-pills">
+<h2 class="tabset tabset-pills">Overview</h2>
+<div id="learning-objectives" class="section level3">
+<h3>Learning Objectives</h3>
+<p>Publish a personal website using GitHub pages.</p>
+</div>
+<div id="slide-deck" class="section level3">
+<h3>Slide Deck</h3>
+<div class="vid_container">
+<p><iframe 
+    src="https://speakerdeck.com/player/e4897332b1e345e8a223b5e82fc61504" 
+    allowfullscreen 
+    frameborder="0"
+    class="video"> </iframe></p>
+</div>
+<div style="margin-bottom:5px">
+<strong>
+<a href="https://speakerdeck.com/jeffgoldsmith/p8105-making-websites" title="Making Websites" target="_blank">Making
+Websites</a> </strong> from
+<strong><a href="https://speakerdeck.com/jeffgoldsmith" target="_blank">Jeff
+Goldsmith</a></strong>.
+</div>
+<p><br></p>
+<hr />
+</div>
+<div id="video-lecture" class="section level3">
+<h3>Video Lecture</h3>
+<div class="vid_container">
+<p><iframe 
+    src="https://www.youtube.com/embed/guTdeLfgLZU"
+    frameborder="0" allowfullscreen class="video"> </iframe></p>
+</div>
+<hr />
+</div>
+</div>
+<div id="example" class="section level2">
+<h2>Example</h2>
+<p>The example below is built around the construction of a “personal”
+website, but the steps are the same for any other website you want to
+create.</p>
+<div id="create-a-repo" class="section level3">
+<h3>Create a repo</h3>
+<p>This is going to hold everything you want on your website, and the
+name does matter:</p>
+<ul>
+<li>Call it <code>&lt;YOUR_GH_NAME&gt;.github.io</code> if you want this
+to be your personal website</li>
+<li>Call it whatever you want if it will be something different (tip:
+website names should be short and easy-to-remember; they’re also
+generally case-sensitive)</li>
+<li>Create a local R Project / directory for this repo</li>
+</ul>
+</div>
+<div id="getting-started" class="section level3">
+<h3>Getting started</h3>
+<p>All websites have an <code>index.html</code> file – it’s the most
+common name for the default page and gets served up whenever someone
+shows up at your site. We’ll start by using this <a
+href="resources/index.Rmd"><code>index.Rmd</code></a> file. This has
+usual RMD stuff: a title, some headings, some content. Anything you
+could put in any other RMD file, you can put in here, too. Then, as
+usual, you can knit to create <code>index.html</code>; you should get
+something like the following.</p>
+<p><img src="images/making_websites_First_Website.png" style="width:75%"></p>
+<p><strong>NOTE:</strong> Web page names are case sensitive, and
+<code>index.html</code> has to start with a lower-case “i”.</p>
+</div>
+<div id="common-content" class="section level3">
+<h3>Common content</h3>
+<p>Your website can include text, of course; you can also include code
+and figures generated from analyses. Like I keep saying, you’re writing
+in RMD.</p>
+<p>One important feature of your site will be hyperlinks. The general
+format for links is <code>[text for link](address.of.link)</code>. So,
+to link to my favorite tool for data science, I’d use
+<code>[this](google.com)</code>.</p>
+<p>Your website usually has more than one page. These pages can be
+created using the same process as <code>index.html</code>: create an Rmd
+file and knit to html. Once you have another page
+(e.g. <code>about.html</code>) you need to link to it from your home
+page (e.g. using use <code>[about](about.html)</code>), or no one will
+be able to find it.</p>
+<p>Sometimes you want to add images – pictures you’ve taken or found on
+the internets, rather than things that are generated from analyses. This
+is a bit more involved than other things you might want to do. RMD’s
+default image settings (using <code>![](image.jpg)</code>) aren’t great.
+I often use a line of HTML:</p>
+<pre class="r"><code>&lt;img src=&quot;images/image.jpg&quot; style=&quot;width:75%&quot;&gt;</code></pre>
+<p>This will load and display <code>images/image.jpg</code> (I usually
+keep my images inside an <code>images</code> folder to reduce clutter).
+The <code>style</code> components control things like adding a border or
+adjusting the image height or width, along with lots of other things –
+googling around can help if you want to change the style settings. If
+you want your style rules to apply to all images it can be easier to
+write a short CSS file, but that’s beyond what we’re going to do
+now.</p>
+</div>
+<div id="site.yml" class="section level3">
+<h3><code>_site.yml</code></h3>
+<p>Right now, all our pages have styling, output, and structure coming
+from page-specific YAML. It’s better to have one set of rules that apply
+site-wide instead. To do this, we’ll create a single file with all the
+YAML stuff we need, and at the same time remove extraneous YAML header
+content from individual Rmd files.</p>
+<p>Create your <code>_site.yml</code> file by going to File &gt; New
+File &gt; Text file. Copy the content below, and save the file as
+<code>_site.yml</code> in your project’s home folder.</p>
+<pre class="r"><code>name: &quot;Yay internet!&quot;
+output_dir: &quot;.&quot;
+navbar:
+  title: &quot;Home&quot;
+  right:
+    - text: &quot;About&quot;
+      href: about.html
+    - icon: fa-envelope fa-lg
+      href: mailto:&lt;you@youremail.com&gt;
+    - icon: fa-github fa-lg
+      href: http://github.com/&lt;YOUR_GH_NAME&gt;/
+output:
+  html_document:
+    theme: cerulean</code></pre>
+<p>This contains some usual kinds of formatting stuff, like
+<code>output</code> options, but also the <code>navbar</code>. After
+saving this (and removing YAML from each page), re-knit
+<code>index.Rmd</code> and <code>about.Rmd</code> – there’s a navigation
+bar across the top that has nothing to do with
+<code>index.Rmd</code>.</p>
+<p>There are several ways you can arrange the nav bar (right vs. left;
+single pages vs. drop-down menus) but the idea is to give a way to
+navigate through your <em>site</em>, not just your <em>page</em>. The
+two icons are there to encourage good practices – an easy way for
+someone to email you, and a link to the source for the site on GitHub
+(icons come from <a href="http://fontawesome.io/icons/">font
+awesome</a>). I’ve also included an “About” page, which is pretty common
+for pages describing projects.</p>
+</div>
+<div id="template-website" class="section level3">
+<h3>Template website</h3>
+<p>We’ve been creating a website from scratch, but it’s sometimes
+helpful to have a quick-start template with a couple of pages and a
+<code>_site.yml</code> file. We’ve put together such a <a
+href="resources/website_template.zip">website template</a> for that
+reason.</p>
+</div>
+<div id="r-project" class="section level3">
+<h3>R Project</h3>
+<p>One nice feature is that RStudio will recognize your project as a
+website, and give you a quick way to build the complete website using
+the “build website” button. This is really just a shortcut to
+<code>rmarkdown::render_site()</code>, but it’s still nice.</p>
+<p><img src="images/making_websites_RProj.png" style="width:75%"></p>
+<p>This rebuilds the full website, whereas the <code>knit</code> button
+only rebuilds a page. Rebuilding the site can be useful if you’ve made
+big changes, like changing the <code>_site.yml</code>.</p>
+</div>
+<div id="hosting-on-github" class="section level3">
+<h3>Hosting on GitHub</h3>
+<p>Once you’ve built your site, your directory should include
+<code>index.html</code> and <code>about.html</code> (in addition to the
+respective RMD files), <code>_site.yml</code>, the .Rproj, and a folder
+with some stuff you don’t need to worry about. That’s great – you have a
+website! Except it exists only on your computer, so … not really a
+<em>web</em> site…</p>
+<p>This is where GitHub helps. GitHub will recognize your repository as
+a website and host it as such. If your repo is named
+<code>&lt;YOUR_GH_NAME&gt;.github.io</code>, that’s your personal site
+address. If your repo has another name, your site address will be
+<code>&lt;YOUR_GH_NAME&gt;.github.io/&lt;YOUR_PROJECT_NAME&gt;</code>.
+Often this “just works”, but sometimes you have to update the repo
+settings for GitHub to know this is a website, especially for websites
+that are not <code>&lt;YOUR_GH_NAME&gt;.github.io</code>:</p>
+<ul>
+<li>Make sure you’ve pushed what you have to GitHub</li>
+<li>Log in to GitHub, find the repo, and navigate to repo settings</li>
+<li>Set the GitHub pages source to the main branch (see below)</li>
+</ul>
+<p><img src="images/making_websites_GH_Settings.png" style="width:65%"></p>
+<p>That’s it!</p>
+<p>Moving forward, make edits to your website by editing your .Rmd files
+or <code>_site.yml</code> and then rebuilding your site in RStudio
+(which will update the .html files). Then push these changes from your
+local directory to GitHub so they are reflected online.</p>
+</div>
+<div id="tips-for-building-websites" class="section level3">
+<h3>Tips for building websites</h3>
+<p>The important stuff on your website is the content – what you say,
+how clearly you say it, and how easy it is for a reader to find the
+information they care about. Keeping things up-to-date is critical, and
+can require frequent tweaking (of e.g. your resume or list of
+projects).</p>
+<p>Default website themes are pretty good. You can modify these if you
+want; speaking from experience, you can also fall down a rabbit hole and
+spend a few days learning CSS to make stylistic changes that seem
+critical but that, in fact, no one will ever notice. That’s probably not
+a good use of your time, and you will eventually get tired of any
+styling you do anyway. Instead, add a <a
+href="https://bootswatch.com/3/">default theme</a> to your YAML and
+change it from time to time. (RStudio is a bit behind in their bootstrap
+themes; if you find another one you want to add, you might find <a
+href="https://community.rstudio.com/t/in-rstudio-rmarkdown-how-to-add-new-html-themes-from-bootswatch/15791/2">this
+thread</a> useful.)</p>
+<p>The best way to extend your website is to copy from other websites
+you like. You can borrow structurally (e.g. how content is organized) or
+specific elements (e.g. how that person added a twitter button). People
+generally understand that this happens (and make their code public to
+help!), but if you borrow a lot it’s friendly to shoot the person an
+email to say their stuff was useful.</p>
+</div>
+<div id="websites-about-projects" class="section level3">
+<h3>Websites about projects</h3>
+<p>As noted, the preceding example is about a personal website but
+illustrates useful ideas. If you’re making a website about a data
+science project, I recommend including:</p>
+<ul>
+<li>A landing page giving a broad overview of the project</li>
+<li>A page (or pages) about the data wrangling, including the raw data
+if appropriate</li>
+<li>Separate pages for each distinct analysis, possibly organized using
+menus</li>
+<li>R and package versions used in the analyses</li>
+</ul>
+</div>
+</div>
+<div id="other-materials" class="section level2">
+<h2>Other materials</h2>
+<p>There’s a lot of material online to help with making websites. You
+should use it.</p>
+<ul>
+<li>RStudio’s <a
+href="http://rmarkdown.rstudio.com/rmarkdown_websites.html">guide</a></li>
+<li>This <a href="http://nickstrayer.me/RMarkdown_Sites_tutorial/">walk
+through</a></li>
+<li>GitHub <a href="https://pages.github.com">Pages</a></li>
+</ul>
+<p>The website I produced during lecture is <a
+href="http://bst-p8105.github.io">here</a>, and the materials can be
+downloaded from this <a
+href="https://github.com/bst-p8105/bst-p8105.github.io/">GitHub
+repo</a>.</p>
+</div>
+
+<br><br>
+<footer>
+  <img src="images/p8105_stickers.png" alt="stickers" style="width:30%">
+  <br>
+  <p class="copyright text-muted" align="center">Copyright &copy; 2019 Jeff Goldsmith</p>
+</footer>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

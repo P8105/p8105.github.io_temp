@@ -1,0 +1,318 @@
+---
+title: "Statistical Learning"
+output:
+  html_document: 
+    toc: true
+    toc_float: true
+---
+
+Statistical learning methods -- both supervised and unsupervised -- provide techniques for gaining insights from data. These methods have various goals, including prediction, pattern recognition, and classification; they also vary in complexity and interpretability. This lecture is intended to provide a very broad overview of two methods: lasso and k-means clustering.
+
+```{r, echo = FALSE}
+library(tidyverse)
+
+knitr::opts_chunk$set(
+	echo = TRUE,
+	warning = FALSE,
+  fig.width = 6,
+  fig.asp = .6,
+  out.width = "90%"
+)
+
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+
+scale_colour_discrete = scale_colour_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+```
+
+## Some slides
+
+<script async class="speakerdeck-embed" data-id="911acc341b434b02b24df1fdab954c7e" data-ratio="1.77777777777778" src="//speakerdeck.com/assets/embed.js"></script>
+<div style="margin-bottom:5px"> <strong> <a href="https://speakerdeck.com/jeffgoldsmith/p8105-statistical-learning" title="Statistical Learning" target="_blank">Statistical Learning</a> </strong> from <strong><a href="https://speakerdeck.com/jeffgoldsmith" target="_blank">Jeff Goldsmith</a></strong>. </div><br>
+
+
+## Example
+
+As always, I'll work on today's example in a GitHub repo + local directory / R Project. [This zip file](resources/extra_topic_data.zip) has a couple of datasets we'll look at.
+
+```{r}
+library(tidyverse)
+library(glmnet)
+
+set.seed(11)
+```
+
+### Lasso
+
+To illustrate the lasso, we'll data from a study of factors that affect birthweight. The code chunk below loads and cleans these data, converts to factors where appropriate, and takes a sample of size 200 from the result.
+
+```{r import}
+bwt_df = 
+  read_csv("data/birthweight.csv") |> 
+  janitor::clean_names() |>
+  mutate(
+    babysex = as.factor(babysex),
+    babysex = fct_recode(babysex, "male" = "1", "female" = "2"),
+    frace = as.factor(frace),
+    frace = fct_recode(
+      frace, "white" = "1", "black" = "2", "asian" = "3", 
+      "puerto rican" = "4", "other" = "8"),
+    malform = as.logical(malform),
+    mrace = as.factor(mrace),
+    mrace = fct_recode(
+      mrace, "white" = "1", "black" = "2", "asian" = "3", 
+      "puerto rican" = "4")) |> 
+  sample_n(200)
+```
+
+To fit a lasso model, we'll use `glmnet`. This package is widely used and broadly useful, but predates the `tidyverse` by a long time. The interface asks for an outcome vector `y` and a matrix of predictors `X`, which are created next. To create a predictor matrix that includes relevant dummy variables based on factors, we're using `model.matrix` and excluding the intercept
+
+```{r}
+x = model.matrix(bwt ~ ., bwt_df)[,-1]
+y = bwt_df |> pull(bwt)
+```
+
+We fit the lasso model for each tuning parameter in a pre-defined grid `lambda`, and then compare the fits using cross validation. I chose this grid using the trusty "try things until it looks right" method; `glmnet` will pick something reasonable by default if you prefer that.
+
+```{r}
+lambda = 10^(seq(3, -2, -0.1))
+
+lasso_fit =
+  glmnet(x, y, lambda = lambda)
+
+lasso_cv =
+  cv.glmnet(x, y, lambda = lambda)
+
+lambda_opt = lasso_cv$lambda.min
+```
+
+The plot below shows coefficient estimates corresponding to a subset of the predictors in the dataset -- these are predictors that have non-zero coefficients for at least one tuning parameter value in the pre-defined grid. As lambda increases, the coefficient values are shrunk to zero and the model becomes more sparse. The optimal tuning parameter, determined using cross validation, is shown by a vertical blue line.
+
+```{r}
+lasso_fit |> 
+  broom::tidy() |> 
+  select(term, lambda, estimate) |> 
+  complete(term, lambda, fill = list(estimate = 0) ) |> 
+  filter(term != "(Intercept)") |> 
+  ggplot(aes(x = log(lambda, 10), y = estimate, group = term, color = term)) + 
+  geom_path() + 
+  geom_vline(xintercept = log(lambda_opt, 10), color = "blue", size = 1.2) +
+  theme(legend.position = "none")
+```
+
+The next plot shows the CV curve itself. This is relatively shallow -- having nothing at all in your model isn't great, but you can get reasonable predictions from models that have "too many" predictors. 
+
+```{r}
+lasso_cv |> 
+  broom::tidy() |> 
+  ggplot(aes(x = log(lambda, 10), y = estimate)) + 
+  geom_point()  
+```
+
+The coefficients from the optimal model are shown below.
+
+```{r}
+lasso_fit = 
+  glmnet(x, y, lambda = lambda_opt)
+
+lasso_fit |> broom::tidy()
+```
+
+To be clear, these don't come with p-values and it's really challenging to do inference. These are also different from a usual OLS fit for a multiple linear regression model that uses the same predictors: the lasso penalty affects these even if they're retained by the model. 
+
+A final point is that on the full dataset, lasso doesn't do you much good. With ~4000 datapoints, the relatively few coefficients are estimated well enough that penalization doesn't make much of a difference in this example. 
+
+### Clustering: pokemon
+
+For the first clustering example, we'll use a dataset containing information about pokemon. The full dataset contains several variables (including some that aren't numeric, which is a challenge for clustering we won't address). To make results easy to visualize, we look only at `hp` and `speed`; a scatterplot is below.
+
+```{r}
+poke_df = 
+  read_csv("./data/pokemon.csv") |> 
+  janitor::clean_names() |> 
+  select(hp, speed)
+
+poke_df |> 
+  ggplot(aes(x = hp, y = speed)) + 
+  geom_point()
+```
+
+K-means clustering is established enough that it's implemented in the base R `stats` package in the `kmeans` function. This also has a bit of an outdated interface, but there you go. The code chunk below fits the k-means algorithm with three clusters to the data shown above.
+
+```{r}
+kmeans_fit =
+  kmeans(x = poke_df, centers = 3)
+```
+
+More recent tools allow interactions with the `kmeans` output. In particular, we'll use `broom::augment` to add cluster assignments to the data, and plot the results. 
+
+```{r}
+poke_df =
+  broom::augment(kmeans_fit, poke_df)
+
+poke_df |> 
+  ggplot(aes(x = hp, y = speed, color = .cluster)) +
+  geom_point()
+```
+
+Clusters are broadly interpretable, but this still doesn't come with inference. Also, at boundaries between clusters, the distinctions can seem a bit ... arbitrary. 
+
+The code chunk below maps across a few choices for the number of clusters, and then plots the results.
+
+```{r}
+clusts =
+  tibble(k = 2:4) |>
+  mutate(
+    km_fit =    map(k, \(n_clust) kmeans(poke_df, centers = n_clust)),
+    augmented = map(km_fit, \(fit) broom::augment(x = fit, poke_df))
+  )
+
+clusts |> 
+  select(-km_fit) |> 
+  unnest(augmented) |> 
+  ggplot(aes(hp, speed, color = .cluster)) +
+  geom_point(aes(color = .cluster)) +
+  facet_grid(~k)
+```
+
+There are metrics that can suggest which of these is the better choice, but we won't get into that. 
+
+### Clustering: penguins
+
+As a quick example of when clustering is more visually obvious, we'll take a look at [data](https://allisonhorst.github.io/palmerpenguins/) "collected and made available by Dr. Kristen Gorman and the Palmer Station, Antarctica LTER, a member of the Long Term Ecological Research Network." You may need to install the `palmerpenguins` package to see this example. 
+First we'll load the data and do some initial tidying to keep the variables of interest and remove rows with missing values. We'll then make a quick visualization of bill length vs flipper length. 
+
+```{r}
+library(palmerpenguins)
+
+data("penguins")
+
+penguins = 
+  penguins |> 
+  select(species, bill_length_mm, flipper_length_mm) |> 
+  drop_na() 
+
+penguins |> 
+  ggplot(aes(x = bill_length_mm, y = flipper_length_mm, color = species)) + 
+  geom_point()
+```
+
+We'll again use `kmeans` to identify clusters in a data-driven way. We remove the `species` variable and rescale the remaining columns, since `kmeans` is sensitive to different scales for the input variables. The results are shown in the next plot.
+
+```{r}
+kmeans_fit =
+  penguins |> 
+  select(-species) |> 
+  scale() |> 
+  kmeans(centers = 3)
+
+penguins |> 
+  broom::augment(kmeans_fit, data = _) |> 
+  ggplot(
+    aes(x = bill_length_mm, y = flipper_length_mm,
+        color = .cluster, shape = species)) + 
+  geom_point(size = 2)
+```
+
+As shown in the table below, the data-driven clusters don't perfectly correspond to the penguins' species, but the alignment is pretty good. This is helpful for illustrating a good use-case for clustering -- if the `species` variable didn't exist, clustering would provide a pretty good classification of observed data that simplifies the more complex structure for bill and flipper length.
+
+```{r}
+penguins |> 
+  broom::augment(kmeans_fit, data = _) |> 
+  count(species, .cluster) |> 
+  pivot_wider(
+    names_from = .cluster, 
+    values_from = n, 
+    values_fill = 0)
+```
+
+
+### Clustering: trajectories
+
+A final clustering example uses longitudinally observed data. The process we'll focus on is: 
+
+* for each subject, estimate a simple linear regression
+* extract the intercept and slope
+* cluster using the intercept and slope
+
+Below we import and plot the trajectory data.
+
+```{r}
+traj_data = 
+  read_csv("./data/trajectories.csv")
+
+traj_data |> 
+  ggplot(aes(x = week, y = value, group = subj)) + 
+  geom_point() + 
+  geom_path()
+```
+
+Next we'll do some data manipulation. These steps compute the SLRs, extract estimates, and format the data for k-means clustering.
+
+```{r}
+int_slope_df = 
+  traj_data |> 
+  nest(data = week:value) |> 
+  mutate(
+    models = map(data, \(df) lm(value ~ week, data = df)),
+    result = map(models, broom::tidy)
+  ) |> 
+  select(subj, result) |> 
+  unnest(result) |> 
+  select(subj, term, estimate) |> 
+  pivot_wider(
+    names_from = term,
+    values_from = estimate
+  ) |> 
+  rename(int = "(Intercept)", slope = week)
+```
+
+A plot of the intercepts and slopes are below. There does seem to be some structure, and we'll use k-means clustering to try to make that concrete.
+
+```{r}
+int_slope_df |> 
+  ggplot(aes(x = int, y = slope)) + 
+  geom_point()
+
+km_fit = 
+  kmeans(
+    x = int_slope_df |> select(-subj) |> scale(), 
+    centers = 2)
+
+int_slope_df =
+  broom::augment(km_fit, int_slope_df)
+```
+
+The plot below shows the results of k-means based on the intercepts and slopes. This is ... not bad, but honestly maybe not what I'd hoped for. 
+
+```{r}
+int_slope_df |> 
+  ggplot(aes(x = int, y = slope, color = .cluster)) +
+  geom_point()
+```
+
+Finally, we'll add the cluster assignments to the original trajectory data and plot based on this. Again, the cluster assignments are okay but maybe not great. 
+
+```{r}
+left_join(traj_data, int_slope_df) |> 
+  ggplot(aes(x = week, y = value, group = subj, color = .cluster)) + 
+  geom_point() + 
+  geom_path() 
+```
+
+This example is very much related to "trajectory analysis", which has become pretty popular recently (maybe because `PROC TRAJ` exists in SAS ...). The basic idea is to use tools from longitudinal data analysis to estimate trajectories underlying data -- mixed models rather than SLRs. The subject-level estimates (random effects) are then clustered; cluster means are hopefully interpretable, and cluster assignments are thought to be meaningful. In many cases, though, the distinction between groups is fairly arbitrary.
+
+## Other materials
+
+* Intro to Statistical Learning with R, chapters 6 and 10
+* Nice [shiny app](https://shiny.rstudio.com/gallery/kmeans-example.html) for k-means
+* Good [overview](https://idc9.github.io/stor390/notes/clustering/clustering.html) of clustering
+* Some discussion about [tidying](https://cran.microsoft.com//web/packages/broom/vignettes/kmeans.html) results
+
+The code that I produced working examples in lecture is [here](https://github.com/P8105/extra_topics).
+

@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Visualization with ggplot2</title>
+
+<script src="site_libs/header-attrs-2.24/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" />
+<script defer src="https://use.fontawesome.com/releases/v5.0.3/js/all.js"></script>
+<script defer src="https://use.fontawesome.com/releases/v5.0.0/js/v4-shims.js"></script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-151578452-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-151578452-1');
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">P8105</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="schedule.html">Schedule</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Topics
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="topic_what_is_data_science.html">What is Data Science?</a>
+    </li>
+    <li>
+      <a href="topic_building_blocks.html">Building Blocks</a>
+    </li>
+    <li>
+      <a href="topic_data_wrangling_i.html">Data Wrangling I</a>
+    </li>
+    <li>
+      <a href="topic_visualization_and_eda.html">Visualization and EDA</a>
+    </li>
+    <li>
+      <a href="topic_data_wrangling_ii.html">Data Wrangling II</a>
+    </li>
+    <li>
+      <a href="topic_interactivity.html">Interactivity</a>
+    </li>
+    <li>
+      <a href="topic_iteration.html">Iteration</a>
+    </li>
+    <li>
+      <a href="topic_linear_models.html">Linear Models</a>
+    </li>
+    <li>
+      <a href="topic_other_material.html">Other Materials</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Datasets
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="dataset_airbnb.html">Airbnb</a>
+    </li>
+    <li>
+      <a href="dataset_brfss.html">BRFSS</a>
+    </li>
+    <li>
+      <a href="dataset_fivethirtyeight.html">FiveThirtyEight</a>
+    </li>
+    <li>
+      <a href="dataset_instacart.html">Instacart</a>
+    </li>
+    <li>
+      <a href="dataset_mr_trash_wheel.html">Mr. Trash Wheel</a>
+    </li>
+    <li>
+      <a href="dataset_noaa.html">NOAA</a>
+    </li>
+    <li>
+      <a href="dataset_restaurant_inspections.html">NYC Restaurant Inspections</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="homework_and_projects.html">Homework and Projects</a>
+</li>
+<li>
+  <a href="course_communication.html">Communication</a>
+</li>
+<li>
+  <a href="https://github.com/P8105/p8105.github.io">
+    <span class="fa fa-github"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Visualization with
+<code>ggplot2</code></h1>
+<h3 class="subtitle">Part 2</h3>
+
+</div>
+
+
+<p>Good visualization is a critical step in data analysis.</p>
+<p>This is the second module in the <a
+href="topic_visualization_and_eda.html">Visualization and EDA</a> topic.
+Note that the slides and Other Materials / Extra Reading is the same as
+in <a href="visualization_pt1.html">Visualization Pt 1</a>.</p>
+<div id="overview" class="section level2 tabset tabset-pills">
+<h2 class="tabset tabset-pills">Overview</h2>
+<div id="learning-objectives" class="section level3">
+<h3>Learning Objectives</h3>
+<p>Create effective graphics using ggplot and implement best practices
+for effective graphical communication.</p>
+</div>
+<div id="slide-deck" class="section level3">
+<h3>Slide Deck</h3>
+<div class="vid_container">
+<p><iframe 
+    src="https://speakerdeck.com/player/093fb87078174226896b975baef19e23" 
+    allowfullscreen 
+    frameborder="0"
+    class="video"> </iframe></p>
+</div>
+<div style="margin-bottom:5px">
+<strong>
+<a href="https://speakerdeck.com/jeffgoldsmith/p8105-visualization-ii" title="Visualization" target="_blank">Visualization</a>
+</strong> from
+<strong><a href="https://speakerdeck.com/jeffgoldsmith" target="_blank">Jeff
+Goldsmith</a></strong>.
+</div>
+<p><br></p>
+<hr />
+</div>
+<div id="video-lecture" class="section level3">
+<h3>Video Lecture</h3>
+<div class="vid_container">
+<p><iframe 
+    src="https://www.youtube.com/embed/JglEg1vQLrI"
+    frameborder="0" allowfullscreen class="video"> </iframe></p>
+</div>
+<hr />
+</div>
+</div>
+<div id="example" class="section level2">
+<h2>Example</h2>
+<p>I’ll create a new .Rmd for this example, and include it in the Git
+repo / directory for the <a
+href="topic_visualization_and_eda.html">Visualization and EDA</a> topic.
+I’m also going to take advantage of features in the
+<code>tidyverse</code> and <code>patchwork</code> packages, so I’ll load
+those next.</p>
+<pre class="r"><code>library(tidyverse)
+## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+## ✔ dplyr     1.1.3     ✔ readr     2.1.4
+## ✔ forcats   1.0.0     ✔ stringr   1.5.0
+## ✔ ggplot2   3.4.3     ✔ tibble    3.2.1
+## ✔ lubridate 1.9.2     ✔ tidyr     1.3.0
+## ✔ purrr     1.0.2     
+## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+## ✖ dplyr::filter() masks stats::filter()
+## ✖ dplyr::lag()    masks stats::lag()
+## ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors
+library(patchwork)</code></pre>
+<p>We’ll still work with NOAA weather data, which is loaded using the
+same code as in <a href="visualization_pt1.html">Visualization Pt
+1</a>.</p>
+<pre class="r"><code>weather_df = 
+  rnoaa::meteo_pull_monitors(
+    c(&quot;USW00094728&quot;, &quot;USW00022534&quot;, &quot;USS0023B17S&quot;),
+    var = c(&quot;PRCP&quot;, &quot;TMIN&quot;, &quot;TMAX&quot;), 
+    date_min = &quot;2021-01-01&quot;,
+    date_max = &quot;2023-12-31&quot;) |&gt;
+  mutate(
+    name = recode(
+      id, 
+      USW00094728 = &quot;CentralPark_NY&quot;, 
+      USW00022534 = &quot;Molokai_HI&quot;,
+      USS0023B17S = &quot;Waterhole_WA&quot;),
+    tmin = tmin / 10,
+    tmax = tmax / 10) |&gt;
+  select(name, id, everything())
+## Registered S3 method overwritten by &#39;hoardr&#39;:
+##   method           from
+##   print.cache_info httr
+## using cached file: /Users/jeffgoldsmith/Library/Caches/org.R-project.R/R/rnoaa/noaa_ghcnd/USW00094728.dly
+## date created (size, mb): 2023-09-19 15:41:55.07359 (8.524)
+## file min/max dates: 1869-01-01 / 2023-09-30
+## using cached file: /Users/jeffgoldsmith/Library/Caches/org.R-project.R/R/rnoaa/noaa_ghcnd/USW00022534.dly
+## date created (size, mb): 2023-09-25 10:06:23.827176 (3.83)
+## file min/max dates: 1949-10-01 / 2023-09-30
+## using cached file: /Users/jeffgoldsmith/Library/Caches/org.R-project.R/R/rnoaa/noaa_ghcnd/USS0023B17S.dly
+## date created (size, mb): 2023-09-19 15:42:03.139582 (0.994)
+## file min/max dates: 1999-09-01 / 2023-09-30
+
+weather_df
+## # A tibble: 3,009 × 6
+##    name           id          date        prcp  tmax  tmin
+##    &lt;chr&gt;          &lt;chr&gt;       &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+##  1 CentralPark_NY USW00094728 2021-01-01   157   4.4   0.6
+##  2 CentralPark_NY USW00094728 2021-01-02    13  10.6   2.2
+##  3 CentralPark_NY USW00094728 2021-01-03    56   3.3   1.1
+##  4 CentralPark_NY USW00094728 2021-01-04     5   6.1   1.7
+##  5 CentralPark_NY USW00094728 2021-01-05     0   5.6   2.2
+##  6 CentralPark_NY USW00094728 2021-01-06     0   5     1.1
+##  7 CentralPark_NY USW00094728 2021-01-07     0   5    -1  
+##  8 CentralPark_NY USW00094728 2021-01-08     0   2.8  -2.7
+##  9 CentralPark_NY USW00094728 2021-01-09     0   2.8  -4.3
+## 10 CentralPark_NY USW00094728 2021-01-10     0   5    -1.6
+## # ℹ 2,999 more rows</code></pre>
+<p>As a starting point, let’s revisit the scatterplot of
+<code>tmax</code> against <code>tmin</code> made in <a
+href="visualization_pt1.html">Visualization Pt 1</a>.</p>
+<pre class="r"><code>weather_df |&gt; 
+  ggplot(aes(x = tmin, y = tmax)) + 
+  geom_point(aes(color = name), alpha = .5)
+## Warning: Removed 51 rows containing missing values (`geom_point()`).</code></pre>
+<p><img src="visualization_pt2_files/figure-html/unnamed-chunk-3-1.png" width="90%" /></p>
+<div id="labels" class="section level3">
+<h3>Labels</h3>
+<p>There are a variety of useful ways to change the appearance of your
+plot, especially if your graphic is intended to be viewed by others. One
+of the most important things you can do is provide informative axis
+labels, plot titles, and captions, all of which can be controlled using
+<code>labs()</code>.</p>
+<pre class="r"><code>weather_df |&gt; 
+  ggplot(aes(x = tmin, y = tmax)) + 
+  geom_point(aes(color = name), alpha = .5) + 
+  labs(
+    title = &quot;Temperature plot&quot;,
+    x = &quot;Minimum daily temperature (C)&quot;,
+    y = &quot;Maxiumum daily temperature (C)&quot;,
+    color = &quot;Location&quot;,
+    caption = &quot;Data from the rnoaa package&quot;
+  )
+## Warning: Removed 51 rows containing missing values (`geom_point()`).</code></pre>
+<p><img src="visualization_pt2_files/figure-html/unnamed-chunk-4-1.png" width="90%" /></p>
+</div>
+<div id="scales" class="section level3">
+<h3>Scales</h3>
+<p>Aesthetic mappings determine which variables map to which plot
+attributes. These mappings have reasonable default behaviors, but can be
+modified through scales.</p>
+<p>For example, you’ll occasionally want control over the location and
+specification of tick marks on the X or Y axis. These can be manipulated
+in <code>scale_x_*</code> and <code>scale_y_*</code> where
+<code>*</code> depends on the type of variable mapped to the
+<code>x</code> and <code>y</code> aesthetics
+(i.e. <code>continuous</code> vs <code>discrete</code>).</p>
+<pre class="r"><code>weather_df |&gt; 
+  ggplot(aes(x = tmin, y = tmax)) + 
+  geom_point(aes(color = name), alpha = .5) + 
+  labs(
+    title = &quot;Temperature plot&quot;,
+    x = &quot;Minimum daily temperature (C)&quot;,
+    y = &quot;Maxiumum daily temperature (C)&quot;,
+    color = &quot;Location&quot;,
+    caption = &quot;Data from the rnoaa package&quot;) + 
+  scale_x_continuous(
+    breaks = c(-15, 0, 15), 
+    labels = c(&quot;-15º C&quot;, &quot;0&quot;, &quot;15&quot;))
+## Warning: Removed 51 rows containing missing values (`geom_point()`).</code></pre>
+<p><img src="visualization_pt2_files/figure-html/unnamed-chunk-5-1.png" width="90%" /></p>
+<p>There are a variety of other <code>scale_x_*</code> and
+<code>scale_y_*</code> options – it can be helpful to know how and where
+these are controlled, although I usually would have to google how to do
+what I want.</p>
+<pre class="r"><code>weather_df |&gt; 
+  ggplot(aes(x = tmin, y = tmax)) + 
+  geom_point(aes(color = name), alpha = .5) + 
+  labs(
+    title = &quot;Temperature plot&quot;,
+    x = &quot;Minimum daily temperature (C)&quot;,
+    y = &quot;Maxiumum daily temperature (C)&quot;,
+    color = &quot;Location&quot;,
+    caption = &quot;Data from the rnoaa package&quot;) + 
+  scale_x_continuous(
+    breaks = c(-15, 0, 15), 
+    labels = c(&quot;-15ºC&quot;, &quot;0&quot;, &quot;15&quot;),
+    limits = c(-20, 30)) + 
+  scale_y_continuous(
+    trans = &quot;sqrt&quot;, 
+    position = &quot;right&quot;)
+## Warning in self$trans$transform(x): NaNs produced
+## Warning: Transformation introduced infinite values in continuous y-axis
+## Warning: Removed 217 rows containing missing values (`geom_point()`).</code></pre>
+<p><img src="visualization_pt2_files/figure-html/unnamed-chunk-6-1.png" width="90%" /></p>
+<p>For many graph options there are several ways to produce the desired
+result, and you should feel free to use whichever is most convenient.
+For instance, <code>scale_y_sqrt()</code> can be added to a
+<code>ggplot</code> object to transform the Y scale, and
+<code>xlim()</code> can be used to control the plot limits in the X
+axis.</p>
+<p>Analogously to <code>scale_x_*</code> and <code>scale_y_*</code>,
+there are <code>scale</code>s corresponding to other aesthetics. Some of
+the most common are used to control the <code>color</code> aesthetic.
+For example, arguments to <code>scale_color_hue()</code> control the
+color scale and the name in the plot legend.</p>
+<pre class="r"><code>weather_df |&gt; 
+  ggplot(aes(x = tmin, y = tmax)) + 
+  geom_point(aes(color = name), alpha = .5) + 
+  labs(
+    title = &quot;Temperature plot&quot;,
+    x = &quot;Minimum daily temperature (C)&quot;,
+    y = &quot;Maxiumum daily temperature (C)&quot;,
+    color = &quot;Location&quot;,
+    caption = &quot;Data from the rnoaa package&quot;) + 
+  scale_color_hue(h = c(100, 300))
+## Warning: Removed 51 rows containing missing values (`geom_point()`).</code></pre>
+<p><img src="visualization_pt2_files/figure-html/unnamed-chunk-7-1.png" width="90%" /></p>
+<p>Trying to create your own color scheme usually doesn’t go well; I
+encourage you to use the <a
+href="https://cran.r-project.org/web/packages/viridis/vignettes/intro-to-viridis.html"><code>viridis</code></a>
+package instead. There are several options, but the default color scheme
+works nicely!</p>
+<pre class="r"><code>ggp_temp_plot = 
+  weather_df |&gt; 
+  ggplot(aes(x = tmin, y = tmax)) + 
+  geom_point(aes(color = name), alpha = .5) + 
+  labs(
+    title = &quot;Temperature plot&quot;,
+    x = &quot;Minimum daily temperature (C)&quot;,
+    y = &quot;Maxiumum daily temperature (C)&quot;,
+    color = &quot;Location&quot;,
+    caption = &quot;Data from the rnoaa package&quot;
+  ) + 
+  viridis::scale_color_viridis(
+    name = &quot;Location&quot;, 
+    discrete = TRUE
+  )
+
+ggp_temp_plot
+## Warning: Removed 51 rows containing missing values (`geom_point()`).</code></pre>
+<p><img src="visualization_pt2_files/figure-html/unnamed-chunk-8-1.png" width="90%" /></p>
+<p>We used <code>discrete = TRUE</code> because the <code>color</code>
+aesthetic is mapped to a discrete variable. In other cases (for example,
+when color mapped to <code>prcp</code>) you can omit this argument to
+get a continuous color gradient. The
+<code>viridis::scale_fill_viridis()</code> function is appropriate for
+the <code>fill</code> aesthetic used in histograms, density plots, and
+elsewhere.</p>
+</div>
+<div id="themes" class="section level3">
+<h3>Themes</h3>
+<p>Themes are used to modify non-data elements of a plot – they don’t
+change mappings or how data are render, but control things like
+background color and location of the the legend. Using themes can help
+with general plot appearance.</p>
+<p>For example, I frequently change is the legend position. By default
+this is on the right of the graphic, but I like to shift it to the
+bottom to ensure the graphic takes up the available left-to-right
+space.</p>
+<pre class="r"><code>ggp_temp_plot + 
+  theme(legend.position = &quot;bottom&quot;)
+## Warning: Removed 51 rows containing missing values (`geom_point()`).</code></pre>
+<p><img src="visualization_pt2_files/figure-html/unnamed-chunk-9-1.png" width="90%" /></p>
+<p>Quick tip: <code>legend.position = "none"</code> will remove the
+legend. This is helpful when multiple plots use the same color scheme or
+when the legend is obnoxious for some other reason.</p>
+<p>While you can manage specific theme elements individually, I
+recommend using a built-in theme. By default this is
+<code>theme_gray</code>; here’s <code>theme_bw()</code>:</p>
+<pre class="r"><code>ggp_temp_plot + 
+  theme_bw() + 
+  theme(legend.position = &quot;bottom&quot;)
+## Warning: Removed 51 rows containing missing values (`geom_point()`).</code></pre>
+<p><img src="visualization_pt2_files/figure-html/unnamed-chunk-10-1.png" width="90%" /></p>
+<p>… and here’s <code>theme_classic()</code>:</p>
+<pre class="r"><code>ggp_temp_plot + 
+  theme_classic() + 
+  theme(legend.position = &quot;bottom&quot;)
+## Warning: Removed 51 rows containing missing values (`geom_point()`).</code></pre>
+<p><img src="visualization_pt2_files/figure-html/unnamed-chunk-11-1.png" width="90%" /></p>
+<p>… and, for some reason, here’s the Excel 2003 theme from <a
+href="https://jrnold.github.io/ggthemes/"><code>ggthemes</code></a>:</p>
+<pre class="r"><code>ggp_temp_plot + 
+  ggthemes::theme_excel() + 
+  theme(legend.position = &quot;bottom&quot;)
+## Warning: Removed 51 rows containing missing values (`geom_point()`).</code></pre>
+<p><img src="visualization_pt2_files/figure-html/unnamed-chunk-12-1.png" width="90%" /></p>
+<p>Don’t use the Excel 2003 theme (the first two are fine, and
+<code>ggthemes</code> has other very nice themes as well).</p>
+<p>The ordering of <code>theme_bw()</code> and <code>theme()</code>
+matters – <code>theme()</code> changes a particular element of the
+plot’s current “theme”. If you call <code>theme</code> to change the
+some element and then <code>theme_bw()</code>, the changes introduced by
+<code>theme()</code> are overwritten by <code>theme_bw()</code>.</p>
+<p><strong><em>Learning Assessment:</em></strong> Revisit the plot
+showing <code>tmax</code> against <code>date</code> for each location.
+Use labels, scale options, and theme changes to improve the readability
+of this plot.</p>
+<details>
+<summary>
+Solution
+</summary>
+<p>One possible plot is shown below.</p>
+<pre class="r"><code>ggplot(weather_df, aes(x = date, y = tmax, color = name)) + 
+  geom_smooth(se = FALSE) + 
+  geom_point(aes(size = prcp), alpha = .75) + 
+  labs(
+    title = &quot;Temperature plot&quot;,
+    x = &quot;Date&quot;,
+    y = &quot;Maxiumum daily temperature (C)&quot;,
+    color = &quot;Location&quot;,
+    caption = &quot;Data from the rnoaa package&quot;
+  ) + 
+  viridis::scale_color_viridis(discrete = TRUE) + 
+  theme_minimal() + 
+  theme(legend.position = &quot;bottom&quot;)
+## `geom_smooth()` using method = &#39;gam&#39; and formula = &#39;y ~ s(x, bs = &quot;cs&quot;)&#39;
+## Warning: Removed 51 rows containing non-finite values (`stat_smooth()`).
+## Warning: Removed 54 rows containing missing values (`geom_point()`).</code></pre>
+<p><img src="visualization_pt2_files/figure-html/unnamed-chunk-13-1.png" width="90%" /></p>
+</details>
+</div>
+<div id="setting-options" class="section level3">
+<h3>Setting options</h3>
+<p>In addition to figure sizing, I include a few other figure
+preferences in global options declared at the outset of each .Rmd file
+(this code chunk just gets copy-and-pasted to the beginning of every new
+file).</p>
+<pre class="r"><code>library(tidyverse)
+
+knitr::opts_chunk$set(
+  fig.width = 6,
+  fig.asp = .6,
+  out.width = &quot;90%&quot;
+)
+
+theme_set(theme_minimal() + theme(legend.position = &quot;bottom&quot;))
+
+options(
+  ggplot2.continuous.colour = &quot;viridis&quot;,
+  ggplot2.continuous.fill = &quot;viridis&quot;
+)
+
+scale_colour_discrete = scale_colour_viridis_d
+scale_fill_discrete = scale_fill_viridis_d</code></pre>
+<p>There are ways to set color preferences globally as well (for
+example, to use <code>viridis</code> color palettes everywhere, all the
+time, without setting these options in your RMarkdown file), although
+they’re a bit more involved.</p>
+</div>
+<div id="data-argument-in-geom_" class="section level3">
+<h3>Data argument in <code>geom_*</code></h3>
+<p>We’ve seen that where an aesthetic gets mapped to a variable matters
+– setting <code>aes(color = name)</code> in <code>ggplot</code> can
+yield different results than the same setting in
+<code>geom_point()</code>. This arises from the way that
+<code>ggplot</code> objects inherit aesthetic mappings, and it turns out
+there’s a similar thing with the data used to make a plot.</p>
+<p>In a contrived example, we can split <code>weather_df</code> into
+separate datasets for Central Park and Molokai Then we use one in the
+<code>ggplot()</code> call and another in <code>geom_line()</code>:</p>
+<pre class="r"><code>central_park_df = 
+  weather_df |&gt; 
+  filter(name == &quot;CentralPark_NY&quot;)
+
+molokai_df = 
+  weather_df |&gt; 
+  filter(name == &quot;Molokai_HI&quot;)
+
+ggplot(data = molokai_df, aes(x = date, y = tmax, color = name)) + 
+  geom_point() + 
+  geom_line(data = central_park_df) 
+## Warning: Removed 8 rows containing missing values (`geom_point()`).
+## Warning: Removed 13 rows containing missing values (`geom_line()`).</code></pre>
+<p><img src="visualization_pt2_files/figure-html/unnamed-chunk-15-1.png" width="90%" /></p>
+<p>More realistically, it’s sometimes necessary to overlay data
+summaries on a plot of the complete data. Depending on the setting, one
+way to do this is to create a “summary” dataframe and use that when
+adding a new <code>geom</code> to a <code>ggplot</code> based on the
+full data.</p>
+</div>
+<div id="patchwork" class="section level3">
+<h3><code>patchwork</code></h3>
+<p>We’ve seen facetting as an approach to create the “same plot” for
+several levels of a categorical variable, and this can get you pretty
+far. Sometimes, though, you want to show two or three fundamentally
+different plots in the same graphic: you may want to juxtapose a
+scatterplot and a boxplot, or show scatterplots illustrating
+relationships between different variables. In this case, a solution is
+to create each of the panels you want separately and combine panels
+using tools in the <a
+href="https://github.com/thomasp85/patchwork"><code>patchwork</code></a>
+package:</p>
+<pre class="r"><code>tmax_tmin_p = 
+  weather_df |&gt; 
+  ggplot(aes(x = tmax, y = tmin, color = name)) + 
+  geom_point(alpha = .5) +
+  theme(legend.position = &quot;none&quot;)
+
+prcp_dens_p = 
+  weather_df |&gt; 
+  filter(prcp &gt; 0) |&gt; 
+  ggplot(aes(x = prcp, fill = name)) + 
+  geom_density(alpha = .5) + 
+  theme(legend.position = &quot;none&quot;)
+
+tmax_date_p = 
+  weather_df |&gt; 
+  ggplot(aes(x = date, y = tmax, color = name)) + 
+  geom_point(alpha = .5) +
+  geom_smooth(se = FALSE) + 
+  theme(legend.position = &quot;bottom&quot;)
+
+(tmax_tmin_p + prcp_dens_p) / tmax_date_p
+## Warning: Removed 51 rows containing missing values (`geom_point()`).
+## `geom_smooth()` using method = &#39;gam&#39; and formula = &#39;y ~ s(x, bs = &quot;cs&quot;)&#39;
+## Warning: Removed 51 rows containing non-finite values (`stat_smooth()`).
+## Removed 51 rows containing missing values (`geom_point()`).</code></pre>
+<p><img src="visualization_pt2_files/figure-html/unnamed-chunk-16-1.png" width="90%" /></p>
+<p>The package is already very helpful but is under active development –
+some features may change or be added over time – so check the package
+webstie periodically to stay up-to-date. This does require some amount
+of work for each panel, and you should keep in mind that this is
+intended to help combine panels into a plot that couldn’t be created
+better using data tidying steps.</p>
+</div>
+<div id="data-manipulation" class="section level3">
+<h3>Data Manipulation</h3>
+<p>Often, struggles with <code>ggplot</code> are struggles with data
+tidying in disguise. Viewing data manipulation as part of the
+visualization process will often be your path to success! Put
+differently, the behavior of your plot depends on the data you’ve
+supplied; in some cases, it’s easier to control behavior through data
+manipulation than it is through the plot code.</p>
+<p>This is particularly true for the order of categorical or factor
+variables in plots. Categorical variables will be ordered
+alphabetically; factors will follow the specified order level that
+underlies the variable labels. You can change the order level of a
+factor variable to your specified preference using
+<code>forcats::fct_relevel</code> or according to the value of another
+variable using <code>forcats::fct_reorder</code>.</p>
+<p>A first example reorders <code>name</code> “by hand”:</p>
+<pre class="r"><code>weather_df |&gt;
+  mutate(name = forcats::fct_relevel(name, c(&quot;Molokai_HI&quot;, &quot;CentralPark_NY&quot;, &quot;Waterhole_WA&quot;))) |&gt; 
+  ggplot(aes(x = name, y = tmax)) + 
+  geom_violin(aes(fill = name), color = &quot;blue&quot;, alpha = .5) + 
+  theme(legend.position = &quot;bottom&quot;)
+## Warning: Removed 51 rows containing non-finite values (`stat_ydensity()`).</code></pre>
+<p><img src="visualization_pt2_files/figure-html/unnamed-chunk-17-1.png" width="90%" /></p>
+<p>A second example reorders <code>name</code> according to
+<code>tmax</code> values in each name:</p>
+<pre class="r"><code>weather_df |&gt;
+  mutate(name = forcats::fct_reorder(name, tmax)) |&gt; 
+  ggplot(aes(x = name, y = tmax)) + 
+  geom_violin(aes(fill = name), color = &quot;blue&quot;, alpha = .5) + 
+  theme(legend.position = &quot;bottom&quot;)
+## Warning: There was 1 warning in `mutate()`.
+## ℹ In argument: `name = forcats::fct_reorder(name, tmax)`.
+## Caused by warning:
+## ! `fct_reorder()` removing 51 missing values.
+## ℹ Use `.na_rm = TRUE` to silence this message.
+## ℹ Use `.na_rm = FALSE` to preserve NAs.
+## Warning: Removed 51 rows containing non-finite values (`stat_ydensity()`).</code></pre>
+<p><img src="visualization_pt2_files/figure-html/unnamed-chunk-18-1.png" width="90%" /></p>
+<p>We’ll learn more about the <a
+href="http://forcats.tidyverse.org/index.html"><code>forcats</code></a>
+package in <a href="data_wrangling_ii.html">Data Wrangling II</a>.</p>
+<p>A more difficult situation relates to data tidyiness. Suppose I
+wanted to create a three-panel plot showing densities for
+<code>tmax</code> and <code>tmin</code> within each location. More
+concretely, I want to be able to facet panels across the
+<code>name</code> variable, and create separate densities for
+<code>tmax</code> and <code>tmin</code> in each panel. Unfortunately,
+<code>weather_df</code> isn’t organized in a way that makes this
+easy.</p>
+<p>One solution would recognize that <code>tmax</code> and
+<code>tmin</code> are separate observation types of a shared
+<code>temperature</code> variable. With this understanding, it’s
+possible to tidy the <code>weather_df</code> and make the plot
+directly:</p>
+<pre class="r"><code>weather_df |&gt;
+  select(name, tmax, tmin) |&gt; 
+  pivot_longer(
+    tmax:tmin,
+    names_to = &quot;observation&quot;, 
+    values_to = &quot;temp&quot;) |&gt; 
+  ggplot(aes(x = temp, fill = observation)) +
+  geom_density(alpha = .5) + 
+  facet_grid(~name) + 
+  viridis::scale_fill_viridis(discrete = TRUE)
+## Warning: Removed 102 rows containing non-finite values (`stat_density()`).</code></pre>
+<p><img src="visualization_pt2_files/figure-html/unnamed-chunk-19-1.png" width="90%" /></p>
+<p>Our emphasis on data tidiness in previous examples is helpful in
+visualization. The code below imports and tidies the PULSE data, and
+creates a plot showing BDI score across visits. Some steps that are
+helpful in retrospect are using <code>pivot_longer</code> to organize
+the BDI score and visit time variables, and organizing the visit time
+variable into a factor with an informative ordering.</p>
+<pre class="r"><code>pulse_data = 
+  haven::read_sas(&quot;./data/public_pulse_data.sas7bdat&quot;) |&gt;
+  janitor::clean_names() |&gt;
+  pivot_longer(
+    bdi_score_bl:bdi_score_12m,
+    names_to = &quot;visit&quot;, 
+    names_prefix = &quot;bdi_score_&quot;,
+    values_to = &quot;bdi&quot;) |&gt;
+  select(id, visit, everything()) |&gt;
+  mutate(
+    visit = recode(visit, &quot;bl&quot; = &quot;00m&quot;),
+    visit = factor(visit, levels = str_c(c(&quot;00&quot;, &quot;01&quot;, &quot;06&quot;, &quot;12&quot;), &quot;m&quot;))) |&gt;
+  arrange(id, visit)
+
+ggplot(pulse_data, aes(x = visit, y = bdi)) + 
+  geom_boxplot()
+## Warning: Removed 879 rows containing non-finite values (`stat_boxplot()`).</code></pre>
+<p><img src="visualization_pt2_files/figure-html/unnamed-chunk-20-1.png" width="90%" /></p>
+<p>As a final example, we’ll revisit the FAS data. We’ve seen code for
+data import and organization and for joining the litters and pups data.
+Here we add some data tidying steps to view pup-level outcomes
+(post-natal day on which ears “work”, on which the pup can walk, etc)
+across values of dose category and treatment day.</p>
+<pre class="r"><code>pup_data = 
+  read_csv(&quot;./data/FAS_pups.csv&quot;) |&gt;
+  janitor::clean_names() |&gt;
+  mutate(
+    sex = 
+      case_match(
+        sex, 
+        1 ~ &quot;male&quot;, 
+        2 ~ &quot;female&quot;))
+## Rows: 313 Columns: 6
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## chr (1): Litter Number
+## dbl (5): Sex, PD ears, PD eyes, PD pivot, PD walk
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+litter_data = 
+  read_csv(&quot;./data/FAS_litters.csv&quot;) |&gt;
+  janitor::clean_names() |&gt;
+  separate(group, into = c(&quot;dose&quot;, &quot;day_of_tx&quot;), sep = 3)
+## Rows: 49 Columns: 8
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## chr (2): Group, Litter Number
+## dbl (6): GD0 weight, GD18 weight, GD of Birth, Pups born alive, Pups dead @ ...
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+fas_data = left_join(pup_data, litter_data, by = &quot;litter_number&quot;) 
+
+fas_data |&gt; 
+  select(sex, dose, day_of_tx, pd_ears:pd_walk) |&gt; 
+  pivot_longer(
+    pd_ears:pd_walk,
+    names_to = &quot;outcome&quot;, 
+    values_to = &quot;pn_day&quot;) |&gt; 
+  drop_na() |&gt; 
+  mutate(outcome = forcats::fct_reorder(outcome, pn_day, median)) |&gt; 
+  ggplot(aes(x = dose, y = pn_day)) + 
+  geom_violin() + 
+  facet_grid(day_of_tx ~ outcome)</code></pre>
+<p><img src="visualization_pt2_files/figure-html/unnamed-chunk-21-1.png" width="90%" /></p>
+<p>The PULSE and FAS examples involve some fairly complex import,
+tidying, and plotting steps. They aren’t intended to be daunting, but
+rather to illustrate how closely linked the steps in this process are
+and to emphasize the need for proficiency in data wrangling tools when
+conducting exploratory analyses.</p>
+</div>
+</div>
+<div id="other-materials" class="section level2">
+<h2>Other materials</h2>
+<p>Oh man is there a lot of stuff about visualization …</p>
+<ul>
+<li>There are overviews on good and bad graphics
+<ul>
+<li>Including an early paper on <a
+href="http://www.jstor.org/stable/2683253?seq=1#page_scan_tab_contents">“How
+to display data badly”</a></li>
+<li>Karl Broman’s <a
+href="https://www.biostat.wisc.edu/~kbroman/topten_worstgraphs/">top ten
+worst graphs</a></li>
+<li>… and Karl’s talk on <a
+href="https://www.biostat.wisc.edu/~kbroman/presentations/graphs2018.pdf">creating
+effective figures and table</a></li>
+<li>Also Hadley Wickham’s <a
+href="http://vita.had.co.nz/papers/layered-grammar.pdf">paper</a> on the
+philosophy underlying <code>ggplot</code></li>
+</ul></li>
+<li>There are tutorials on making graphics using <code>ggplot</code>
+<ul>
+<li>The <a href="https://ggplot2-book.org">ggplot2</a> book</li>
+<li>From R for Data Science: <a
+href="http://r4ds.had.co.nz/data-visualisation.html">basics</a> and <a
+href="and%20http://r4ds.had.co.nz/graphics-for-communication.html">advanced
+stuff</a></li>
+<li>Jenny Bryan’s <a
+href="http://stat545.com/cm006_tibbles-dplyr-ggplot2.html">intro to
+ggplot</a> and her <a
+href="https://github.com/jennybc/ggplot2-tutorial">ggplot tutorial</a>
+(with a <a href="https://www.youtube.com/watch?v=4MfUCX_KpdE">video
+presentation</a> of the ggplot2 tutorial slides)</li>
+<li>From <a
+href="https://geanders.github.io/RProgrammingForResearch/exploring-data-1.html#plots-to-explore-data">R
+Programming for Research</a></li>
+<li>The <a href="http://www.cookbook-r.com/Graphs/">Graphs</a> chapter
+in the R Cookbook by Winston Chang</li>
+<li>… and his <a
+href="http://shop.oreilly.com/product/0636920023135.do">R Graphics
+Cookbook</a></li>
+<li>And, of course, a <a
+href="https://www.rstudio.com/wp-content/uploads/2016/11/ggplot2-cheatsheet-2.1.pdf">cheatsheet</a></li>
+</ul></li>
+<li>There are arguments about ggplot vs base R graphics
+<ul>
+<li><a
+href="https://simplystatistics.org/2016/02/11/why-i-dont-use-ggplot2/">Why
+I don’t use ggplot2</a></li>
+<li><a
+href="https://flowingdata.com/2016/03/22/comparing-ggplot2-and-r-base-graphics/">Comparing
+ggplot2 and R Base Graphics</a></li>
+<li><a href="http://varianceexplained.org/r/why-I-use-ggplot2/">Why I
+use ggplot2</a></li>
+</ul></li>
+</ul>
+<p>The code that I produced working examples in lecture is <a
+href="https://github.com/P8105/viz_and_eda">here</a>.</p>
+</div>
+
+<br><br>
+<footer>
+  <img src="images/p8105_stickers.png" alt="stickers" style="width:30%">
+  <br>
+  <p class="copyright text-muted" align="center">Copyright &copy; 2019 Jeff Goldsmith</p>
+</footer>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

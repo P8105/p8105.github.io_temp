@@ -1,0 +1,1272 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Exploratory analysis using data summaries</title>
+
+<script src="site_libs/header-attrs-2.24/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" />
+<script defer src="https://use.fontawesome.com/releases/v5.0.3/js/all.js"></script>
+<script defer src="https://use.fontawesome.com/releases/v5.0.0/js/v4-shims.js"></script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-151578452-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-151578452-1');
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">P8105</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="schedule.html">Schedule</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Topics
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="topic_what_is_data_science.html">What is Data Science?</a>
+    </li>
+    <li>
+      <a href="topic_building_blocks.html">Building Blocks</a>
+    </li>
+    <li>
+      <a href="topic_data_wrangling_i.html">Data Wrangling I</a>
+    </li>
+    <li>
+      <a href="topic_visualization_and_eda.html">Visualization and EDA</a>
+    </li>
+    <li>
+      <a href="topic_data_wrangling_ii.html">Data Wrangling II</a>
+    </li>
+    <li>
+      <a href="topic_interactivity.html">Interactivity</a>
+    </li>
+    <li>
+      <a href="topic_iteration.html">Iteration</a>
+    </li>
+    <li>
+      <a href="topic_linear_models.html">Linear Models</a>
+    </li>
+    <li>
+      <a href="topic_other_material.html">Other Materials</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Datasets
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="dataset_airbnb.html">Airbnb</a>
+    </li>
+    <li>
+      <a href="dataset_brfss.html">BRFSS</a>
+    </li>
+    <li>
+      <a href="dataset_fivethirtyeight.html">FiveThirtyEight</a>
+    </li>
+    <li>
+      <a href="dataset_instacart.html">Instacart</a>
+    </li>
+    <li>
+      <a href="dataset_mr_trash_wheel.html">Mr. Trash Wheel</a>
+    </li>
+    <li>
+      <a href="dataset_noaa.html">NOAA</a>
+    </li>
+    <li>
+      <a href="dataset_restaurant_inspections.html">NYC Restaurant Inspections</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="homework_and_projects.html">Homework and Projects</a>
+</li>
+<li>
+  <a href="course_communication.html">Communication</a>
+</li>
+<li>
+  <a href="https://github.com/P8105/p8105.github.io">
+    <span class="fa fa-github"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Exploratory analysis using data
+summaries</h1>
+
+</div>
+
+
+<p>Data sets can frequently be partitioned into meaningful groups based
+on the variables they contain. Making this grouping explicit allows the
+computation of numeric summaries within groups, which in turn
+facilitates quantitative comparisons.</p>
+<p>This is the second module in the <a
+href="topic_visualization_and_eda.html">Visualization and EDA</a>
+topic.</p>
+<div id="overview" class="section level2 tabset tabset-pills">
+<h2 class="tabset tabset-pills">Overview</h2>
+<div id="learning-objectives" class="section level3">
+<h3>Learning Objectives</h3>
+<p>Conduct exploratory analyses using <code>dplyr</code> verbs
+(<code>group_by</code> and <code>summarize</code>), along with numeric
+data summaries.</p>
+</div>
+<div id="slide-deck" class="section level3">
+<h3>Slide Deck</h3>
+<div class="vid_container">
+<p><iframe 
+    src="https://speakerdeck.com/player/38db98aa225d41a0a0d7fec84ae7a259" 
+    allowfullscreen 
+    frameborder="0"
+    class="video"> </iframe></p>
+</div>
+<div style="margin-bottom:5px">
+<strong>
+<a href="https://speakerdeck.com/jeffgoldsmith/dsi-exploratory-analysis" title="Exploratory Analysis" target="_blank">Exploratory
+Analysis</a> </strong> from
+<strong><a href="https://speakerdeck.com/jeffgoldsmith" target="_blank">Jeff
+Goldsmith</a></strong>.
+</div>
+<p><br></p>
+<hr />
+</div>
+<div id="video-lecture" class="section level3">
+<h3>Video Lecture</h3>
+<div class="vid_container">
+<p><iframe 
+    src="https://www.youtube.com/embed/evwEoXO3Y7w"
+    frameborder="0" allowfullscreen class="video"> </iframe></p>
+</div>
+<hr />
+</div>
+</div>
+<div id="example" class="section level2">
+<h2>Example</h2>
+<p>We’ll continue in the same Git repo / R project that we used for
+visualization, and use essentially the same <code>weather_df</code>
+dataset – the only exception is the addition of <code>month</code>
+variable, created using <code>lubridate::floor_date()</code>.</p>
+<pre class="r"><code>weather_df = 
+  rnoaa::meteo_pull_monitors(
+    c(&quot;USW00094728&quot;, &quot;USW00022534&quot;, &quot;USS0023B17S&quot;),
+    var = c(&quot;PRCP&quot;, &quot;TMIN&quot;, &quot;TMAX&quot;), 
+    date_min = &quot;2021-01-01&quot;,
+    date_max = &quot;2022-12-31&quot;) |&gt;
+  mutate(
+    name = recode(
+      id, 
+      USW00094728 = &quot;CentralPark_NY&quot;, 
+      USW00022534 = &quot;Molokai_HI&quot;,
+      USS0023B17S = &quot;Waterhole_WA&quot;),
+    tmin = tmin / 10,
+    tmax = tmax / 10,
+    month = lubridate::floor_date(date, unit = &quot;month&quot;)) |&gt;
+  select(name, id, everything())</code></pre>
+<div id="initial-numeric-explorations" class="section level3">
+<h3>Initial numeric explorations</h3>
+<p>Before beginning to summarize data, it can help to use initial
+visualizations to motivate some data checks or observations. Consider,
+for example, this histogram of precipitation values:</p>
+<pre class="r"><code>weather_df |&gt; 
+  ggplot(aes(x = prcp)) + 
+  geom_histogram()
+## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+## Warning: Removed 15 rows containing non-finite values (`stat_bin()`).</code></pre>
+<p><img src="exploratory_analysis_files/figure-html/unnamed-chunk-2-1.png" width="90%" /></p>
+<p>This is clearly a very skewed distribution; any formal analyses
+involving preciptation as a predictor or outcome might be influenced by
+this fact. It’s important to note that the vast majority of days have no
+precipitation. Meanwhile, examining the relatively few days have very
+high precipitation might be helpful.</p>
+<pre class="r"><code>weather_df |&gt; 
+  filter(prcp &gt;= 1000)
+## # A tibble: 3 × 7
+##   name           id          date        prcp  tmax  tmin month     
+##   &lt;chr&gt;          &lt;chr&gt;       &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;date&gt;    
+## 1 CentralPark_NY USW00094728 2021-08-21  1130  27.8  22.8 2021-08-01
+## 2 CentralPark_NY USW00094728 2021-09-01  1811  25.6  17.2 2021-09-01
+## 3 Molokai_HI     USW00022534 2022-12-18  1120  23.3  18.9 2022-12-01</code></pre>
+<p>The two high rainfall days in NYC correspond to <a
+href="https://www.nytimes.com/2021/08/22/nyregion/tropical-storm-henri.html">tropical
+storm Henri</a> and <a
+href="https://www.nytimes.com/live/2021/09/02/nyregion/nyc-storm">hurricane
+Ida</a>, while the high precipitation day in Molokai took place during a
+notable <a href="https://www.weather.gov/hfo/coldfront_dec2022">cold
+front</a>.</p>
+<p>A close look at the scatterplot below (which focuses on a range of
+values to emphasize this point) suggests that Central Park and Molokai
+report temperature values differently from Waterhole …</p>
+<pre class="r"><code>weather_df |&gt; 
+  filter(tmax &gt;= 20, tmax &lt;= 30) |&gt; 
+  ggplot(aes(x = tmin, y = tmax, color = name, shape = name)) + 
+  geom_point(alpha = .75)</code></pre>
+<p><img src="exploratory_analysis_files/figure-html/unnamed-chunk-4-1.png" width="90%" /></p>
+<p>Depending on the nature of later analyses, understanding how these
+differ and implementing an approach to bring the reports into alignment
+might be necessary.</p>
+</div>
+<div id="group_by" class="section level3">
+<h3><code>group_by</code></h3>
+<p>Datasets are often comprised of groups defined by one or more
+(categorical) variable; <code>group_by()</code> makes these groupings
+explicit so that they can be included in subsequent operations. For
+example, we might group <code>weather_df</code> by <code>name</code> and
+<code>month</code>:</p>
+<pre class="r"><code>weather_df |&gt;
+  group_by(name, month)
+## # A tibble: 2,190 × 7
+## # Groups:   name, month [72]
+##   name           id          date        prcp  tmax  tmin month     
+##   &lt;chr&gt;          &lt;chr&gt;       &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;date&gt;    
+## 1 CentralPark_NY USW00094728 2021-01-01   157   4.4   0.6 2021-01-01
+## 2 CentralPark_NY USW00094728 2021-01-02    13  10.6   2.2 2021-01-01
+## 3 CentralPark_NY USW00094728 2021-01-03    56   3.3   1.1 2021-01-01
+## 4 CentralPark_NY USW00094728 2021-01-04     5   6.1   1.7 2021-01-01
+## 5 CentralPark_NY USW00094728 2021-01-05     0   5.6   2.2 2021-01-01
+## 6 CentralPark_NY USW00094728 2021-01-06     0   5     1.1 2021-01-01
+## # ℹ 2,184 more rows</code></pre>
+<p>Several important functions respect grouping structures. You will
+frequently use <code>summarize</code> to create one-number summaries
+within each group, or use <code>mutate</code> to define variables within
+groups. The rest of this example shows these functions in action.</p>
+<p>Because these (and other) functions will use grouping information if
+it exists, it is sometimes necessary to remove groups using
+<code>ungroup()</code>.</p>
+</div>
+<div id="counting-things" class="section level3">
+<h3>Counting things</h3>
+<p>As an intro to <code>summarize</code>, let’s count the number of
+observations in each month in the complete <code>weather_df</code>
+dataset.</p>
+<pre class="r"><code>weather_df |&gt;
+  group_by(month) |&gt;
+  summarize(n_obs = n())
+## # A tibble: 24 × 2
+##   month      n_obs
+##   &lt;date&gt;     &lt;int&gt;
+## 1 2021-01-01    93
+## 2 2021-02-01    84
+## 3 2021-03-01    93
+## 4 2021-04-01    90
+## 5 2021-05-01    93
+## 6 2021-06-01    90
+## # ℹ 18 more rows</code></pre>
+<p>We can group by more than one variable, too.</p>
+<pre class="r"><code>weather_df |&gt;
+  group_by(name, month) |&gt;
+  summarize(n_obs = n())
+## `summarise()` has grouped output by &#39;name&#39;. You can override using the
+## `.groups` argument.
+## # A tibble: 72 × 3
+## # Groups:   name [3]
+##   name           month      n_obs
+##   &lt;chr&gt;          &lt;date&gt;     &lt;int&gt;
+## 1 CentralPark_NY 2021-01-01    31
+## 2 CentralPark_NY 2021-02-01    28
+## 3 CentralPark_NY 2021-03-01    31
+## 4 CentralPark_NY 2021-04-01    30
+## 5 CentralPark_NY 2021-05-01    31
+## 6 CentralPark_NY 2021-06-01    30
+## # ℹ 66 more rows</code></pre>
+<p>In both cases, the result is a dataframe that includes the grouping
+variable(s) and the desired summary.</p>
+<p>To count things, you could use <code>count()</code> in place of
+<code>group_by()</code> and <code>summarize()</code> if you remember
+that this function exists. I’ll also make use of the <code>name</code>
+argument in count, which defaults to <code>"n"</code>.</p>
+<pre class="r"><code>weather_df |&gt;
+  count(month, name = &quot;n_obs&quot;)
+## # A tibble: 24 × 2
+##   month      n_obs
+##   &lt;date&gt;     &lt;int&gt;
+## 1 2021-01-01    93
+## 2 2021-02-01    84
+## 3 2021-03-01    93
+## 4 2021-04-01    90
+## 5 2021-05-01    93
+## 6 2021-06-01    90
+## # ℹ 18 more rows</code></pre>
+<p><code>count()</code> is a useful tidyverse alternative to Base R’s
+<code>table</code> function. Both functions produce summaries of how
+often values appear, but <code>table</code>’s output is of class
+<code>table</code> and is hard to do any additional work with, while
+<code>count</code> produces a dataframe you can use or manipulate
+directly. For an example, run the code below and try to do something
+useful with the result…</p>
+<pre class="r"><code>weather_df |&gt;
+  pull(month) |&gt; 
+  table</code></pre>
+<p>You can use <code>summarize()</code> to compute multiple summaries
+within each group. As an example, we count the number of observations in
+each month and the number of distinct values of <code>date</code> in
+each month.</p>
+<pre class="r"><code>weather_df |&gt;
+  group_by(month) |&gt;
+  summarize(
+    n_obs = n(),
+    n_days = n_distinct(date))
+## # A tibble: 24 × 3
+##   month      n_obs n_days
+##   &lt;date&gt;     &lt;int&gt;  &lt;int&gt;
+## 1 2021-01-01    93     31
+## 2 2021-02-01    84     28
+## 3 2021-03-01    93     31
+## 4 2021-04-01    90     30
+## 5 2021-05-01    93     31
+## 6 2021-06-01    90     30
+## # ℹ 18 more rows</code></pre>
+</div>
+<div id="x2-tables" class="section level3">
+<h3>(2x2 tables)</h3>
+<p>You might find yourself, someday, wanting to tabulate the frequency
+of a binary outcome across levels of a binary predictor. In a contrived
+example, let’s say you want to look at the number of cold and not-cold
+days in Central Park and Waterhole. We can do this with some extra data
+manipulation steps and <code>group_by</code> +
+<code>summarize</code>:</p>
+<pre class="r"><code>weather_df |&gt; 
+  drop_na(tmax) |&gt; 
+  mutate(
+    cold = case_when(
+      tmax &lt;  5 ~ &quot;cold&quot;,
+      tmax &gt;= 5 ~ &quot;not_cold&quot;,
+      TRUE      ~ &quot;&quot;
+  )) |&gt; 
+  filter(name != &quot;Molokai_HI&quot;) |&gt; 
+  group_by(name, cold) |&gt; 
+  summarize(count = n())
+## `summarise()` has grouped output by &#39;name&#39;. You can override using the
+## `.groups` argument.
+## # A tibble: 4 × 3
+## # Groups:   name [2]
+##   name           cold     count
+##   &lt;chr&gt;          &lt;chr&gt;    &lt;int&gt;
+## 1 CentralPark_NY cold        96
+## 2 CentralPark_NY not_cold   634
+## 3 Waterhole_WA   cold       319
+## 4 Waterhole_WA   not_cold   395</code></pre>
+<p>This is a “tidy” table, and it’s also a data frame. You could
+re-organize into a more standard (non-tidy) 2x2 table using
+<code>pivot_wider</code>, or you could use
+<code>janitor::tabyl</code>:</p>
+<pre class="r"><code>weather_df |&gt; 
+  drop_na(tmax) |&gt; 
+  mutate(cold = case_when(
+    tmax &lt;  5 ~ &quot;cold&quot;,
+    tmax &gt;= 5 ~ &quot;not_cold&quot;,
+    TRUE     ~ &quot;&quot;
+  )) |&gt; 
+  filter(name != &quot;Molokai_HI&quot;) |&gt; 
+  janitor::tabyl(name, cold)
+##            name cold not_cold
+##  CentralPark_NY   96      634
+##    Waterhole_WA  319      395</code></pre>
+<p>This isn’t tidy, but it is still a data frame – and that’s noticeably
+better than usual output from R’s built-in <code>table</code> function.
+<code>janitor</code> has a lot of little functions like this that turn
+out to be useful, so when you have some time you might read through all
+the things you can do. I don’t really love that this is called
+<code>tabyl</code>, but you can’t always get what you want in life.</p>
+<p>(Since we’re on the subject, I think 2x2 tables are kind of silly.
+When are you ever going to actually analyze data in that format?? In
+grad school I thought I’d be computing odds ratios by hand everyday
+(<span class="math inline">\(OR = AD / BC\)</span>, right?!), but really
+I do that as often as I write in cursive – which is never. Just do a
+logistic regression adjusting for confounders – because there are
+<em>always confounders</em>. And is a 2x2 table really that much better
+than the “tidy” version? There are <strong><em>4 numbers</em></strong>.
+)</p>
+</div>
+<div id="general-summaries" class="section level3">
+<h3>General summaries</h3>
+<p>Standard statistical summaries are regularly computed in
+<code>summarize()</code> using functions like <code>mean()</code>,
+<code>median()</code>, <code>var()</code>, <code>sd()</code>,
+<code>mad()</code>, <code>IQR()</code>, <code>min()</code>, and
+<code>max()</code>. To use these, you indicate the variable to which
+they apply and include any additional arguments as necessary.</p>
+<pre class="r"><code>weather_df |&gt;
+  group_by(month) |&gt;
+  summarize(
+    mean_tmax = mean(tmax, na.rm = TRUE),
+    mean_prec = mean(prcp, na.rm = TRUE),
+    median_tmax = median(tmax),
+    sd_tmax = sd(tmax))
+## # A tibble: 24 × 5
+##   month      mean_tmax mean_prec median_tmax sd_tmax
+##   &lt;date&gt;         &lt;dbl&gt;     &lt;dbl&gt;       &lt;dbl&gt;   &lt;dbl&gt;
+## 1 2021-01-01     10.9       39.5         5     12.2 
+## 2 2021-02-01      9.82      42.6         2.8   12.2 
+## 3 2021-03-01     13.7       55.5        NA     NA   
+## 4 2021-04-01     16.8       14.7        18.0    9.29
+## 5 2021-05-01     19.6       17.3        22.2    9.40
+## 6 2021-06-01     24.3       14.1        28.3    8.28
+## # ℹ 18 more rows</code></pre>
+<p>You can group by more than one variable.</p>
+<pre class="r"><code>weather_df |&gt;
+  group_by(name, month) |&gt;
+  summarize(
+    mean_tmax = mean(tmax),
+    median_tmax = median(tmax))
+## `summarise()` has grouped output by &#39;name&#39;. You can override using the
+## `.groups` argument.
+## # A tibble: 72 × 4
+## # Groups:   name [3]
+##   name           month      mean_tmax median_tmax
+##   &lt;chr&gt;          &lt;date&gt;         &lt;dbl&gt;       &lt;dbl&gt;
+## 1 CentralPark_NY 2021-01-01      4.27         5  
+## 2 CentralPark_NY 2021-02-01      3.87         2.8
+## 3 CentralPark_NY 2021-03-01     12.3         12.2
+## 4 CentralPark_NY 2021-04-01     17.6         18.0
+## 5 CentralPark_NY 2021-05-01     22.1         22.2
+## 6 CentralPark_NY 2021-06-01     28.1         27.8
+## # ℹ 66 more rows</code></pre>
+<p>If you want to summarize multiple columns using the same summary, the
+<code>across</code> function is helpful.</p>
+<pre class="r"><code>weather_df |&gt;
+  group_by(name, month) |&gt;
+  summarize(across(tmin:prcp, mean))
+## `summarise()` has grouped output by &#39;name&#39;. You can override using the
+## `.groups` argument.
+## # A tibble: 72 × 5
+## # Groups:   name [3]
+##   name           month       tmin  tmax  prcp
+##   &lt;chr&gt;          &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1 CentralPark_NY 2021-01-01 -1.15  4.27  18.9
+## 2 CentralPark_NY 2021-02-01 -1.39  3.87  46.6
+## 3 CentralPark_NY 2021-03-01  3.1  12.3   28.0
+## 4 CentralPark_NY 2021-04-01  7.48 17.6   22.8
+## 5 CentralPark_NY 2021-05-01 12.2  22.1   35.7
+## 6 CentralPark_NY 2021-06-01 18.9  28.1   22.2
+## # ℹ 66 more rows</code></pre>
+<p>The fact that <code>summarize()</code> produces a dataframe is
+important (and consistent with other functions in the
+<code>tidyverse</code>). You can incorporate grouping and summarizing
+within broader analysis pipelines. For example, we can take create a
+plot based on the monthly summary:</p>
+<pre class="r"><code>weather_df |&gt;
+  group_by(name, month) |&gt;
+  summarize(mean_tmax = mean(tmax, na.rm = TRUE)) |&gt;
+  ggplot(aes(x = month, y = mean_tmax, color = name)) + 
+    geom_point() + geom_line() + 
+    theme(legend.position = &quot;bottom&quot;)
+## `summarise()` has grouped output by &#39;name&#39;. You can override using the
+## `.groups` argument.</code></pre>
+<p><img src="exploratory_analysis_files/figure-html/unnamed-chunk-16-1.png" width="90%" /></p>
+<p>The results of <code>group_by()</code> and <code>summarize()</code>
+are generally tidy, but presenting reader-friendly results for this kind
+of exploratory analysis often benefits from some un-tidying. For
+example, the table below shows month-by-month average max temperatures
+in a more human-readable format.</p>
+<pre class="r"><code>weather_df |&gt;
+  group_by(name, month) |&gt;
+  summarize(mean_tmax = mean(tmax, na.rm = TRUE)) |&gt; 
+  pivot_wider(
+    names_from = name,
+    values_from = mean_tmax) |&gt; 
+  knitr::kable(digits = 1)
+## `summarise()` has grouped output by &#39;name&#39;. You can override using the
+## `.groups` argument.</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">month</th>
+<th align="right">CentralPark_NY</th>
+<th align="right">Molokai_HI</th>
+<th align="right">Waterhole_WA</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">2021-01-01</td>
+<td align="right">4.3</td>
+<td align="right">27.6</td>
+<td align="right">0.8</td>
+</tr>
+<tr class="even">
+<td align="left">2021-02-01</td>
+<td align="right">3.9</td>
+<td align="right">26.4</td>
+<td align="right">-0.8</td>
+</tr>
+<tr class="odd">
+<td align="left">2021-03-01</td>
+<td align="right">12.3</td>
+<td align="right">25.9</td>
+<td align="right">2.6</td>
+</tr>
+<tr class="even">
+<td align="left">2021-04-01</td>
+<td align="right">17.6</td>
+<td align="right">26.6</td>
+<td align="right">6.1</td>
+</tr>
+<tr class="odd">
+<td align="left">2021-05-01</td>
+<td align="right">22.1</td>
+<td align="right">28.6</td>
+<td align="right">8.2</td>
+</tr>
+<tr class="even">
+<td align="left">2021-06-01</td>
+<td align="right">28.1</td>
+<td align="right">29.6</td>
+<td align="right">15.3</td>
+</tr>
+<tr class="odd">
+<td align="left">2021-07-01</td>
+<td align="right">28.4</td>
+<td align="right">30.0</td>
+<td align="right">17.3</td>
+</tr>
+<tr class="even">
+<td align="left">2021-08-01</td>
+<td align="right">28.8</td>
+<td align="right">29.5</td>
+<td align="right">17.2</td>
+</tr>
+<tr class="odd">
+<td align="left">2021-09-01</td>
+<td align="right">24.8</td>
+<td align="right">29.7</td>
+<td align="right">12.6</td>
+</tr>
+<tr class="even">
+<td align="left">2021-10-01</td>
+<td align="right">19.9</td>
+<td align="right">29.1</td>
+<td align="right">5.5</td>
+</tr>
+<tr class="odd">
+<td align="left">2021-11-01</td>
+<td align="right">11.5</td>
+<td align="right">28.8</td>
+<td align="right">3.5</td>
+</tr>
+<tr class="even">
+<td align="left">2021-12-01</td>
+<td align="right">9.6</td>
+<td align="right">26.2</td>
+<td align="right">-2.1</td>
+</tr>
+<tr class="odd">
+<td align="left">2022-01-01</td>
+<td align="right">2.9</td>
+<td align="right">26.6</td>
+<td align="right">3.6</td>
+</tr>
+<tr class="even">
+<td align="left">2022-02-01</td>
+<td align="right">7.7</td>
+<td align="right">26.8</td>
+<td align="right">3.0</td>
+</tr>
+<tr class="odd">
+<td align="left">2022-03-01</td>
+<td align="right">12.0</td>
+<td align="right">27.7</td>
+<td align="right">3.4</td>
+</tr>
+<tr class="even">
+<td align="left">2022-04-01</td>
+<td align="right">15.8</td>
+<td align="right">27.7</td>
+<td align="right">2.5</td>
+</tr>
+<tr class="odd">
+<td align="left">2022-05-01</td>
+<td align="right">22.3</td>
+<td align="right">28.3</td>
+<td align="right">5.8</td>
+</tr>
+<tr class="even">
+<td align="left">2022-06-01</td>
+<td align="right">26.1</td>
+<td align="right">29.2</td>
+<td align="right">11.1</td>
+</tr>
+<tr class="odd">
+<td align="left">2022-07-01</td>
+<td align="right">30.7</td>
+<td align="right">29.5</td>
+<td align="right">15.9</td>
+</tr>
+<tr class="even">
+<td align="left">2022-08-01</td>
+<td align="right">30.5</td>
+<td align="right">30.7</td>
+<td align="right">18.8</td>
+</tr>
+<tr class="odd">
+<td align="left">2022-09-01</td>
+<td align="right">24.9</td>
+<td align="right">30.4</td>
+<td align="right">15.2</td>
+</tr>
+<tr class="even">
+<td align="left">2022-10-01</td>
+<td align="right">17.4</td>
+<td align="right">29.2</td>
+<td align="right">11.9</td>
+</tr>
+<tr class="odd">
+<td align="left">2022-11-01</td>
+<td align="right">14.0</td>
+<td align="right">28.0</td>
+<td align="right">2.1</td>
+</tr>
+<tr class="even">
+<td align="left">2022-12-01</td>
+<td align="right">6.8</td>
+<td align="right">27.3</td>
+<td align="right">-0.5</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="grouped-mutate" class="section level3">
+<h3>Grouped <code>mutate</code></h3>
+<p>Summarizing collapses groups into single data points. In contrast,
+using <code>mutate()</code> in conjuntion with <code>group_by()</code>
+will retain all original data points and add new variables computed
+within groups.</p>
+<p>Suppose you want to compare the daily max temperature to the annual
+average max temperature for each station separately, and to plot the
+result. You could do so using:</p>
+<pre class="r"><code>weather_df |&gt;
+  group_by(name) |&gt;
+  mutate(
+    mean_tmax = mean(tmax, na.rm = TRUE),
+    centered_tmax = tmax - mean_tmax) |&gt; 
+  ggplot(aes(x = date, y = centered_tmax, color = name)) + 
+    geom_point() 
+## Warning: Removed 17 rows containing missing values (`geom_point()`).</code></pre>
+<p><img src="exploratory_analysis_files/figure-html/unnamed-chunk-18-1.png" width="90%" /></p>
+</div>
+<div id="window-functions" class="section level3">
+<h3>Window functions</h3>
+<p>The previous example used <code>mean()</code> to compute the mean
+within each group, which was then subtracted from the observed max
+tempurature. <code>mean()</code> takes <code>n</code> inputs and
+produces a single output.</p>
+<p>Window functions, in contrast, take <code>n</code> inputs and return
+<code>n</code> outputs, and the outputs depend on all the inputs. There
+are several categories of window functions; you’re most likely to need
+ranking functions and offsets, which we illustrate below.</p>
+<p>First, we can find the max temperature ranking within month.</p>
+<pre class="r"><code>weather_df |&gt;
+  group_by(name, month) |&gt;
+  mutate(temp_ranking = min_rank(tmax))
+## # A tibble: 2,190 × 8
+## # Groups:   name, month [72]
+##   name           id         date        prcp  tmax  tmin month      temp_ranking
+##   &lt;chr&gt;          &lt;chr&gt;      &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;date&gt;            &lt;int&gt;
+## 1 CentralPark_NY USW000947… 2021-01-01   157   4.4   0.6 2021-01-01           14
+## 2 CentralPark_NY USW000947… 2021-01-02    13  10.6   2.2 2021-01-01           31
+## 3 CentralPark_NY USW000947… 2021-01-03    56   3.3   1.1 2021-01-01           13
+## 4 CentralPark_NY USW000947… 2021-01-04     5   6.1   1.7 2021-01-01           20
+## 5 CentralPark_NY USW000947… 2021-01-05     0   5.6   2.2 2021-01-01           19
+## 6 CentralPark_NY USW000947… 2021-01-06     0   5     1.1 2021-01-01           16
+## # ℹ 2,184 more rows</code></pre>
+<p>This sort of ranking is useful when filtering data based on rank. We
+could, for example, keep only the day with the lowest max temperature
+within each month:</p>
+<pre class="r"><code>weather_df |&gt;
+  group_by(name, month) |&gt;
+  filter(min_rank(tmax) &lt; 2)
+## # A tibble: 92 × 7
+## # Groups:   name, month [72]
+##   name           id          date        prcp  tmax  tmin month     
+##   &lt;chr&gt;          &lt;chr&gt;       &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;date&gt;    
+## 1 CentralPark_NY USW00094728 2021-01-29     0  -3.8  -9.9 2021-01-01
+## 2 CentralPark_NY USW00094728 2021-02-08     0  -1.6  -8.2 2021-02-01
+## 3 CentralPark_NY USW00094728 2021-03-02     0   0.6  -6   2021-03-01
+## 4 CentralPark_NY USW00094728 2021-04-02     0   3.9  -2.1 2021-04-01
+## 5 CentralPark_NY USW00094728 2021-05-29   117  10.6   8.3 2021-05-01
+## 6 CentralPark_NY USW00094728 2021-05-30   226  10.6   8.3 2021-05-01
+## # ℹ 86 more rows</code></pre>
+<p>We could also keep the three days with the highest max
+temperature:</p>
+<pre class="r"><code>weather_df |&gt;
+  group_by(name, month) |&gt;
+  filter(min_rank(desc(tmax)) &lt; 4)
+## # A tibble: 269 × 7
+## # Groups:   name, month [72]
+##   name           id          date        prcp  tmax  tmin month     
+##   &lt;chr&gt;          &lt;chr&gt;       &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;date&gt;    
+## 1 CentralPark_NY USW00094728 2021-01-02    13  10.6   2.2 2021-01-01
+## 2 CentralPark_NY USW00094728 2021-01-14     0   9.4   3.9 2021-01-01
+## 3 CentralPark_NY USW00094728 2021-01-16   198   8.3   2.8 2021-01-01
+## 4 CentralPark_NY USW00094728 2021-02-16   208  10.6   1.1 2021-02-01
+## 5 CentralPark_NY USW00094728 2021-02-24     0  12.2   3.9 2021-02-01
+## 6 CentralPark_NY USW00094728 2021-02-25     0  10     4.4 2021-02-01
+## # ℹ 263 more rows</code></pre>
+<p>In both of these, we’ve skipped a <code>mutate()</code> statement
+that would create a ranking variable, and gone straight to filtering
+based on the result.</p>
+<p>Offsets, especially lags, are used to compare an observation to it’s
+previous value. This is useful, for example, to find the day-by-day
+change in max temperature within each station over the year:</p>
+<pre class="r"><code>weather_df |&gt;
+  group_by(name) |&gt;
+  mutate(temp_change = tmax - lag(tmax))
+## # A tibble: 2,190 × 8
+## # Groups:   name [3]
+##   name           id          date        prcp  tmax  tmin month      temp_change
+##   &lt;chr&gt;          &lt;chr&gt;       &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;date&gt;           &lt;dbl&gt;
+## 1 CentralPark_NY USW00094728 2021-01-01   157   4.4   0.6 2021-01-01      NA    
+## 2 CentralPark_NY USW00094728 2021-01-02    13  10.6   2.2 2021-01-01       6.2  
+## 3 CentralPark_NY USW00094728 2021-01-03    56   3.3   1.1 2021-01-01      -7.3  
+## 4 CentralPark_NY USW00094728 2021-01-04     5   6.1   1.7 2021-01-01       2.8  
+## 5 CentralPark_NY USW00094728 2021-01-05     0   5.6   2.2 2021-01-01      -0.5  
+## 6 CentralPark_NY USW00094728 2021-01-06     0   5     1.1 2021-01-01      -0.600
+## # ℹ 2,184 more rows</code></pre>
+<p>This kind of variable might be used to quantify the day-by-day
+variability in max temperature, or to identify the largest one-day
+increase:</p>
+<pre class="r"><code>weather_df |&gt;
+  group_by(name) |&gt;
+  mutate(temp_change = tmax - lag(tmax)) |&gt;
+  summarize(
+    temp_change_sd = sd(temp_change, na.rm = TRUE),
+    temp_change_max = max(temp_change, na.rm = TRUE))
+## # A tibble: 3 × 3
+##   name           temp_change_sd temp_change_max
+##   &lt;chr&gt;                   &lt;dbl&gt;           &lt;dbl&gt;
+## 1 CentralPark_NY           4.43            12.2
+## 2 Molokai_HI               1.24             5.6
+## 3 Waterhole_WA             3.04            11.1</code></pre>
+</div>
+<div id="limitations" class="section level3">
+<h3>Limitations</h3>
+<p><code>summarize()</code> can only be used with functions that return
+a single-number summary. This creates a ceiling, even if it is
+<strong>very</strong> high. Later we’ll see how to aggregate data in a
+more general way, and how to perform complex operations on the resulting
+sub-datasets.</p>
+</div>
+<div id="revisiting-examples" class="section level3">
+<h3>Revisiting examples</h3>
+<p>We’ve seen the PULSE and FAS datasets on several occasions, and we’ll
+briefly revisit them here.</p>
+<p><strong><em>Learning Assessment:</em></strong> In the PULSE data, the
+primary outcome is BDI score; it’s observed over follow-up visits, and
+we might ask if the typical BDI score values are roughly similar at
+each. Try to write a code chunk that imports, cleans, and summarizes the
+PULSE data to examine the mean and median at each visit. Export the
+results of this in a reader-friendly format.</p>
+<details>
+<summary>
+Solution
+</summary>
+<p>The code chunk below imports and tidies the PUSLE data, produces the
+desired information, and exports it using <code>knitr::kable</code>.</p>
+<pre class="r"><code>pulse_data = 
+  haven::read_sas(&quot;./data/public_pulse_data.sas7bdat&quot;) |&gt;
+  janitor::clean_names() |&gt;
+  pivot_longer(
+    bdi_score_bl:bdi_score_12m,
+    names_to = &quot;visit&quot;, 
+    names_prefix = &quot;bdi_score_&quot;,
+    values_to = &quot;bdi&quot;) |&gt;
+  select(id, visit, everything()) |&gt;
+  mutate(
+    visit = replace(visit, visit == &quot;bl&quot;, &quot;00m&quot;),
+    visit = factor(visit, levels = str_c(c(&quot;00&quot;, &quot;01&quot;, &quot;06&quot;, &quot;12&quot;), &quot;m&quot;))) |&gt;
+  arrange(id, visit)
+
+pulse_data |&gt; 
+  group_by(visit) |&gt; 
+  summarize(
+    mean_bdi = mean(bdi, na.rm = TRUE),
+    median_bdi = median(bdi, na.rm = TRUE)) |&gt; 
+  knitr::kable(digits = 3)</code></pre>
+This quick summary suggests a relatively large drop in the typical BDI
+score from baseline to 1 month, with small or no changes thereafter.
+</details>
+<p><strong><em>Learning Assessment:</em></strong> In the FAS data, there
+are several outcomes of interest; for now, focus on post-natal day on
+which a pup is able to pivot. Two predictors of interest are the dose
+level and the day of treatment. Produce a reader-friendly table that
+quantifies the possible associations between dose, day of treatment, and
+the ability to pivot.</p>
+<details>
+<summary>
+Solution
+</summary>
+<p>The code chunk below imports the litters and pups data, joins them,
+produces the desired information, un-tidies the result, and exports a
+table using <code>knitr::kable</code>.</p>
+<pre class="r"><code>pup_data = 
+  read_csv(&quot;./data/FAS_pups.csv&quot;) |&gt;
+  janitor::clean_names() |&gt;
+  mutate(sex = recode(sex, `1` = &quot;male&quot;, `2` = &quot;female&quot;)) 
+
+litter_data = 
+  read_csv(&quot;./data/FAS_litters.csv&quot;) |&gt;
+  janitor::clean_names() |&gt;
+  separate(group, into = c(&quot;dose&quot;, &quot;day_of_tx&quot;), sep = 3)
+
+fas_data = left_join(pup_data, litter_data, by = &quot;litter_number&quot;) 
+
+fas_data |&gt; 
+  group_by(dose, day_of_tx) |&gt; 
+  drop_na(dose) |&gt; 
+  summarize(mean_pivot = mean(pd_pivot, na.rm = TRUE)) |&gt; 
+  pivot_wider(
+    names_from = dose, 
+    values_from = mean_pivot) |&gt; 
+  knitr::kable(digits = 3)</code></pre>
+<p>These results may suggest that pups in the control group are able to
+pivot earlier than pups in the low-dose group, but it is unclear if
+there are differences between the control and moderate-dose groups or if
+day of treatment is an important predictor.</p>
+</details>
+<p><strong><em>Note</em></strong>: In both of these examples, the data
+are structure such that repeated observations are made on the same study
+units. In the PULSE data, repeated observations are made on subjects
+over time; in the FAS data, pups are “repeated observations” within
+litters. The analyses here, and plots made previously, are
+<em>exploratory</em> – any more substantial claims would require
+appropriate statistical analysis for non-independent samples.</p>
+</div>
+</div>
+<div id="other-materials" class="section level2">
+<h2>Other materials</h2>
+<ul>
+<li>The preceding is based heavily on Jenny Bryan’s <a
+href="http://stat545.com/block010_dplyr-end-single-table.html#group_by-is-a-mighty-weapon">group_by</a>
+material</li>
+<li>R for Data Science has sub-chapters on <a
+href="http://r4ds.had.co.nz/transform.html#grouped-summaries-with-summarise">grouped
+summaries</a> and <a
+href="http://r4ds.had.co.nz/exploratory-data-analysis.html">exploratory
+data analysis</a></li>
+<li>A more in-depth overview of window functions is <a
+href="https://cran.r-project.org/web/packages/dplyr/vignettes/window-functions.html">here</a></li>
+</ul>
+<p>The code that I produced working examples in lecture is <a
+href="https://github.com/P8105/viz_and_eda">here</a>.</p>
+</div>
+
+<br><br>
+<footer>
+  <img src="images/p8105_stickers.png" alt="stickers" style="width:30%">
+  <br>
+  <p class="copyright text-muted" align="center">Copyright &copy; 2019 Jeff Goldsmith</p>
+</footer>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1170 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Reading data from the web</title>
+
+<script src="site_libs/header-attrs-2.24/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" />
+<script defer src="https://use.fontawesome.com/releases/v5.0.3/js/all.js"></script>
+<script defer src="https://use.fontawesome.com/releases/v5.0.0/js/v4-shims.js"></script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-151578452-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-151578452-1');
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">P8105</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="schedule.html">Schedule</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Topics
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="topic_what_is_data_science.html">What is Data Science?</a>
+    </li>
+    <li>
+      <a href="topic_building_blocks.html">Building Blocks</a>
+    </li>
+    <li>
+      <a href="topic_data_wrangling_i.html">Data Wrangling I</a>
+    </li>
+    <li>
+      <a href="topic_visualization_and_eda.html">Visualization and EDA</a>
+    </li>
+    <li>
+      <a href="topic_data_wrangling_ii.html">Data Wrangling II</a>
+    </li>
+    <li>
+      <a href="topic_interactivity.html">Interactivity</a>
+    </li>
+    <li>
+      <a href="topic_iteration.html">Iteration</a>
+    </li>
+    <li>
+      <a href="topic_linear_models.html">Linear Models</a>
+    </li>
+    <li>
+      <a href="topic_other_material.html">Other Materials</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Datasets
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="dataset_airbnb.html">Airbnb</a>
+    </li>
+    <li>
+      <a href="dataset_brfss.html">BRFSS</a>
+    </li>
+    <li>
+      <a href="dataset_fivethirtyeight.html">FiveThirtyEight</a>
+    </li>
+    <li>
+      <a href="dataset_instacart.html">Instacart</a>
+    </li>
+    <li>
+      <a href="dataset_mr_trash_wheel.html">Mr. Trash Wheel</a>
+    </li>
+    <li>
+      <a href="dataset_noaa.html">NOAA</a>
+    </li>
+    <li>
+      <a href="dataset_restaurant_inspections.html">NYC Restaurant Inspections</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="homework_and_projects.html">Homework and Projects</a>
+</li>
+<li>
+  <a href="course_communication.html">Communication</a>
+</li>
+<li>
+  <a href="https://github.com/P8105/p8105.github.io">
+    <span class="fa fa-github"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Reading data from the web</h1>
+
+</div>
+
+
+<p>In <a href="data_import.html">data import</a>, we saw how to load
+data from a variety of formats; this is a fairly standard way to get
+data that have been gathered as part of a study. In a lot of cases,
+though, you’re going to have to go out and get the data you want or
+need. That’s what we’re covering now.</p>
+<p>This is the first module in the <a
+href="topic_data_wrangling_ii.html">Data Wrangling II</a> topic.</p>
+<div id="overview" class="section level2 tabset tabset-pills">
+<h2 class="tabset tabset-pills">Overview</h2>
+<div id="learning-objectives" class="section level3">
+<h3>Learning Objectives</h3>
+<p>Gather data from online sources (i.e. “scrape”) using APIs, rvest,
+and httr.</p>
+</div>
+<div id="slide-deck" class="section level3">
+<h3>Slide Deck</h3>
+<div class="vid_container">
+<p><iframe 
+    src="https://speakerdeck.com/player/849dc71f1d784a4a9af780e5c4ba16a2" 
+    allowfullscreen 
+    frameborder="0"
+    class="video"> </iframe></p>
+</div>
+<div style="margin-bottom:5px">
+<strong>
+<a href="https://speakerdeck.com/jeffgoldsmith/p8105-reading-data-from-the-web" title="Reading Data from the Web" target="_blank">Reading
+Data from the Web</a> </strong> from
+<strong><a href="https://speakerdeck.com/jeffgoldsmith" target="_blank">Jeff
+Goldsmith</a></strong>.
+</div>
+<p><br></p>
+<hr />
+</div>
+<div id="video-lecture" class="section level3">
+<h3>Video Lecture</h3>
+<div class="vid_container">
+<p><iframe 
+    src="https://www.youtube.com/embed/2RjK6fYWdzM"
+    frameborder="0" allowfullscreen class="video"> </iframe></p>
+</div>
+<hr />
+</div>
+</div>
+<div id="example" class="section level2">
+<h2>Example</h2>
+<p>As always, I’ll create a new GH Repo + local project called
+<code>data_wrangling_ii</code>, and open a new R Markdown file called
+<code>reading_data_from_the_web.Rmd</code>. Although we’ll mostly be
+getting data from the web, we’ll revisit some of <a
+href="./resources/data_import_examples.zip">these examples</a>, so I’ll
+create a <code>data</code> subdirectory and put those in it.</p>
+<p>There are some new additions to our standard packages
+(<code>rvest</code> and <code>httr</code>); I’m loading everything we
+need now. Now’s also the time to “install” the <a
+href="http://selectorgadget.com">Selector Gadget</a>.</p>
+<pre class="r"><code>library(tidyverse)
+library(rvest)
+library(httr)</code></pre>
+<div id="extracting-tables" class="section level3">
+<h3>Extracting tables</h3>
+<p><a
+href="http://samhda.s3-us-gov-west-1.amazonaws.com/s3fs-public/field-uploads/2k15StateFiles/NSDUHsaeShortTermCHG2015.htm">This
+page</a> contains data from the National Survey on Drug Use and Health;
+it includes tables for drug use in the past year or month, separately
+for specific kinds of drug use. These data are potentially useful for
+analysis, and we’d like to be able to read in the first table.</p>
+<p>First, let’s make sure we can load the data from the web.</p>
+<pre class="r"><code>url = &quot;http://samhda.s3-us-gov-west-1.amazonaws.com/s3fs-public/field-uploads/2k15StateFiles/NSDUHsaeShortTermCHG2015.htm&quot;
+drug_use_html = read_html(url)
+
+drug_use_html</code></pre>
+<pre><code>## {html_document}
+## &lt;html lang=&quot;en&quot;&gt;
+## [1] &lt;head&gt;\n&lt;link rel=&quot;P3Pv1&quot; href=&quot;http://www.samhsa.gov/w3c/p3p.xml&quot;&gt;\n&lt;tit ...
+## [2] &lt;body&gt;\r\n\r\n&lt;noscript&gt;\r\n&lt;p&gt;Your browser&#39;s Javascript is off. Hyperlin ...</code></pre>
+<p>Doesn’t look like much, but we’re there. Rather than trying to grab
+something using a CSS selector, let’s try our luck extracting the tables
+from the HTML.</p>
+<pre class="r"><code>drug_use_html |&gt;
+  html_table()</code></pre>
+<pre><code>## [[1]]
+## # A tibble: 57 × 16
+##    State     `12+(2013-2014)` `12+(2014-2015)` `12+(P Value)` `12-17(2013-2014)`
+##    &lt;chr&gt;     &lt;chr&gt;            &lt;chr&gt;            &lt;chr&gt;          &lt;chr&gt;             
+##  1 &quot;NOTE: S… &quot;NOTE: State an… &quot;NOTE: State an… &quot;NOTE: State … &quot;NOTE: State and …
+##  2 &quot;Total U… &quot;12.90a&quot;         &quot;13.36&quot;          &quot;0.002&quot;        &quot;13.28b&quot;          
+##  3 &quot;Northea… &quot;13.88a&quot;         &quot;14.66&quot;          &quot;0.005&quot;        &quot;13.98&quot;           
+##  4 &quot;Midwest&quot; &quot;12.40b&quot;         &quot;12.76&quot;          &quot;0.082&quot;        &quot;12.45&quot;           
+##  5 &quot;South&quot;   &quot;11.24a&quot;         &quot;11.64&quot;          &quot;0.029&quot;        &quot;12.02&quot;           
+##  6 &quot;West&quot;    &quot;15.27&quot;          &quot;15.62&quot;          &quot;0.262&quot;        &quot;15.53a&quot;          
+##  7 &quot;Alabama&quot; &quot;9.98&quot;           &quot;9.60&quot;           &quot;0.426&quot;        &quot;9.90&quot;            
+##  8 &quot;Alaska&quot;  &quot;19.60a&quot;         &quot;21.92&quot;          &quot;0.010&quot;        &quot;17.30&quot;           
+##  9 &quot;Arizona&quot; &quot;13.69&quot;          &quot;13.12&quot;          &quot;0.364&quot;        &quot;15.12&quot;           
+## 10 &quot;Arkansa… &quot;11.37&quot;          &quot;11.59&quot;          &quot;0.678&quot;        &quot;12.79&quot;           
+## # ℹ 47 more rows
+## # ℹ 11 more variables: `12-17(2014-2015)` &lt;chr&gt;, `12-17(P Value)` &lt;chr&gt;,
+## #   `18-25(2013-2014)` &lt;chr&gt;, `18-25(2014-2015)` &lt;chr&gt;, `18-25(P Value)` &lt;chr&gt;,
+## #   `26+(2013-2014)` &lt;chr&gt;, `26+(2014-2015)` &lt;chr&gt;, `26+(P Value)` &lt;chr&gt;,
+## #   `18+(2013-2014)` &lt;chr&gt;, `18+(2014-2015)` &lt;chr&gt;, `18+(P Value)` &lt;chr&gt;
+## 
+## [[2]]
+## # A tibble: 57 × 16
+##    State     `12+(2013-2014)` `12+(2014-2015)` `12+(P Value)` `12-17(2013-2014)`
+##    &lt;chr&gt;     &lt;chr&gt;            &lt;chr&gt;            &lt;chr&gt;          &lt;chr&gt;             
+##  1 &quot;NOTE: S… &quot;NOTE: State an… &quot;NOTE: State an… &quot;NOTE: State … &quot;NOTE: State and …
+##  2 &quot;Total U… &quot;7.96a&quot;          &quot;8.34&quot;           &quot;0.001&quot;        &quot;7.22&quot;            
+##  3 &quot;Northea… &quot;8.58a&quot;          &quot;9.28&quot;           &quot;0.001&quot;        &quot;7.68&quot;            
+##  4 &quot;Midwest&quot; &quot;7.50a&quot;          &quot;7.92&quot;           &quot;0.009&quot;        &quot;6.64&quot;            
+##  5 &quot;South&quot;   &quot;6.74a&quot;          &quot;7.02&quot;           &quot;0.044&quot;        &quot;6.31&quot;            
+##  6 &quot;West&quot;    &quot;9.84&quot;           &quot;10.08&quot;          &quot;0.324&quot;        &quot;8.85&quot;            
+##  7 &quot;Alabama&quot; &quot;5.57&quot;           &quot;5.35&quot;           &quot;0.510&quot;        &quot;4.98&quot;            
+##  8 &quot;Alaska&quot;  &quot;11.85a&quot;         &quot;14.38&quot;          &quot;0.002&quot;        &quot;9.19&quot;            
+##  9 &quot;Arizona&quot; &quot;8.80&quot;           &quot;8.51&quot;           &quot;0.570&quot;        &quot;8.30&quot;            
+## 10 &quot;Arkansa… &quot;6.70&quot;           &quot;7.17&quot;           &quot;0.240&quot;        &quot;6.22&quot;            
+## # ℹ 47 more rows
+## # ℹ 11 more variables: `12-17(2014-2015)` &lt;chr&gt;, `12-17(P Value)` &lt;chr&gt;,
+## #   `18-25(2013-2014)` &lt;chr&gt;, `18-25(2014-2015)` &lt;chr&gt;, `18-25(P Value)` &lt;chr&gt;,
+## #   `26+(2013-2014)` &lt;chr&gt;, `26+(2014-2015)` &lt;chr&gt;, `26+(P Value)` &lt;chr&gt;,
+## #   `18+(2013-2014)` &lt;chr&gt;, `18+(2014-2015)` &lt;chr&gt;, `18+(P Value)` &lt;chr&gt;
+## 
+## [[3]]
+## # A tibble: 57 × 16
+##    State     `12+(2013-2014)` `12+(2014-2015)` `12+(P Value)` `12-17(2013-2014)`
+##    &lt;chr&gt;     &lt;chr&gt;            &lt;chr&gt;            &lt;chr&gt;          &lt;chr&gt;             
+##  1 &quot;NOTE: S… &quot;NOTE: State an… &quot;NOTE: State an… &quot;NOTE: State … &quot;NOTE: State and …
+##  2 &quot;Total U… &quot;1.91&quot;           &quot;1.95&quot;           &quot;0.276&quot;        &quot;5.60&quot;            
+##  3 &quot;Northea… &quot;2.01&quot;           &quot;2.04&quot;           &quot;0.634&quot;        &quot;5.85b&quot;           
+##  4 &quot;Midwest&quot; &quot;1.95&quot;           &quot;1.96&quot;           &quot;0.854&quot;        &quot;5.31&quot;            
+##  5 &quot;South&quot;   &quot;1.69&quot;           &quot;1.75&quot;           &quot;0.137&quot;        &quot;5.18&quot;            
+##  6 &quot;West&quot;    &quot;2.20&quot;           &quot;2.21&quot;           &quot;0.868&quot;        &quot;6.37b&quot;           
+##  7 &quot;Alabama&quot; &quot;1.42&quot;           &quot;1.49&quot;           &quot;0.383&quot;        &quot;4.46&quot;            
+##  8 &quot;Alaska&quot;  &quot;3.01a&quot;          &quot;3.54&quot;           &quot;0.012&quot;        &quot;6.99&quot;            
+##  9 &quot;Arizona&quot; &quot;2.16&quot;           &quot;2.15&quot;           &quot;0.934&quot;        &quot;6.58&quot;            
+## 10 &quot;Arkansa… &quot;1.82&quot;           &quot;1.84&quot;           &quot;0.794&quot;        &quot;5.78&quot;            
+## # ℹ 47 more rows
+## # ℹ 11 more variables: `12-17(2014-2015)` &lt;chr&gt;, `12-17(P Value)` &lt;chr&gt;,
+## #   `18-25(2013-2014)` &lt;chr&gt;, `18-25(2014-2015)` &lt;chr&gt;, `18-25(P Value)` &lt;chr&gt;,
+## #   `26+(2013-2014)` &lt;chr&gt;, `26+(2014-2015)` &lt;chr&gt;, `26+(P Value)` &lt;chr&gt;,
+## #   `18+(2013-2014)` &lt;chr&gt;, `18+(2014-2015)` &lt;chr&gt;, `18+(P Value)` &lt;chr&gt;
+## 
+## [[4]]
+## # A tibble: 57 × 16
+##    State     `12+(2013-2014)` `12+(2014-2015)` `12+(P Value)` `12-17(2013-2014)`
+##    &lt;chr&gt;     &lt;chr&gt;            &lt;chr&gt;            &lt;chr&gt;          &lt;chr&gt;             
+##  1 &quot;NOTE: S… &quot;NOTE: State an… &quot;NOTE: State an… &quot;NOTE: State … &quot;NOTE: State and …
+##  2 &quot;Total U… &quot;1.66a&quot;          &quot;1.76&quot;           &quot;0.040&quot;        &quot;0.60&quot;            
+##  3 &quot;Northea… &quot;1.94a&quot;          &quot;2.18&quot;           &quot;0.012&quot;        &quot;0.60&quot;            
+##  4 &quot;Midwest&quot; &quot;1.37&quot;           &quot;1.43&quot;           &quot;0.282&quot;        &quot;0.48&quot;            
+##  5 &quot;South&quot;   &quot;1.45b&quot;          &quot;1.56&quot;           &quot;0.067&quot;        &quot;0.53&quot;            
+##  6 &quot;West&quot;    &quot;2.03&quot;           &quot;2.05&quot;           &quot;0.816&quot;        &quot;0.82&quot;            
+##  7 &quot;Alabama&quot; &quot;1.23&quot;           &quot;1.22&quot;           &quot;0.995&quot;        &quot;0.42&quot;            
+##  8 &quot;Alaska&quot;  &quot;1.54a&quot;          &quot;2.00&quot;           &quot;0.010&quot;        &quot;0.51&quot;            
+##  9 &quot;Arizona&quot; &quot;2.25&quot;           &quot;2.29&quot;           &quot;0.861&quot;        &quot;1.01&quot;            
+## 10 &quot;Arkansa… &quot;0.93&quot;           &quot;1.07&quot;           &quot;0.208&quot;        &quot;0.41&quot;            
+## # ℹ 47 more rows
+## # ℹ 11 more variables: `12-17(2014-2015)` &lt;chr&gt;, `12-17(P Value)` &lt;chr&gt;,
+## #   `18-25(2013-2014)` &lt;chr&gt;, `18-25(2014-2015)` &lt;chr&gt;, `18-25(P Value)` &lt;chr&gt;,
+## #   `26+(2013-2014)` &lt;chr&gt;, `26+(2014-2015)` &lt;chr&gt;, `26+(P Value)` &lt;chr&gt;,
+## #   `18+(2013-2014)` &lt;chr&gt;, `18+(2014-2015)` &lt;chr&gt;, `18+(P Value)` &lt;chr&gt;
+## 
+## [[5]]
+## # A tibble: 57 × 16
+##    State     `12+(2013-2014)` `12+(2014-2015)` `12+(P Value)` `12-17(2013-2014)`
+##    &lt;chr&gt;     &lt;chr&gt;            &lt;chr&gt;            &lt;chr&gt;          &lt;chr&gt;             
+##  1 &quot;NOTE: S… &quot;NOTE: State an… &quot;NOTE: State an… &quot;NOTE: State … &quot;NOTE: State and …
+##  2 &quot;Total U… &quot;0.30&quot;           &quot;0.33&quot;           &quot;0.217&quot;        &quot;0.12&quot;            
+##  3 &quot;Northea… &quot;0.43a&quot;          &quot;0.54&quot;           &quot;0.007&quot;        &quot;0.13&quot;            
+##  4 &quot;Midwest&quot; &quot;0.30&quot;           &quot;0.31&quot;           &quot;0.638&quot;        &quot;0.11&quot;            
+##  5 &quot;South&quot;   &quot;0.27&quot;           &quot;0.26&quot;           &quot;0.444&quot;        &quot;0.12&quot;            
+##  6 &quot;West&quot;    &quot;0.25&quot;           &quot;0.29&quot;           &quot;0.152&quot;        &quot;0.13&quot;            
+##  7 &quot;Alabama&quot; &quot;0.22&quot;           &quot;0.27&quot;           &quot;0.171&quot;        &quot;0.10&quot;            
+##  8 &quot;Alaska&quot;  &quot;0.70a&quot;          &quot;1.23&quot;           &quot;0.044&quot;        &quot;0.11&quot;            
+##  9 &quot;Arizona&quot; &quot;0.32a&quot;          &quot;0.55&quot;           &quot;0.001&quot;        &quot;0.17&quot;            
+## 10 &quot;Arkansa… &quot;0.19&quot;           &quot;0.17&quot;           &quot;0.398&quot;        &quot;0.10&quot;            
+## # ℹ 47 more rows
+## # ℹ 11 more variables: `12-17(2014-2015)` &lt;chr&gt;, `12-17(P Value)` &lt;chr&gt;,
+## #   `18-25(2013-2014)` &lt;chr&gt;, `18-25(2014-2015)` &lt;chr&gt;, `18-25(P Value)` &lt;chr&gt;,
+## #   `26+(2013-2014)` &lt;chr&gt;, `26+(2014-2015)` &lt;chr&gt;, `26+(P Value)` &lt;chr&gt;,
+## #   `18+(2013-2014)` &lt;chr&gt;, `18+(2014-2015)` &lt;chr&gt;, `18+(P Value)` &lt;chr&gt;
+## 
+## [[6]]
+## # A tibble: 57 × 16
+##    State     `12+(2013-2014)` `12+(2014-2015)` `12+(P Value)` `12-17(2013-2014)`
+##    &lt;chr&gt;     &lt;chr&gt;            &lt;chr&gt;            &lt;chr&gt;          &lt;chr&gt;             
+##  1 &quot;NOTE: S… &quot;NOTE: State an… &quot;NOTE: State an… &quot;NOTE: State … &quot;NOTE: State and …
+##  2 &quot;Total U… &quot;52.42&quot;          &quot;52.18&quot;          &quot;0.337&quot;        &quot;11.55a&quot;          
+##  3 &quot;Northea… &quot;57.80a&quot;         &quot;56.66&quot;          &quot;0.009&quot;        &quot;13.19&quot;           
+##  4 &quot;Midwest&quot; &quot;55.14a&quot;         &quot;54.36&quot;          &quot;0.032&quot;        &quot;11.31a&quot;          
+##  5 &quot;South&quot;   &quot;48.74&quot;          &quot;48.85&quot;          &quot;0.759&quot;        &quot;10.87a&quot;          
+##  6 &quot;West&quot;    &quot;51.67&quot;          &quot;52.07&quot;          &quot;0.383&quot;        &quot;11.71a&quot;          
+##  7 &quot;Alabama&quot; &quot;44.72&quot;          &quot;43.94&quot;          &quot;0.533&quot;        &quot;10.53a&quot;          
+##  8 &quot;Alaska&quot;  &quot;54.02&quot;          &quot;54.98&quot;          &quot;0.444&quot;        &quot;9.22&quot;            
+##  9 &quot;Arizona&quot; &quot;51.80&quot;          &quot;51.19&quot;          &quot;0.613&quot;        &quot;11.90b&quot;          
+## 10 &quot;Arkansa… &quot;42.45&quot;          &quot;41.81&quot;          &quot;0.588&quot;        &quot;9.90&quot;            
+## # ℹ 47 more rows
+## # ℹ 11 more variables: `12-17(2014-2015)` &lt;chr&gt;, `12-17(P Value)` &lt;chr&gt;,
+## #   `18-25(2013-2014)` &lt;chr&gt;, `18-25(2014-2015)` &lt;chr&gt;, `18-25(P Value)` &lt;chr&gt;,
+## #   `26+(2013-2014)` &lt;chr&gt;, `26+(2014-2015)` &lt;chr&gt;, `26+(P Value)` &lt;chr&gt;,
+## #   `18+(2013-2014)` &lt;chr&gt;, `18+(2014-2015)` &lt;chr&gt;, `18+(P Value)` &lt;chr&gt;
+## 
+## [[7]]
+## # A tibble: 57 × 4
+##    State    Alcohol Use inPast M…¹ Alcohol Use inPast M…² Alcohol Use inPast M…³
+##    &lt;chr&gt;    &lt;chr&gt;                  &lt;chr&gt;                  &lt;chr&gt;                 
+##  1 &quot;NOTE: … &quot;NOTE: State and cens… &quot;NOTE: State and cens… &quot;NOTE: State and cens…
+##  2 &quot;Total … &quot;22.76a&quot;               &quot;21.57&quot;                &quot;0.000&quot;               
+##  3 &quot;Northe… &quot;26.11&quot;                &quot;25.98&quot;                &quot;0.792&quot;               
+##  4 &quot;Midwes… &quot;23.73a&quot;               &quot;22.00&quot;                &quot;0.000&quot;               
+##  5 &quot;South&quot;  &quot;20.68a&quot;               &quot;19.66&quot;                &quot;0.010&quot;               
+##  6 &quot;West&quot;   &quot;22.73a&quot;               &quot;21.01&quot;                &quot;0.000&quot;               
+##  7 &quot;Alabam… &quot;19.25&quot;                &quot;18.19&quot;                &quot;0.305&quot;               
+##  8 &quot;Alaska&quot; &quot;21.47b&quot;               &quot;23.91&quot;                &quot;0.058&quot;               
+##  9 &quot;Arizon… &quot;22.01a&quot;               &quot;19.25&quot;                &quot;0.009&quot;               
+## 10 &quot;Arkans… &quot;18.07&quot;                &quot;16.65&quot;                &quot;0.106&quot;               
+## # ℹ 47 more rows
+## # ℹ abbreviated names: ¹​`Alcohol Use inPast Month(2013-2014)`,
+## #   ²​`Alcohol Use inPast Month(2014-2015)`,
+## #   ³​`Alcohol Use inPast Month(P Value)`
+## 
+## [[8]]
+## # A tibble: 57 × 16
+##    State     `12+(2013-2014)` `12+(2014-2015)` `12+(P Value)` `12-17(2013-2014)`
+##    &lt;chr&gt;     &lt;chr&gt;            &lt;chr&gt;            &lt;chr&gt;          &lt;chr&gt;             
+##  1 &quot;NOTE: S… &quot;NOTE: State an… &quot;NOTE: State an… &quot;NOTE: State … &quot;NOTE: State and …
+##  2 &quot;Total U… &quot;25.36a&quot;         &quot;24.56&quot;          &quot;0.000&quot;        &quot;7.42a&quot;           
+##  3 &quot;Northea… &quot;23.76&quot;          &quot;23.30&quot;          &quot;0.216&quot;        &quot;7.18a&quot;           
+##  4 &quot;Midwest&quot; &quot;28.57a&quot;         &quot;27.39&quot;          &quot;0.000&quot;        &quot;8.58a&quot;           
+##  5 &quot;South&quot;   &quot;26.91a&quot;         &quot;26.24&quot;          &quot;0.034&quot;        &quot;7.57a&quot;           
+##  6 &quot;West&quot;    &quot;21.20a&quot;         &quot;20.29&quot;          &quot;0.015&quot;        &quot;6.31a&quot;           
+##  7 &quot;Alabama&quot; &quot;31.62&quot;          &quot;30.46&quot;          &quot;0.295&quot;        &quot;8.43&quot;            
+##  8 &quot;Alaska&quot;  &quot;29.30a&quot;         &quot;31.51&quot;          &quot;0.048&quot;        &quot;10.73&quot;           
+##  9 &quot;Arizona&quot; &quot;22.14&quot;          &quot;22.51&quot;          &quot;0.678&quot;        &quot;6.81&quot;            
+## 10 &quot;Arkansa… &quot;35.57&quot;          &quot;34.05&quot;          &quot;0.188&quot;        &quot;10.89&quot;           
+## # ℹ 47 more rows
+## # ℹ 11 more variables: `12-17(2014-2015)` &lt;chr&gt;, `12-17(P Value)` &lt;chr&gt;,
+## #   `18-25(2013-2014)` &lt;chr&gt;, `18-25(2014-2015)` &lt;chr&gt;, `18-25(P Value)` &lt;chr&gt;,
+## #   `26+(2013-2014)` &lt;chr&gt;, `26+(2014-2015)` &lt;chr&gt;, `26+(P Value)` &lt;chr&gt;,
+## #   `18+(2013-2014)` &lt;chr&gt;, `18+(2014-2015)` &lt;chr&gt;, `18+(P Value)` &lt;chr&gt;
+## 
+## [[9]]
+## # A tibble: 57 × 16
+##    State     `12+(2013-2014)` `12+(2014-2015)` `12+(P Value)` `12-17(2013-2014)`
+##    &lt;chr&gt;     &lt;chr&gt;            &lt;chr&gt;            &lt;chr&gt;          &lt;chr&gt;             
+##  1 &quot;NOTE: S… &quot;NOTE: State an… &quot;NOTE: State an… &quot;NOTE: State … &quot;NOTE: State and …
+##  2 &quot;Total U… &quot;21.05a&quot;         &quot;20.12&quot;          &quot;0.000&quot;        &quot;5.24a&quot;           
+##  3 &quot;Northea… &quot;19.69&quot;          &quot;19.13&quot;          &quot;0.101&quot;        &quot;5.10a&quot;           
+##  4 &quot;Midwest&quot; &quot;23.84a&quot;         &quot;22.50&quot;          &quot;0.000&quot;        &quot;6.16a&quot;           
+##  5 &quot;South&quot;   &quot;22.37a&quot;         &quot;21.41&quot;          &quot;0.001&quot;        &quot;5.22a&quot;           
+##  6 &quot;West&quot;    &quot;17.43a&quot;         &quot;16.66&quot;          &quot;0.026&quot;        &quot;4.56a&quot;           
+##  7 &quot;Alabama&quot; &quot;25.90&quot;          &quot;24.25&quot;          &quot;0.106&quot;        &quot;5.66&quot;            
+##  8 &quot;Alaska&quot;  &quot;22.00a&quot;         &quot;24.64&quot;          &quot;0.008&quot;        &quot;6.15&quot;            
+##  9 &quot;Arizona&quot; &quot;18.73&quot;          &quot;19.23&quot;          &quot;0.576&quot;        &quot;4.95&quot;            
+## 10 &quot;Arkansa… &quot;28.51&quot;          &quot;27.81&quot;          &quot;0.519&quot;        &quot;7.13&quot;            
+## # ℹ 47 more rows
+## # ℹ 11 more variables: `12-17(2014-2015)` &lt;chr&gt;, `12-17(P Value)` &lt;chr&gt;,
+## #   `18-25(2013-2014)` &lt;chr&gt;, `18-25(2014-2015)` &lt;chr&gt;, `18-25(P Value)` &lt;chr&gt;,
+## #   `26+(2013-2014)` &lt;chr&gt;, `26+(2014-2015)` &lt;chr&gt;, `26+(P Value)` &lt;chr&gt;,
+## #   `18+(2013-2014)` &lt;chr&gt;, `18+(2014-2015)` &lt;chr&gt;, `18+(P Value)` &lt;chr&gt;
+## 
+## [[10]]
+## # A tibble: 57 × 16
+##    State     `12+(2013-2014)` `12+(2014-2015)` `12+(P Value)` `12-17(2013-2014)`
+##    &lt;chr&gt;     &lt;chr&gt;            &lt;chr&gt;            &lt;chr&gt;          &lt;chr&gt;             
+##  1 &quot;NOTE: S… &quot;NOTE: State an… &quot;NOTE: State an… &quot;NOTE: State … &quot;NOTE: State and …
+##  2 &quot;Total U… &quot;6.50a&quot;          &quot;6.14&quot;           &quot;0.001&quot;        &quot;2.76&quot;            
+##  3 &quot;Northea… &quot;6.64&quot;           &quot;6.39&quot;           &quot;0.193&quot;        &quot;2.88&quot;            
+##  4 &quot;Midwest&quot; &quot;6.59a&quot;          &quot;6.25&quot;           &quot;0.033&quot;        &quot;2.70&quot;            
+##  5 &quot;South&quot;   &quot;6.20a&quot;          &quot;5.76&quot;           &quot;0.003&quot;        &quot;2.65&quot;            
+##  6 &quot;West&quot;    &quot;6.80&quot;           &quot;6.47&quot;           &quot;0.120&quot;        &quot;2.91&quot;            
+##  7 &quot;Alabama&quot; &quot;5.76a&quot;          &quot;4.64&quot;           &quot;0.007&quot;        &quot;2.84b&quot;           
+##  8 &quot;Alaska&quot;  &quot;6.72&quot;           &quot;7.43&quot;           &quot;0.153&quot;        &quot;2.12&quot;            
+##  9 &quot;Arizona&quot; &quot;7.60b&quot;          &quot;6.66&quot;           &quot;0.062&quot;        &quot;3.37&quot;            
+## 10 &quot;Arkansa… &quot;5.23&quot;           &quot;4.88&quot;           &quot;0.347&quot;        &quot;2.63&quot;            
+## # ℹ 47 more rows
+## # ℹ 11 more variables: `12-17(2014-2015)` &lt;chr&gt;, `12-17(P Value)` &lt;chr&gt;,
+## #   `18-25(2013-2014)` &lt;chr&gt;, `18-25(2014-2015)` &lt;chr&gt;, `18-25(P Value)` &lt;chr&gt;,
+## #   `26+(2013-2014)` &lt;chr&gt;, `26+(2014-2015)` &lt;chr&gt;, `26+(P Value)` &lt;chr&gt;,
+## #   `18+(2013-2014)` &lt;chr&gt;, `18+(2014-2015)` &lt;chr&gt;, `18+(P Value)` &lt;chr&gt;
+## 
+## [[11]]
+## # A tibble: 57 × 16
+##    State     `12+(2013-2014)` `12+(2014-2015)` `12+(P Value)` `12-17(2013-2014)`
+##    &lt;chr&gt;     &lt;chr&gt;            &lt;chr&gt;            &lt;chr&gt;          &lt;chr&gt;             
+##  1 &quot;NOTE: S… &quot;NOTE: State an… &quot;NOTE: State an… &quot;NOTE: State … &quot;NOTE: State and …
+##  2 &quot;Total U… &quot;3.04&quot;           &quot;2.97&quot;           &quot;0.321&quot;        &quot;1.01&quot;            
+##  3 &quot;Northea… &quot;3.01&quot;           &quot;3.09&quot;           &quot;0.500&quot;        &quot;1.02&quot;            
+##  4 &quot;Midwest&quot; &quot;3.06b&quot;          &quot;2.86&quot;           &quot;0.061&quot;        &quot;1.03&quot;            
+##  5 &quot;South&quot;   &quot;2.92a&quot;          &quot;2.73&quot;           &quot;0.047&quot;        &quot;0.96&quot;            
+##  6 &quot;West&quot;    &quot;3.25&quot;           &quot;3.37&quot;           &quot;0.409&quot;        &quot;1.05&quot;            
+##  7 &quot;Alabama&quot; &quot;2.99a&quot;          &quot;2.34&quot;           &quot;0.026&quot;        &quot;0.98&quot;            
+##  8 &quot;Alaska&quot;  &quot;3.21&quot;           &quot;3.67&quot;           &quot;0.200&quot;        &quot;0.77&quot;            
+##  9 &quot;Arizona&quot; &quot;3.44&quot;           &quot;3.62&quot;           &quot;0.591&quot;        &quot;1.11&quot;            
+## 10 &quot;Arkansa… &quot;2.73&quot;           &quot;2.42&quot;           &quot;0.255&quot;        &quot;0.96&quot;            
+## # ℹ 47 more rows
+## # ℹ 11 more variables: `12-17(2014-2015)` &lt;chr&gt;, `12-17(P Value)` &lt;chr&gt;,
+## #   `18-25(2013-2014)` &lt;chr&gt;, `18-25(2014-2015)` &lt;chr&gt;, `18-25(P Value)` &lt;chr&gt;,
+## #   `26+(2013-2014)` &lt;chr&gt;, `26+(2014-2015)` &lt;chr&gt;, `26+(P Value)` &lt;chr&gt;,
+## #   `18+(2013-2014)` &lt;chr&gt;, `18+(2014-2015)` &lt;chr&gt;, `18+(P Value)` &lt;chr&gt;
+## 
+## [[12]]
+## # A tibble: 57 × 10
+##    State     `18+(2013-2014)` `18+(2014-2015)` `18+(P Value)` `18-25(2013-2014)`
+##    &lt;chr&gt;     &lt;chr&gt;            &lt;chr&gt;            &lt;chr&gt;          &lt;chr&gt;             
+##  1 &quot;NOTE: S… &quot;NOTE: State an… &quot;NOTE: State an… &quot;NOTE: State … &quot;NOTE: State and …
+##  2 &quot;Total U… &quot;4.15&quot;           &quot;4.05&quot;           &quot;0.325&quot;        &quot;4.52a&quot;           
+##  3 &quot;Northea… &quot;3.93&quot;           &quot;3.94&quot;           &quot;0.953&quot;        &quot;4.67a&quot;           
+##  4 &quot;Midwest&quot; &quot;4.45&quot;           &quot;4.36&quot;           &quot;0.511&quot;        &quot;4.93a&quot;           
+##  5 &quot;South&quot;   &quot;4.17&quot;           &quot;4.00&quot;           &quot;0.206&quot;        &quot;4.18a&quot;           
+##  6 &quot;West&quot;    &quot;4.02&quot;           &quot;3.96&quot;           &quot;0.681&quot;        &quot;4.56b&quot;           
+##  7 &quot;Alabama&quot; &quot;4.53&quot;           &quot;4.64&quot;           &quot;0.749&quot;        &quot;4.30&quot;            
+##  8 &quot;Alaska&quot;  &quot;3.90&quot;           &quot;4.02&quot;           &quot;0.707&quot;        &quot;4.60a&quot;           
+##  9 &quot;Arizona&quot; &quot;4.09&quot;           &quot;4.33&quot;           &quot;0.491&quot;        &quot;4.45&quot;            
+## 10 &quot;Arkansa… &quot;5.24&quot;           &quot;5.27&quot;           &quot;0.942&quot;        &quot;4.49&quot;            
+## # ℹ 47 more rows
+## # ℹ 5 more variables: `18-25(2014-2015)` &lt;chr&gt;, `18-25(P Value)` &lt;chr&gt;,
+## #   `26+(2013-2014)` &lt;chr&gt;, `26+(2014-2015)` &lt;chr&gt;, `26+(P Value)` &lt;chr&gt;
+## 
+## [[13]]
+## # A tibble: 57 × 10
+##    State     `18+(2013-2014)` `18+(2014-2015)` `18+(P Value)` `18-25(2013-2014)`
+##    &lt;chr&gt;     &lt;chr&gt;            &lt;chr&gt;            &lt;chr&gt;          &lt;chr&gt;             
+##  1 &quot;NOTE: S… &quot;NOTE: State an… &quot;NOTE: State an… &quot;NOTE: State … &quot;NOTE: State and …
+##  2 &quot;Total U… &quot;18.29&quot;          &quot;18.01&quot;          &quot;0.146&quot;        &quot;19.75a&quot;          
+##  3 &quot;Northea… &quot;17.87&quot;          &quot;17.76&quot;          &quot;0.735&quot;        &quot;20.80a&quot;          
+##  4 &quot;Midwest&quot; &quot;18.61&quot;          &quot;18.34&quot;          &quot;0.356&quot;        &quot;20.45a&quot;          
+##  5 &quot;South&quot;   &quot;18.01&quot;          &quot;17.82&quot;          &quot;0.519&quot;        &quot;18.22a&quot;          
+##  6 &quot;West&quot;    &quot;18.79b&quot;         &quot;18.18&quot;          &quot;0.088&quot;        &quot;20.70a&quot;          
+##  7 &quot;Alabama&quot; &quot;19.51&quot;          &quot;18.85&quot;          &quot;0.469&quot;        &quot;18.09&quot;           
+##  8 &quot;Alaska&quot;  &quot;18.12&quot;          &quot;18.11&quot;          &quot;0.989&quot;        &quot;20.33a&quot;          
+##  9 &quot;Arizona&quot; &quot;18.59&quot;          &quot;18.32&quot;          &quot;0.756&quot;        &quot;18.76&quot;           
+## 10 &quot;Arkansa… &quot;20.00&quot;          &quot;19.77&quot;          &quot;0.816&quot;        &quot;19.99&quot;           
+## # ℹ 47 more rows
+## # ℹ 5 more variables: `18-25(2014-2015)` &lt;chr&gt;, `18-25(P Value)` &lt;chr&gt;,
+## #   `26+(2013-2014)` &lt;chr&gt;, `26+(2014-2015)` &lt;chr&gt;, `26+(P Value)` &lt;chr&gt;
+## 
+## [[14]]
+## # A tibble: 57 × 10
+##    State     `18+(2013-2014)` `18+(2014-2015)` `18+(P Value)` `18-25(2013-2014)`
+##    &lt;chr&gt;     &lt;chr&gt;            &lt;chr&gt;            &lt;chr&gt;          &lt;chr&gt;             
+##  1 &quot;NOTE: S… &quot;NOTE: State an… &quot;NOTE: State an… &quot;NOTE: State … &quot;NOTE: State and …
+##  2 &quot;Total U… &quot;3.94&quot;           &quot;3.99&quot;           &quot;0.526&quot;        &quot;7.44a&quot;           
+##  3 &quot;Northea… &quot;3.81&quot;           &quot;3.93&quot;           &quot;0.407&quot;        &quot;7.60b&quot;           
+##  4 &quot;Midwest&quot; &quot;4.11&quot;           &quot;4.14&quot;           &quot;0.791&quot;        &quot;7.83&quot;            
+##  5 &quot;South&quot;   &quot;3.84&quot;           &quot;3.86&quot;           &quot;0.896&quot;        &quot;6.89a&quot;           
+##  6 &quot;West&quot;    &quot;4.02&quot;           &quot;4.12&quot;           &quot;0.522&quot;        &quot;7.84&quot;            
+##  7 &quot;Alabama&quot; &quot;3.98&quot;           &quot;4.02&quot;           &quot;0.885&quot;        &quot;7.31&quot;            
+##  8 &quot;Alaska&quot;  &quot;4.21&quot;           &quot;4.68&quot;           &quot;0.237&quot;        &quot;8.30b&quot;           
+##  9 &quot;Arizona&quot; &quot;4.23&quot;           &quot;4.34&quot;           &quot;0.775&quot;        &quot;7.04&quot;            
+## 10 &quot;Arkansa… &quot;4.58&quot;           &quot;4.41&quot;           &quot;0.682&quot;        &quot;6.67&quot;            
+## # ℹ 47 more rows
+## # ℹ 5 more variables: `18-25(2014-2015)` &lt;chr&gt;, `18-25(P Value)` &lt;chr&gt;,
+## #   `26+(2013-2014)` &lt;chr&gt;, `26+(2014-2015)` &lt;chr&gt;, `26+(P Value)` &lt;chr&gt;
+## 
+## [[15]]
+## # A tibble: 57 × 13
+##    State     `18+(2013-2014)` `18+(2014-2015)` `18+(P Value)` `12-17(2013-2014)`
+##    &lt;chr&gt;     &lt;chr&gt;            &lt;chr&gt;            &lt;chr&gt;          &lt;chr&gt;             
+##  1 &quot;NOTE: S… &quot;NOTE: State an… &quot;NOTE: State an… &quot;NOTE: State … &quot;NOTE: State and …
+##  2 &quot;Total U… &quot;6.63&quot;           &quot;6.64&quot;           &quot;0.915&quot;        &quot;11.01a&quot;          
+##  3 &quot;Northea… &quot;6.66&quot;           &quot;6.82&quot;           &quot;0.458&quot;        &quot;10.63a&quot;          
+##  4 &quot;Midwest&quot; &quot;6.81&quot;           &quot;6.87&quot;           &quot;0.736&quot;        &quot;10.81a&quot;          
+##  5 &quot;South&quot;   &quot;6.47&quot;           &quot;6.52&quot;           &quot;0.750&quot;        &quot;10.77a&quot;          
+##  6 &quot;West&quot;    &quot;6.67&quot;           &quot;6.47&quot;           &quot;0.353&quot;        &quot;11.82a&quot;          
+##  7 &quot;Alabama&quot; &quot;6.85&quot;           &quot;6.81&quot;           &quot;0.948&quot;        &quot;10.74&quot;           
+##  8 &quot;Alaska&quot;  &quot;6.57&quot;           &quot;6.73&quot;           &quot;0.770&quot;        &quot;9.92a&quot;           
+##  9 &quot;Arizona&quot; &quot;7.32&quot;           &quot;6.77&quot;           &quot;0.362&quot;        &quot;13.23&quot;           
+## 10 &quot;Arkansa… &quot;7.31&quot;           &quot;7.78&quot;           &quot;0.446&quot;        &quot;11.95&quot;           
+## # ℹ 47 more rows
+## # ℹ 8 more variables: `12-17(2014-2015)` &lt;chr&gt;, `12-17(P Value)` &lt;chr&gt;,
+## #   `18-25(2013-2014)` &lt;chr&gt;, `18-25(2014-2015)` &lt;chr&gt;, `18-25(P Value)` &lt;chr&gt;,
+## #   `26+(2013-2014)` &lt;chr&gt;, `26+(2014-2015)` &lt;chr&gt;, `26+(P Value)` &lt;chr&gt;</code></pre>
+<p>This has extracted <em>all</em> of the tables on the original page;
+that’s why we have a list with 15 elements. (We haven’t really talked
+about lists yet, but for now you can think of them as a general
+collection of objects in R. As we proceed, syntax for extracting
+individual elements from a list will become clear, and we’ll talk lots
+about lists in <a href="listcols_and_bootstrapping.html">list
+columns</a>.)</p>
+<p>We’re only focused on the first table for now, so let’s get the
+contents from the first list element.</p>
+<pre class="r"><code>table_marj = 
+  drug_use_html |&gt; 
+  html_table() |&gt; 
+  first() </code></pre>
+<p>I won’t print the table here, but if you look at it you’ll notice a
+problem: the “note” at the bottom of the table appears in every column
+in the first row. We need to remove that…</p>
+<pre class="r"><code>table_marj = 
+  drug_use_html |&gt; 
+  html_table() |&gt; 
+  first() |&gt;
+  slice(-1) 
+
+table_marj</code></pre>
+<pre><code>## # A tibble: 56 × 16
+##    State     `12+(2013-2014)` `12+(2014-2015)` `12+(P Value)` `12-17(2013-2014)`
+##    &lt;chr&gt;     &lt;chr&gt;            &lt;chr&gt;            &lt;chr&gt;          &lt;chr&gt;             
+##  1 Total U.… 12.90a           13.36            0.002          13.28b            
+##  2 Northeast 13.88a           14.66            0.005          13.98             
+##  3 Midwest   12.40b           12.76            0.082          12.45             
+##  4 South     11.24a           11.64            0.029          12.02             
+##  5 West      15.27            15.62            0.262          15.53a            
+##  6 Alabama   9.98             9.60             0.426          9.90              
+##  7 Alaska    19.60a           21.92            0.010          17.30             
+##  8 Arizona   13.69            13.12            0.364          15.12             
+##  9 Arkansas  11.37            11.59            0.678          12.79             
+## 10 Californ… 14.49            15.25            0.103          15.03             
+## # ℹ 46 more rows
+## # ℹ 11 more variables: `12-17(2014-2015)` &lt;chr&gt;, `12-17(P Value)` &lt;chr&gt;,
+## #   `18-25(2013-2014)` &lt;chr&gt;, `18-25(2014-2015)` &lt;chr&gt;, `18-25(P Value)` &lt;chr&gt;,
+## #   `26+(2013-2014)` &lt;chr&gt;, `26+(2014-2015)` &lt;chr&gt;, `26+(P Value)` &lt;chr&gt;,
+## #   `18+(2013-2014)` &lt;chr&gt;, `18+(2014-2015)` &lt;chr&gt;, `18+(P Value)` &lt;chr&gt;</code></pre>
+<p>Success!! At least, mostly. These data aren’t <a
+href="tidy_data.html">tidy</a>, but we’ll worry about that <a
+href="strings_and_factors.html">soon</a>.</p>
+<p><strong><em>Learning assessment:</em></strong> Create a data frame
+that contains the cost of living table for New York from <a
+href="https://www.bestplaces.net/cost_of_living/city/new_york/new_york">this
+page</a>.</p>
+<details>
+<summary>
+Solution
+</summary>
+<p>The code below shows one approach to this data cleaning process:</p>
+<pre class="r"><code>nyc_cost = 
+  read_html(&quot;https://www.bestplaces.net/cost_of_living/city/new_york/new_york&quot;) |&gt;
+  html_table(header = TRUE) |&gt;
+  first()</code></pre>
+<p>In case you hadn’t known, NYC is kind of expensive.</p>
+</details>
+</div>
+<div id="css-selectors" class="section level3">
+<h3>CSS Selectors</h3>
+<p>Suppose we’d like to scrape the data about the <a
+href="https://www.imdb.com/list/ls070150896/">Star Wars Movies</a> from
+the IMDB page. The first step is the same as before – we need to get the
+HTML.</p>
+<pre class="r"><code>swm_html = 
+  read_html(&quot;https://www.imdb.com/list/ls070150896/&quot;)</code></pre>
+<p>The information isn’t stored in a handy table, so we’re going to
+isolate the CSS selector for elements we care about. A bit of clicking
+around gets me something like below.</p>
+<p><img src="images/read_from_web_css_selctor.png" style="width:75%"></p>
+<p>For each element, I’ll use the CSS selector in
+<code>html_elements()</code> to extract the relevant HTML code, and
+convert it to text. Then I can combine these into a data frame.</p>
+<pre class="r"><code>title_vec = 
+  swm_html |&gt;
+  html_elements(&quot;.lister-item-header a&quot;) |&gt;
+  html_text()
+
+gross_rev_vec = 
+  swm_html |&gt;
+  html_elements(&quot;.text-small:nth-child(7) span:nth-child(5)&quot;) |&gt;
+  html_text()
+
+runtime_vec = 
+  swm_html |&gt;
+  html_elements(&quot;.runtime&quot;) |&gt;
+  html_text()
+
+swm_df = 
+  tibble(
+    title = title_vec,
+    rev = gross_rev_vec,
+    runtime = runtime_vec)</code></pre>
+<p>Some of these movies made real money …</p>
+<p><strong><em>Learning Assessment:</em></strong> <a
+href="http://books.toscrape.com">This page</a> contains some (made up)
+books. Use a process similar to the one above to extract the book
+titles, stars, and prices.</p>
+<details>
+<summary>
+Solution
+</summary>
+<p>The code below will give me relevant information for the books on
+this page:</p>
+<pre class="r"><code>url = &quot;http://books.toscrape.com&quot;
+
+books_html = read_html(url)
+
+books_titles = 
+  books_html |&gt;
+  html_elements(&quot;h3&quot;) |&gt;
+  html_text2()
+
+books_stars = 
+  books_html |&gt;
+  html_elements(&quot;.star-rating&quot;) |&gt;
+  html_attr(&quot;class&quot;)
+
+books_price = 
+  books_html |&gt;
+  html_elements(&quot;.price_color&quot;) |&gt;
+  html_text()
+
+books = tibble(
+  title = books_titles,
+  stars = books_stars,
+  price = books_price
+)</code></pre>
+</details>
+</div>
+<div id="using-an-api" class="section level3">
+<h3>Using an API</h3>
+<p>New York City has a great open data resource, and we’ll use that for
+our API examples. Although most (all?) of these datasets can be accessed
+by clicking through a website, we’ll access them directly using the API
+to improve reproducibility and make it easier to update results to
+reflect new data.</p>
+<p>As a simple example, <a
+href="https://data.cityofnewyork.us/Environment/Water-Consumption-In-The-New-York-City/ia2d-e54m">this
+page</a> is about a dataset for annual water consumption in NYC, along
+with the population in that year. First, we’ll import this as a CSV and
+parse it.</p>
+<pre class="r"><code>nyc_water = 
+  GET(&quot;https://data.cityofnewyork.us/resource/ia2d-e54m.csv&quot;) |&gt; 
+  content(&quot;parsed&quot;)</code></pre>
+<pre><code>## Rows: 44 Columns: 4
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## dbl (4): year, new_york_city_population, nyc_consumption_million_gallons_per...
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<p>We can also import this dataset as a JSON file. This takes a bit more
+work (and this is, really, a pretty easy case), but it’s still
+doable.</p>
+<pre class="r"><code>nyc_water = 
+  GET(&quot;https://data.cityofnewyork.us/resource/ia2d-e54m.json&quot;) |&gt; 
+  content(&quot;text&quot;) |&gt;
+  jsonlite::fromJSON() |&gt;
+  as_tibble()</code></pre>
+<p><a
+href="https://catalog.data.gov/dataset?q=-aapi+api+OR++res_format%3Aapi#topic=developers_navigation">Data.gov</a>
+also has a lot of data available using their API; often this is
+available as CSV or JSON as well. For example, we might be interested in
+data coming from <a
+href="https://chronicdata.cdc.gov/Behavioral-Risk-Factors/Behavioral-Risk-Factors-Selected-Metropolitan-Area/acme-vg9e">BRFSS</a>.
+This is importable via the API as a CSV (JSON, in this example, is <a
+href="dataset_brfss.html">more complicated</a>).</p>
+<pre class="r"><code>brfss_smart2010 = 
+  GET(&quot;https://chronicdata.cdc.gov/resource/acme-vg9e.csv&quot;,
+      query = list(&quot;$limit&quot; = 5000)) |&gt; 
+  content(&quot;parsed&quot;)</code></pre>
+<p>By default, the CDC API limits data to the first 1000 rows. Here I’ve
+increased that by changing an element of the API query – I looked around
+the website describing the API to find the name of the argument, and
+then used the appropriate syntax for <code>GET</code>. To get the full
+data, I could increase this so that I get all the data at once or I
+could try iterating over chunks of a few thousand rows.</p>
+<p>Both of the previous examples are, actually, <em>pretty easy</em> –
+we accessed data that is essentially a data table, and we had a very
+straightforward API (although updating queries isn’t obvious at
+first).</p>
+<p>To get a sense of how this becomes complicated, let’s look at the <a
+href="https://pokeapi.co">Pokemon API</a> (which is also pretty
+nice).</p>
+<pre class="r"><code>poke = 
+  GET(&quot;http://pokeapi.co/api/v2/pokemon/1&quot;) |&gt;
+  content()
+
+poke$name</code></pre>
+<pre><code>## [1] &quot;bulbasaur&quot;</code></pre>
+<pre class="r"><code>poke$height</code></pre>
+<pre><code>## [1] 7</code></pre>
+<pre class="r"><code>poke$abilities</code></pre>
+<pre><code>## [[1]]
+## [[1]]$ability
+## [[1]]$ability$name
+## [1] &quot;overgrow&quot;
+## 
+## [[1]]$ability$url
+## [1] &quot;https://pokeapi.co/api/v2/ability/65/&quot;
+## 
+## 
+## [[1]]$is_hidden
+## [1] FALSE
+## 
+## [[1]]$slot
+## [1] 1
+## 
+## 
+## [[2]]
+## [[2]]$ability
+## [[2]]$ability$name
+## [1] &quot;chlorophyll&quot;
+## 
+## [[2]]$ability$url
+## [1] &quot;https://pokeapi.co/api/v2/ability/34/&quot;
+## 
+## 
+## [[2]]$is_hidden
+## [1] TRUE
+## 
+## [[2]]$slot
+## [1] 3</code></pre>
+<p>To build a Pokemon dataset for analysis, you’d need to distill the
+data returned from the API into a useful format; iterate across all
+pokemon; and combine the results.</p>
+<p>For both of the API examples we saw today, it wouldn’t be
+<em>terrible</em> to just download the CSV, document where it came from
+carefully, and move on. APIs are more helpful when the full dataset is
+complex and you only need pieces, or when the data are updated
+regularly.</p>
+</div>
+<div id="be-reasonable" class="section level3">
+<h3>Be reasonable</h3>
+<p>When you’re reading data from the web, remember you’re accessing
+resources on someone else’s server – either by reading HTML or by
+accessing data via an API. In some cases, those who make data public
+will take steps to limit bandwidth devoted to a small number of users.
+Amazon and IMDB, for example, probably won’t notice if you scrape small
+amounts of data but <em>would</em> notice if you tried to read data from
+thousands of pages every time you knitted a document.</p>
+<p>Similarly, API developers can (and will) limit the number of database
+entries that can be accessed in a single request. In those cases you’d
+have to take some steps to iterate over “pages” and combine the results;
+as an example, our code for the <a
+href="dataset_restaurant_inspections.html">NYC Restaurant
+Inspections</a> does this. In some cases, API developers protect
+themselves from unreasonable use by requiring users to be authenticated
+– it’s still possible to use <code>httr</code> in these cases, but we
+won’t get into it.</p>
+</div>
+</div>
+<div id="other-materials" class="section level2">
+<h2>Other materials</h2>
+<ul>
+<li>A recent short course presented similar topics to those above; a
+GitHub repo for the course is <a
+href="https://github.com/ropensci/user2016-tutorial">here</a></li>
+<li>A lot of <a href="https://opendata.cityofnewyork.us">NYC data</a> is
+public; <a
+href="https://www.opendatanetwork.com/search?q=new+york+city">this</a>
+is a good place to start looking for interesting data</li>
+<li>There are some cool projects based on scraped data; the RStudio
+community collected some <a
+href="https://community.rstudio.com/t/whats-the-most-interesting-use-of-rvest-youve-seen-in-the-wild/745">here</a></li>
+<li>Check out the <a
+href="https://github.com/tidyverse/dplyr/blob/master/data-raw/starwars.R">R
+file</a> used to create the <code>starwars</code> dataset (in the
+<code>tidyverse</code>) using the <a href="https://swapi.co">Star Wars
+API</a> (from the maker of the Pokemon API).</li>
+<li>Some really helpful R packages are wrappers for APIs – the
+<code>rnoaa</code> package we’ve used is an example, and so is
+<code>rtweet</code></li>
+</ul>
+<p>The code that I produced working examples in lecture is <a
+href="https://github.com/P8105/data_wrangling_ii">here</a>.</p>
+</div>
+
+<br><br>
+<footer>
+  <img src="images/p8105_stickers.png" alt="stickers" style="width:30%">
+  <br>
+  <p class="copyright text-muted" align="center">Copyright &copy; 2019 Jeff Goldsmith</p>
+</footer>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

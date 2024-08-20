@@ -1,0 +1,224 @@
+---
+title: "Writing R Packages II"
+output:
+  html_document: 
+    toc: true
+    toc_float: true
+---
+
+If you write more than two functions, you need a package -- this will remind you what functions do and how they interact with each other, help you keep track of inputs and outputs, and, if you want to share you code, allow you to do so in a standard format. The [first part](writing_r_packages_i.html) of this module covered getting to a complete package from scratch; this module covers some important but more advanced issues in R package development.
+
+This is the second of two lectures on writing R packages.
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(
+  eval = FALSE,
+  collapse = TRUE,
+  fig.width = 6,
+  fig.asp = .6,
+  out.width = "90%"
+)
+
+library(tidyverse)
+
+theme_set(theme_bw() + theme(legend.position = "bottom"))
+```
+
+## Some slides
+
+<script async class="speakerdeck-embed" data-id="7c0c3b85cf824c209a4b691dda1b967b" data-ratio="1.77777777777778" src="//speakerdeck.com/assets/embed.js"></script>
+<div style="margin-bottom:5px"> <strong> <a href="https://speakerdeck.com/jeffgoldsmith/p8105-writing-r-packages-ii" title="Writing R Packages II" target="_blank">Writing R Packages II</a> </strong> from <strong><a href="https://speakerdeck.com/jeffgoldsmith" target="_blank">Jeff Goldsmith</a></strong>. </div><br>
+
+## Example
+
+For today's example, I'll continue working on `example.package`, the R package we started in [writing R packages I](writing_r_packages_i.html). 
+
+### Library path
+
+You can find the path to your package library using `.libPath()` -- opening this directory on your computer will show you what you've installed. 
+
+### Search path
+
+Before jumping into new pacakge development stuff, we're going to take a closer look at R's search path. You can see your current search path at any time using `search()`. 
+
+```{r}
+search()
+```
+
+There's not much here yet, since we haven't loaded anything -- mostly we have default packages and the global environment. 
+
+When you call a function, R has to find it. We've often made the location of a function explicit using `package::function()` which tells R specifically where to look but doesn't affect the search path.
+
+```{r}
+iris = janitor::clean_names(iris)
+search()
+```
+
+The `iris` dataset is included in the `datasets` package, which is in the search path. We can also use the `clean_names()` function since we've been very clear about where R should find it. We didn't do anything to the search path, though!
+
+If you don't specify the package for a specific function, R will look for it in the global environment and then in attached packages -- that is, in the search path. The `library()` function attaches a package to the search path, including it in the collection of packages R searches when trying to find a function. For example, to call `clean_names()` without specifying the package, we can use `library(janitor)` to attach the package to the search path.
+
+```{r}
+library(janitor)
+search()
+
+iris = clean_names(iris)
+detach("package:janitor", unload = TRUE)
+```
+
+Why not just attach everything? In part, at least, to avoid naming conflicts. Both `MASS` and `dplyr` have functions called `select()`, for example, and they do really different things. If you load both packages, which version you get depends on the order in which they're loaded. 
+
+To use `tidyverse::select`, we load that package second.
+
+```{r, error = TRUE}
+library(MASS)
+library(dplyr)
+
+iris %>% 
+  as_tibble() %>% 
+  select(sepal_length)
+```
+
+Note the warning that `dplyr::select()` masks `MASS::select()` -- these warnings are easy to overlook but are really important! 
+
+I'll detach both packages (and first detach `janitor`, since having it loaded prevents me from detaching `dplyr`), then reverse the order in which I attach them and try again. 
+
+```{r, error = TRUE}
+detach("package:dplyr", unload = TRUE)
+detach("package:MASS", unload = TRUE)
+
+library(dplyr)
+library(MASS)
+
+iris %>% 
+  as_tibble() %>% 
+  select(sepal_length)
+
+iris %>% 
+  as_tibble() %>% 
+  dplyr::select(sepal_length)
+```
+
+The command that just uses `select` produces an error, because it's using (implicitly) `MASS::select()`; the second is clear about using `dplyr::select` and works as desired. 
+
+As you work more in R you will run into search path issues (if you haven't already), and understanding how attaching packages affects the search path will help you resolve this. This discussion also illustrates why it's best to only attach the packages you need, and to use `package::function()` notation in cases where a package isn't used repeatedly. 
+
+### `NAMESPACE`
+
+The search path discussion is particularly relevant in the context of writing your own packages. In particular, the `NAMESPACE` file determines search path associated with your package. The `NAMESPACE` file for `example.package` is shown below.
+
+```{r, echo = FALSE, comment = ""}
+cat(readr::read_file("resources/NAMESPACE"))
+```
+
+We used `@import dplyr` in our roxygen comments, which adds the statements `import(dplyr)` and `import(purrr)` to the `NAMESPACE`. As a result, code in our package will include `dplyr` and `purrr` when looking for functions. 
+
+We also used `@importFrom tibble tibble` and `@importFrom magrittr "%>%"` in our roxygen comments, which adds the statements `importFrom(tibble,tibble)` and `importFrom(magrittr,"%>%")` to the `NAMESPACE`. As a result, code in our package will include _these specific functions_ when executing code. 
+
+There's an important but confusing distinction between import **_directives_** in the `NAMESPACE` and the `Import` **_field_** in the `DESCRIPTION` (shown below). Although they share a name, these mean different things: roughly, in the `NAMESPACE` we're listing packages that need to be included in the search path, while in the `DESCRIPTION` we're listing packages that have to be installed for our package to work. 
+
+```{r, echo = FALSE, comment = ""}
+cat(readr::read_file("resources/DESCRIPTION"))
+```
+
+To illustrate this distinction, recall that we used `tibble::tibble()` in our functions rather than including `@import tibble` in the roxygen comments. This makes it very clear where `tidy()` comes from, and means we don't need `broom` in the search path; thus, these don't appear in the `NAMESPACE`. We do still need the packages though, so they're listed as a dependency in the `DESCRIPTION`. 
+
+The `NAMESPACE` and roxygen comments also include exports, which identify functions that are visible when your package is attached. In bigger, more complex packages you may have functions you don't want users to have access to; for those, remove `@export` from the roxygen comments. 
+
+### Checks
+
+Checking yor package for common issues -- things like the presence of all needed files, the completeness of documentation, whether the code and examples run -- is critical to making sure your package is complete and self-contained. You can perform these checks using `devtools::check()` or a button in RStudio. This is going to be frustrating, at least until you start to recognize that this is a helpful process. The checks really get into the corners of your package and find things you wouldn't expect. The messages take some practice to understand. Correcting issues will force you to complete all your documentation. 
+
+You don't have to do this for packages written for yourself, although I do recommend it. You _do_ have to do this for packages that go on CRAN, which is part of the reason that CRAN packages are a bit more trustworthy. Many packages on GitHub has passed checks; look for a happy `build | passing` sticker at the top of the README!
+
+Below is the (redacted) output of checking `example.package`. 
+
+```{r, echo = FALSE, comment = ""}
+cat(readr::read_file("resources/check_output.txt"))
+```
+
+We did pretty well! There are some warnings about our documentation (incomplete `@param` and `@example` roxygen comments), a note about being clear about where some functions come from, and an error in one of our examples (which needs `%>%` to run, but doesn't load the necessary package). This gives a sense of the kind of issues that checking your package will turn up. 
+
+### Tests 
+
+_Checking_ a package is a process that doesn't vary from one package to the next because this process isn't concerned with whether a function or package works as intended -- the built-in checks are for things like documentation, namespace, installation, etc.
+
+_Testing_, in contrast, is package specific because it is concerned with whether functions work as intended. This is important for at least two reasons:
+
+* If your code depends on other packages and those change, you should find out and fix the issue
+* As you add or edit functions, you should be sure that changes don't break existing code in unexpected ways
+
+Informal testing is common during development -- you run your functions on code snippets and make sure they give the results you expect. Formal testing makes this process more rigorous and saving the informal tests and running them each time you check your package. Like other best practices for development, this takes some time to get used to but guards against future trouble and improves your software. 
+
+The `testthat` package does as much as possible to facilitate formal testing. To set this up for your package, run `usethis::use_testthat()`. Doing so will create a directory `/tests/testthat/` to hold tests and a file `/tests/testthat.R` to run tests. It's your job to write the tests!
+
+The file `tests/testthat/test_sim_bern.R` is shown below (note: test files have to start with `test` and be in the right directory):
+
+```{r, echo = FALSE, comment = ""}
+cat(readr::read_file("resources/test_sim_bern.R"))
+```
+
+These are pretty contrived tests, but give you an idea of how testing in general might work. Use `devtools::test()` to run your tests (these will also run when you check your package); output for my tests is shown below. 
+
+```{r, echo = FALSE, comment = ""}
+cat(readr::read_file("resources/test_output.txt"))
+```
+
+This output contains `.` for each passed test in each context, and will indicate when a test is failed. 
+
+
+### Vignettes
+
+Help pages for functions are great, but assume users know roughly how a package works and only need a reminder about some specifics. To give a more general introduction to a package -- what functions do, how they interact, and why you wrote it -- you need the longer-form documentation found in package vignettes. Fortunately, these can be written using R Markdown
+
+To build the infrastructure needed to include a vignette in `example.package`, I'll run the lines below. 
+
+```{r, eval = FALSE}
+usethis::use_vignette("sim_vignette")
+```
+
+This makes several changes in the package directory. 
+
+* Adds `knitr` and `rmarkdown` to `Suggests` in `DESCRIPTION`; these packages aren't dependencies, but will be needed for someone else to knit your vignette.
+* Creates a new file, `/vignettes/sim_vignette.Rmd`, with template vignette content.
+* Adds `/inst/doc` to `.gitignore`.
+
+You'll need to edit `/vignettes/sim_vignette.Rmd`. There are some things you have to do:
+
+* Replace both instances of "Vignette Title" in the YAML with an actual title, using the same title in both places. 
+* List yourself as author or remove that line.
+
+Then edit the rest of the R Markdown document to give an overview of the package. This often consists of organizing some of the code you've used elsewhere -- either in the examples or in the code you have that uses the package.
+
+The vignette I wrote for `example.package` can be downloaded [here](resources/sim_vignette.Rmd). 
+
+Disseminating your vignette gets complicated, unfortunately -- the knitted RMD is in `/inst/doc/`, which git is ignoring. _Building_ a package (going from source to bundle) using `devtools::build()` will compile the vignette and include it in the bundle, so packages installed from a bundle or binary will have vignettes available. That means you can check out vignettes for packages you've installed from CRAN; see what's available with `browseVignettes()`, or go straight to a vignette using `vignette("dplyr")`.
+
+Installing from github first builds the package bundle and then installs that; by default, this won't knit vignettes in case they are time consuming or complex. You can force the inclusion of a vignette using `devtools::install_github(build_vignettes = TRUE)`. 
+
+For packages I put on GH, I usually include a code chunk like the one below in my README to let users know how to include and access the vignette. 
+
+```{r, eval = FALSE}
+devtools::install_github("p8105/example.package", 
+                         build_vignettes = TRUE)
+# vignette("sim_vignette")
+```
+
+
+## Other materials
+
+Many of these topics are touched on in the other materials for [writing R packages I](writing_r_packages_i.html); below we reiterate some of those and add some new resources. 
+
+* Jenny Bryan's longer [illustrated example](http://stat545.com/packages06_foofactors-package.html) covers many of these topics in a reasonable level of detail
+* The R Packages book is a more complete reference. There are chapters on
+    * [What is a package?](http://r-pkgs.had.co.nz/package.html#package)
+    * [NAMESPACE](http://r-pkgs.had.co.nz/namespace.html)
+    * [Checks](http://r-pkgs.had.co.nz/check.html) 
+    * [Tests](http://r-pkgs.had.co.nz/tests.html)
+    * [Vignettes](http://r-pkgs.had.co.nz/vignettes.html)
+    * [Data](http://r-pkgs.had.co.nz/data.html)
+    * [Compiled code](http://r-pkgs.had.co.nz/src.html)
+* The [`usethis` package](https://www.tidyverse.org/articles/2017/11/usethis-1.0.0/) should automate a lot of the package writing process, although I haven't used it myself
+* The official guide to [Writing R Extensions](https://cran.r-project.org/doc/manuals/r-release/R-exts.html) also exists, although I'm not sure I exactly _recommend_ it ...
+
+The code that I produced working examples in lecture is [here](https://github.com/p8105/example.package).

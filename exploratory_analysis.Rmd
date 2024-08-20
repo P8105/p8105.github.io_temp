@@ -1,0 +1,429 @@
+---
+title: "Exploratory analysis using data summaries"
+output:
+  html_document: 
+    toc: true
+    toc_float: true
+---
+
+Data sets can frequently be partitioned into meaningful groups based on the variables they contain. Making this grouping explicit allows the computation of numeric summaries within groups, which in turn facilitates quantitative comparisons. 
+
+This is the second module in the [Visualization and EDA](topic_visualization_and_eda.html) topic.
+
+```{r, echo = FALSE, message=FALSE,warning=FALSE}
+library(tidyverse)
+
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  fig.width = 6,
+  fig.asp = .6,
+  out.width = "90%"
+)
+
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+
+scale_colour_discrete = scale_color_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+
+options(tibble.print_min = 6)
+```
+
+## Overview {.tabset .tabset-pills}
+
+### Learning Objectives
+
+Conduct exploratory analyses using `dplyr` verbs (`group_by` and `summarize`), along with numeric data summaries.
+
+### Slide Deck
+
+<div class="vid_container">
+  <iframe 
+    src="https://speakerdeck.com/player/38db98aa225d41a0a0d7fec84ae7a259" 
+    allowfullscreen 
+    frameborder="0"
+    class="video">
+  </iframe>
+</div>
+
+<div style="margin-bottom:5px"> <strong> <a href="https://speakerdeck.com/jeffgoldsmith/dsi-exploratory-analysis" title="Exploratory Analysis" target="_blank">Exploratory Analysis</a> </strong> from <strong><a href="https://speakerdeck.com/jeffgoldsmith" target="_blank">Jeff Goldsmith</a></strong>. </div><br>
+
+***
+
+### Video Lecture
+
+<div class="vid_container">
+  <iframe 
+    src="https://www.youtube.com/embed/evwEoXO3Y7w"
+    frameborder="0" allowfullscreen class="video">
+  </iframe>
+</div>
+
+***
+
+## Example
+
+We'll continue in the same Git repo / R project that we used for visualization, and use essentially the same `weather_df` dataset -- the only exception is the addition of `month` variable, created using `lubridate::floor_date()`. 
+
+```{r weather_data_create, cache = TRUE, message = FALSE}
+weather_df = 
+  rnoaa::meteo_pull_monitors(
+    c("USW00094728", "USW00022534", "USS0023B17S"),
+    var = c("PRCP", "TMIN", "TMAX"), 
+    date_min = "2021-01-01",
+    date_max = "2022-12-31") |>
+  mutate(
+    name = recode(
+      id, 
+      USW00094728 = "CentralPark_NY", 
+      USW00022534 = "Molokai_HI",
+      USS0023B17S = "Waterhole_WA"),
+    tmin = tmin / 10,
+    tmax = tmax / 10,
+    month = lubridate::floor_date(date, unit = "month")) |>
+  select(name, id, everything())
+```
+
+### Initial numeric explorations
+
+Before beginning to summarize data, it can help to use initial visualizations to motivate some data checks or observations. Consider, for example, this histogram of precipitation values:
+
+```{r}
+weather_df |> 
+  ggplot(aes(x = prcp)) + 
+  geom_histogram()
+```
+
+This is clearly a very skewed distribution; any formal analyses involving preciptation as a predictor or outcome might be influenced by this fact. It's important to note that the vast majority of days have no precipitation. Meanwhile, examining the relatively few days have very high precipitation might be helpful.
+
+```{r}
+weather_df |> 
+  filter(prcp >= 1000)
+```
+
+The two high rainfall days in NYC correspond to [tropical storm Henri](https://www.nytimes.com/2021/08/22/nyregion/tropical-storm-henri.html) and [hurricane Ida](https://www.nytimes.com/live/2021/09/02/nyregion/nyc-storm), while the high precipitation day in Molokai took place during a notable [cold front](https://www.weather.gov/hfo/coldfront_dec2022).
+
+A close look at the scatterplot below (which focuses on a range of values to emphasize this point) suggests that Central Park and Molokai report temperature values differently from Waterhole ...
+
+```{r}
+weather_df |> 
+  filter(tmax >= 20, tmax <= 30) |> 
+  ggplot(aes(x = tmin, y = tmax, color = name, shape = name)) + 
+  geom_point(alpha = .75)
+```
+
+Depending on the nature of later analyses, understanding how these differ and implementing an approach to bring the reports into alignment might be necessary. 
+
+
+### `group_by`
+
+Datasets are often comprised of groups defined by one or more (categorical) variable; `group_by()` makes these groupings explicit so that they can be included in subsequent operations. For example, we might group `weather_df` by `name` and `month`:
+
+```{r}
+weather_df |>
+  group_by(name, month)
+```
+
+Several important functions respect grouping structures. You will frequently use `summarize` to create one-number summaries within each group, or use `mutate` to define variables within groups. The rest of this example shows these functions in action.
+
+Because these (and other) functions will use grouping information if it exists, it is sometimes necessary to remove groups using `ungroup()`.
+
+### Counting things
+
+As an intro to `summarize`, let's count the number of observations in each month in the complete `weather_df` dataset.
+
+```{r}
+weather_df |>
+  group_by(month) |>
+  summarize(n_obs = n())
+```
+
+We can group by more than one variable, too.
+
+```{r}
+weather_df |>
+  group_by(name, month) |>
+  summarize(n_obs = n())
+```
+
+In both cases, the result is a dataframe that includes the grouping variable(s) and the desired summary. 
+
+To count things, you could use `count()` in place of `group_by()` and `summarize()` if you remember that this function exists. I'll also make use of the `name` argument in count, which defaults to `"n"`. 
+
+```{r}
+weather_df |>
+  count(month, name = "n_obs")
+```
+
+`count()` is a useful tidyverse alternative to Base R's `table` function. Both functions produce summaries of how often values appear, but `table`'s output is of class `table` and is hard to do any additional work with, while `count` produces a dataframe you can use or manipulate directly. For an example, run the code below and try to do something useful with the result...
+
+```{r, eval = FALSE}
+weather_df |>
+  pull(month) |> 
+  table
+```
+
+You can use `summarize()` to compute multiple summaries within each group. As an example, we count the number of observations in each month and the number of distinct values of `date` in each month.
+
+```{r}
+weather_df |>
+  group_by(month) |>
+  summarize(
+    n_obs = n(),
+    n_days = n_distinct(date))
+```
+
+### (2x2 tables)
+
+You might find yourself, someday, wanting to tabulate the frequency of a binary outcome across levels of a binary predictor. In a contrived example, let's say you want to look at the number of cold and not-cold days in Central Park and Waterhole. We can do this with some extra data manipulation steps and `group_by` + `summarize`:
+
+```{r}
+weather_df |> 
+  drop_na(tmax) |> 
+  mutate(
+    cold = case_when(
+      tmax <  5 ~ "cold",
+      tmax >= 5 ~ "not_cold",
+      TRUE      ~ ""
+  )) |> 
+  filter(name != "Molokai_HI") |> 
+  group_by(name, cold) |> 
+  summarize(count = n())
+```
+
+This is a "tidy" table, and it's also a data frame. You could re-organize into a more standard (non-tidy) 2x2 table using `pivot_wider`, or you could use `janitor::tabyl`:
+
+```{r}
+weather_df |> 
+  drop_na(tmax) |> 
+  mutate(cold = case_when(
+    tmax <  5 ~ "cold",
+    tmax >= 5 ~ "not_cold",
+    TRUE     ~ ""
+  )) |> 
+  filter(name != "Molokai_HI") |> 
+  janitor::tabyl(name, cold)
+```
+
+This isn't tidy, but it is still a data frame -- and that's noticeably better than usual output from R's built-in `table` function. `janitor` has a lot of little functions like this that turn out to be useful, so when you have some time you might read through all the things you can do. I don't really love that this is called `tabyl`, but you can't always get what you want in life. 
+
+(Since we're on the subject, I think 2x2 tables are kind of silly. When are you ever going to actually analyze data in that format?? In grad school I thought I'd be computing odds ratios by hand everyday ($OR = AD / BC$, right?!), but really I do that as often as I write in cursive -- which is never. Just do a logistic regression adjusting for confounders -- because there are _always confounders_. And is a 2x2 table really that much better than the "tidy" version? There are **_4 numbers_**. )
+
+
+### General summaries
+
+Standard statistical summaries are regularly computed in `summarize()` using functions like `mean()`, `median()`, `var()`, `sd()`, `mad()`, `IQR()`, `min()`, and `max()`. To use these, you indicate the variable to which they apply and include any additional arguments as necessary. 
+
+```{r}
+weather_df |>
+  group_by(month) |>
+  summarize(
+    mean_tmax = mean(tmax, na.rm = TRUE),
+    mean_prec = mean(prcp, na.rm = TRUE),
+    median_tmax = median(tmax),
+    sd_tmax = sd(tmax))
+```
+
+You can group by more than one variable. 
+
+```{r}
+weather_df |>
+  group_by(name, month) |>
+  summarize(
+    mean_tmax = mean(tmax),
+    median_tmax = median(tmax))
+```
+
+If you want to summarize multiple columns using the same summary, the `across` function is helpful.
+
+```{r}
+weather_df |>
+  group_by(name, month) |>
+  summarize(across(tmin:prcp, mean))
+```
+
+The fact that `summarize()` produces a dataframe is important (and consistent with other functions in the `tidyverse`). You can incorporate grouping and summarizing within broader analysis pipelines. For example, we can take create a plot based on the monthly summary: 
+
+```{r}
+weather_df |>
+  group_by(name, month) |>
+  summarize(mean_tmax = mean(tmax, na.rm = TRUE)) |>
+  ggplot(aes(x = month, y = mean_tmax, color = name)) + 
+    geom_point() + geom_line() + 
+    theme(legend.position = "bottom")
+```
+
+The results of `group_by()` and `summarize()` are generally tidy, but presenting reader-friendly results for this kind of exploratory analysis often benefits from some un-tidying. For example, the table below shows month-by-month average max temperatures in a more human-readable format.
+
+```{r}
+weather_df |>
+  group_by(name, month) |>
+  summarize(mean_tmax = mean(tmax, na.rm = TRUE)) |> 
+  pivot_wider(
+    names_from = name,
+    values_from = mean_tmax) |> 
+  knitr::kable(digits = 1)
+```
+
+
+### Grouped `mutate`
+
+Summarizing collapses groups into single data points. In contrast, using `mutate()` in conjuntion with `group_by()` will retain all original data points and add new variables computed within groups.
+
+Suppose you want to compare the daily max temperature to the annual average max temperature for each station separately, and to plot the result. You could do so using:
+
+```{r}
+weather_df |>
+  group_by(name) |>
+  mutate(
+    mean_tmax = mean(tmax, na.rm = TRUE),
+    centered_tmax = tmax - mean_tmax) |> 
+  ggplot(aes(x = date, y = centered_tmax, color = name)) + 
+    geom_point() 
+```
+
+
+### Window functions
+
+The previous example used `mean()` to compute the mean within each group, which was then subtracted from the observed max tempurature. `mean()` takes `n` inputs and produces a single output. 
+
+Window functions, in contrast, take `n` inputs and return `n` outputs, and the outputs depend on all the inputs. There are several categories of window functions; you're most likely to need ranking functions and offsets, which we illustrate below.
+
+First, we can find the max temperature ranking within month.
+
+```{r}
+weather_df |>
+  group_by(name, month) |>
+  mutate(temp_ranking = min_rank(tmax))
+```
+
+This sort of ranking is useful when filtering data based on rank. We could, for example, keep only the day with the lowest max temperature within each month:
+
+```{r}
+weather_df |>
+  group_by(name, month) |>
+  filter(min_rank(tmax) < 2)
+```
+
+We could also keep the three days with the highest max temperature:
+
+```{r}
+weather_df |>
+  group_by(name, month) |>
+  filter(min_rank(desc(tmax)) < 4)
+```
+
+In both of these, we've skipped a `mutate()` statement that would create a ranking variable, and gone straight to filtering based on the result. 
+
+Offsets, especially lags, are used to compare an observation to it's previous value. This is useful, for example, to find the day-by-day change in max temperature within each station over the year:
+
+```{r}
+weather_df |>
+  group_by(name) |>
+  mutate(temp_change = tmax - lag(tmax))
+```
+
+This kind of variable might be used to quantify the day-by-day variability in max temperature, or to identify the largest one-day increase:
+
+```{r}
+weather_df |>
+  group_by(name) |>
+  mutate(temp_change = tmax - lag(tmax)) |>
+  summarize(
+    temp_change_sd = sd(temp_change, na.rm = TRUE),
+    temp_change_max = max(temp_change, na.rm = TRUE))
+```
+
+
+### Limitations
+
+`summarize()` can only be used with functions that return a single-number summary. This creates a ceiling, even if it is **very** high. Later we'll see how to aggregate data in a more general way, and how to perform complex operations on the resulting sub-datasets.
+
+
+### Revisiting examples
+
+We've seen the PULSE and FAS datasets on several occasions, and we'll briefly revisit them here. 
+
+
+**_Learning Assessment:_** In the PULSE data, the primary outcome is BDI score; it's observed over follow-up visits, and we might ask if the typical BDI score values are roughly similar at each. Try to write a code chunk that imports, cleans, and summarizes the PULSE data to examine the mean and median at each visit. Export the results of this in a reader-friendly format. 
+
+<details>
+<summary> Solution </summary>
+
+The code chunk below imports and tidies the PUSLE data, produces the desired information, and exports it using `knitr::kable`. 
+
+```{r, eval = FALSE}
+pulse_data = 
+  haven::read_sas("./data/public_pulse_data.sas7bdat") |>
+  janitor::clean_names() |>
+  pivot_longer(
+    bdi_score_bl:bdi_score_12m,
+    names_to = "visit", 
+    names_prefix = "bdi_score_",
+    values_to = "bdi") |>
+  select(id, visit, everything()) |>
+  mutate(
+    visit = replace(visit, visit == "bl", "00m"),
+    visit = factor(visit, levels = str_c(c("00", "01", "06", "12"), "m"))) |>
+  arrange(id, visit)
+
+pulse_data |> 
+  group_by(visit) |> 
+  summarize(
+    mean_bdi = mean(bdi, na.rm = TRUE),
+    median_bdi = median(bdi, na.rm = TRUE)) |> 
+  knitr::kable(digits = 3)
+```
+
+This quick summary suggests a relatively large drop in the typical BDI score from baseline to 1 month, with small or no changes thereafter. 
+</details>
+
+
+**_Learning Assessment:_** In the FAS data, there are several outcomes of interest; for now, focus on post-natal day on which a pup is able to pivot. Two predictors of interest are the dose level and the day of treatment. Produce a reader-friendly table that quantifies the possible associations between dose, day of treatment, and the ability to pivot. 
+
+<details>
+<summary> Solution </summary>
+
+The code chunk below imports the litters and pups data, joins them, produces the desired information, un-tidies the result, and exports a table using `knitr::kable`. 
+
+```{r, eval = FALSE}
+pup_data = 
+  read_csv("./data/FAS_pups.csv") |>
+  janitor::clean_names() |>
+  mutate(sex = recode(sex, `1` = "male", `2` = "female")) 
+
+litter_data = 
+  read_csv("./data/FAS_litters.csv") |>
+  janitor::clean_names() |>
+  separate(group, into = c("dose", "day_of_tx"), sep = 3)
+
+fas_data = left_join(pup_data, litter_data, by = "litter_number") 
+
+fas_data |> 
+  group_by(dose, day_of_tx) |> 
+  drop_na(dose) |> 
+  summarize(mean_pivot = mean(pd_pivot, na.rm = TRUE)) |> 
+  pivot_wider(
+    names_from = dose, 
+    values_from = mean_pivot) |> 
+  knitr::kable(digits = 3)
+```
+
+These results may suggest that pups in the control group are able to pivot earlier than pups in the low-dose group, but it is unclear if there are differences between the control and moderate-dose groups or if day of treatment is an important predictor. 
+
+</details>
+
+**_Note_**: In both of these examples, the data are structure such that repeated observations are made on the same study units. In the PULSE data, repeated observations are made on subjects over time; in the FAS data, pups are "repeated observations" within litters. The analyses here, and plots made previously, are _exploratory_ -- any more substantial claims would require appropriate statistical analysis for non-independent samples. 
+
+
+## Other materials
+
+* The preceding is based heavily on Jenny Bryan's [group_by](http://stat545.com/block010_dplyr-end-single-table.html#group_by-is-a-mighty-weapon) material
+* R for Data Science has sub-chapters on [grouped summaries](http://r4ds.had.co.nz/transform.html#grouped-summaries-with-summarise) and [exploratory data analysis](http://r4ds.had.co.nz/exploratory-data-analysis.html)
+* A more in-depth overview of window functions is [here](https://cran.r-project.org/web/packages/dplyr/vignettes/window-functions.html)
+
+The code that I produced working examples in lecture is [here](https://github.com/P8105/viz_and_eda).

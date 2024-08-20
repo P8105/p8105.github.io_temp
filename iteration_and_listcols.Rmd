@@ -1,0 +1,450 @@
+---
+title: "Iteration and List Columns"
+output:
+  html_document: 
+    toc: true
+    toc_float: true
+---
+
+We’ve noted that functions are helpful when you repeat code more than twice; we’ve also noted that a lot of statistical methods involve doing the same thing a large number of times. Putting those together motivates a careful approach to iteratation.
+
+Meanwhile, R's data structures, especially data frames, are surprisingly flexible. This is useful when the "observations" you want to store become more complex than single values; for example, each row many contain a few scalar observations as well a complete data set. In these cases, _list columns_ are an appropriate column type, and `map` functions provide a way to interact with those columns.
+
+This is the second module in the [Iteration](topic_iteration.html) topic.
+
+```{r, include = FALSE,message=FALSE,warning=FALSE}
+library(tidyverse)
+
+knitr::opts_chunk$set(
+	echo = TRUE,
+	warning = FALSE,
+  fig.width = 6,
+  fig.asp = .6,
+  out.width = "90%"
+)
+
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+
+scale_colour_discrete = scale_colour_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+```
+
+## Overview {.tabset .tabset-pills}
+
+### Learning Objectives
+
+There are stops along the way, but our goal is to use map functions and iterate over listcolumns in data frames.
+
+### Slide Deck
+
+<div class="vid_container">
+  <iframe 
+    src="https://speakerdeck.com/player/f0d309fcbf2c4d5d9d121eee4a6144ee" 
+    allowfullscreen 
+    frameborder="0"
+    class="video">
+  </iframe>
+</div>
+
+<div style="margin-bottom:5px"> <strong> <a href="https://speakerdeck.com/jeffgoldsmith/p8105-iteration-and-listcols" title="Iteration and List Columns" target="_blank">Iteration and List Columns</a> </strong> from <strong><a href="https://speakerdeck.com/jeffgoldsmith" target="_blank">Jeff Goldsmith</a></strong>. </div><br>
+
+***
+
+### Video Lecture
+
+<div class="vid_container">
+  <iframe 
+    src="https://www.youtube.com/embed/61PbKHQWh6A"
+    frameborder="0" allowfullscreen class="video">
+  </iframe>
+</div>
+
+***
+
+## Example
+
+I'll write code for today's content in a new R Markdown document called `iteration_and_listcols.Rmd` in the `iteration` repo / directory I started last time. The code chunk below loads the `tidyverse` and sets a seed for reproducibility.
+
+```{r}
+library(tidyverse)
+library(rvest)
+
+set.seed(1)
+```
+
+Things are gonna get a little weird...
+
+
+### Lists
+
+We need a brief digression about lists before we do anything. 
+
+In R, vectors are limited to a single data class -- all elements are characters, or all numeric, or all logical. Trying to join the following vectors will result in **coersion**, as would creating vectors of mixed types.
+
+```{r}
+vec_numeric = 5:8
+vec_char = c("My", "name", "is", "Jeff")
+vec_logical = c(TRUE, TRUE, TRUE, FALSE)
+```
+
+Lists provide a way to store anything you want. This flexibility is great, but is offset by a certain ... clunkiness. Lists contain indexed elements, and the indexed elements themselves be scalars, vectors, or other things entirely. 
+
+```{r}
+l = list(
+  vec_numeric = 5:8,
+  mat         = matrix(1:8, 2, 4),
+  vec_logical = c(TRUE, FALSE),
+  summary     = summary(rnorm(1000)))
+l
+```
+
+Lists can be accessed using names or indices, and the things in lists can be accessed in the way you would usually access an object of that type. 
+
+```{r}
+l$vec_numeric
+l[[1]]
+l[[1]][1:3]
+```
+
+Lists seem bizarre but are really useful. Right now, we'll use them to hold general inputs and outputs of iterative processes. Even more importantly, we'll see that data frames are actually a very specific kind of list -- one comprised of vectors of the same length -- which is why they can store variables of different types. 
+
+
+### `for` loops
+
+For this example, I'm going to start with the list defined below.
+
+```{r}
+list_norms = 
+  list(
+    a = rnorm(20, 3, 1),
+    b = rnorm(20, 0, 5),
+    c = rnorm(20, 10, .2),
+    d = rnorm(20, -3, 1)
+  )
+
+is.list(list_norms)
+```
+
+I'd like to apply my simple `mean_and_sd` function from [writing functions](writing_functions.html) to each element of this list For completeness, that function is below. 
+
+```{r}
+mean_and_sd = function(x) {
+  
+  if (!is.numeric(x)) {
+    stop("Argument x should be numeric")
+  } else if (length(x) == 1) {
+    stop("Cannot be computed for length 1 vectors")
+  }
+  
+  mean_x = mean(x)
+  sd_x = sd(x)
+
+  tibble(
+    mean = mean_x, 
+    sd = sd_x
+  )
+}
+```
+
+We can apply the `mean_and_sd` function to each element of `list_norms` using the lines below. 
+
+```{r}
+mean_and_sd(list_norms[[1]])
+mean_and_sd(list_norms[[2]])
+mean_and_sd(list_norms[[3]])
+mean_and_sd(list_norms[[4]])
+```
+
+But now we've broken our "don't repeat code more than twice" rule! Specifically, we've applied the same function / operation to the elements of a list sequentially. This is exactly the kind of code repetition for loops address
+
+Below, I define an output list with the same number of entries as my target dataframe; a sequence to iterate over; and a for loop body that applies the `mean_and_sd` function for each sequence element and saves the result.
+
+```{r}
+output = vector("list", length = 4)
+
+for (i in 1:4) {
+  output[[i]] = mean_and_sd(list_norms[[i]])
+}
+```
+
+This is already much cleaner than using four almost-identical lines of code, and will make life easier the larger our sequence gets. 
+
+In this example, I bypassed a common first step in writing loops because I already had the function I wanted to repeat. Frequently, however, I'll start with repeated code segements, then abstract the underlying process into a function, and then wrap things up in a for loop. 
+
+
+### `map`
+
+A criticism of `for` loops is that there's a lot of overhead -- you have to define your output vector / list, there's the `for` loop bookkeeping to do, etc -- that distracts from the purpose of the code. In this case, we want to apply `mean_and_sd` to each element of `list_norms`, but we have to scan inside the for loop to figure that out.
+
+The `map` functions in `purrr` try to make the purpose of your code clear. Compare the loop above to the line below.
+
+```{r}
+output = map(list_norms, mean_and_sd)
+```
+
+The first argument to `map` is the list (or vector, or data frame) we want to iterate over, and the second argument is the function we want to apply to each element. The line above will produce the same output as the previous loop, but is clearer and easier to understand (once you're used to `map` ...). 
+
+This code (using `map`) is why we pointed out in [writing functions](writing_functions.html) that functions can be passed as arguments to other functions. The second argument in `map(list_norms, mean_and_sd)` is a function we just wrote. To see how powerful this can be, suppose we wanted to apply a different function, say `median`, to each column of `list_norms`. The chunk below includes both the loop and the `map` approach.
+
+```{r}
+output = vector("list", length = 4)
+
+for (i in 1:4) {
+  output[[i]] = median(list_norms[[i]])
+}
+
+output = map(list_norms, median)
+```
+
+Again, both options produce the same `output`, but the `map` places the focus squarely on the function you want to apply by removing much of the bookkeeping. 
+
+### `map` variants
+
+There are some useful variants to the basic `map` function if you know what kind of output you're going to produce. Below we use `map_dbl` because `median` outputs a single numeric value each time; the result is a vector instead of a list. Using the `.id` argument keeps the names of the elements in the input list. 
+
+```{r}
+output = map_dbl(list_norms, median, .id = "input")
+```
+
+If we tried to use `map_int` or `map_lgl`, we'd get an error because the output of `median` isn't a integer or a logical. This is a good way to help catch mistakes when they arise.
+
+Similarly, since we know `mean_and_sd` produces a data frame, we can use the output-specific `map_dfr`; this will produce a single data frame. 
+
+```{r}
+output = map_dfr(list_norms, mean_and_sd, .id = "input")
+```
+
+The `map_df` variants can be helpful when your map statement is part of a longer chain of piped commands. 
+
+Lastly, the variant `map2` (and `map2_dbl`, etc) is helpful when your function has two arguments. In these cases, I find it best to be specific about arguments using something like the following (more on anonymous functions shortly):
+
+```{r, eval = FALSE}
+output = map2(input_1, input_2, \(x,y) func(arg_1 = x, arg_2 = y))
+```
+
+
+### List columns and operations
+
+```{r}
+listcol_df = 
+  tibble(
+    name = c("a", "b", "c", "d"),
+    samp = list_norms
+  )
+```
+
+The `name` column is a character column -- if you pull this column from the `listcol_df` data frame, the result is a character vector. Similarly, the `samp` column is a *list column* -- on it's own, it's a list. 
+
+```{r}
+listcol_df |> pull(name)
+listcol_df |> pull(samp)
+```
+
+The list column really is a list, and will behave as such elsewhere in R. So, for example, you can examine the first list entry using usual list index procedures.
+
+```{r}
+listcol_df$samp[[1]]
+```
+
+You will need to be able to manipulate list columns, but usual operations for columns that might appear in `mutate` (like `mean` or `recode`) often don't apply to the entries in a list column. Instead, recognizing list columns as **_list_** columns motivates an approach for working with them.
+
+Let's apply `mean_and_sd` to the first element of our list column. 
+
+```{r}
+mean_and_sd(listcol_df$samp[[1]])
+```
+
+Great! Keeping in mind that `listcol_df$samp` is a **_list_**, we can apply `mean_and_sd` function to each element using `map`. 
+
+```{r}
+map(listcol_df$samp, mean_and_sd)
+```
+
+The `map` function returns a _list_; we could store the results as a new **_list column_** ... !!!
+
+We've been using `mutate` to define a new variable in a data frame, especially one that is a function of an existing variable. That's exactly what we will keep doing. 
+
+```{r}
+listcol_df = 
+  listcol_df |> 
+  mutate(summary = map(samp, mean_and_sd))
+
+listcol_df
+```
+
+### Revisiting NSDUH
+
+In [reading data from the web](reading_data_from_the_web.html) and elsewhere, we wrote code that allowed us to import data tables from a recent NSDUH survey; in [writing functions](writing_functions.html) we wrapped that code into a function called `nsduh_table` which, for a given `table_number`, produces a data frame containing state, age group, year, and percents. A similar function, which omits the argument `table_name`, is shown below.
+
+```{r}
+nsduh_table <- function(html, table_num) {
+  
+  table = 
+    html |> 
+    html_table() |> 
+    nth(table_num) |>
+    slice(-1) |> 
+    select(-contains("P Value")) |>
+    pivot_longer(
+      -State,
+      names_to = "age_year", 
+      values_to = "percent") |>
+    separate(age_year, into = c("age", "year"), sep = "\\(") |>
+    mutate(
+      year = str_replace(year, "\\)", ""),
+      percent = str_replace(percent, "[a-c]$", ""),
+      percent = as.numeric(percent)) |>
+    filter(!(State %in% c("Total U.S.", "Northeast", "Midwest", "South", "West")))
+  
+  table
+}
+```
+
+We can use this function to import three tables using the next code chunk, which downloads and extracts the page HTML and then iterates over table numbers. The results are combined using `bind_rows()`. Note that, because this version of our function doesn't include `table_name`, that information is lost for now. 
+
+```{r}
+nsduh_url = "http://samhda.s3-us-gov-west-1.amazonaws.com/s3fs-public/field-uploads/2k15StateFiles/NSDUHsaeShortTermCHG2015.htm"
+
+nsduh_html = read_html(nsduh_url)
+
+output = vector("list", 3)
+
+for (i in c(1, 4, 5)) {
+  output[[i]] = nsduh_table(nsduh_html, i)
+}
+
+nsduh_results = bind_rows(output)
+```
+
+We can also import these data using `map()`. Here I'm supplying the `html` argument after the name of the function that I'm iterating over. 
+
+```{r, eval = FALSE}
+nsduh_results = 
+  map(c(1, 4, 5), nsduh_table, html = nsduh_html) |> 
+  bind_rows()
+```
+
+As with previous examples, using a for loop is pretty okay but the `map` call is clearer.
+
+We can also do this using data frames and list columns.
+
+```{r, eval = FALSE}
+nsduh_results= 
+  tibble(
+    name = c("marj", "cocaine", "heroine"),
+    number = c(1, 4, 5)) |> 
+  mutate(table = map(number, \(num) nsduh_table(html = nsduh_html, num))) |> 
+  unnest(cols = "table")
+```
+
+### Operations on nested data
+
+Shifting gears a bit, let's revisit the weather data from [visualization](visualization.html) and elsewhere; these data consist of one year of observations from three monitoring stations. The code below pulls these data into R (using the `rnoaa` package, which interacts with the NOAA API).
+
+```{r weather_data_create, cache = TRUE}
+weather_df = 
+  rnoaa::meteo_pull_monitors(
+    c("USW00094728", "USW00022534", "USS0023B17S"),
+    var = c("PRCP", "TMIN", "TMAX"), 
+    date_min = "2021-01-01",
+    date_max = "2022-12-31") |>
+  mutate(
+    name = recode(
+      id, 
+      USW00094728 = "CentralPark_NY", 
+      USW00022534 = "Molokai_HI",
+      USS0023B17S = "Waterhole_WA"),
+    tmin = tmin / 10,
+    tmax = tmax / 10) |>
+  select(name, id, everything())
+```
+
+The station name and id are constant across the year's temperature and precipitation data. For that reason, we can reorganize these data into a new data frame with a single row for each station. Weather data will be separated into three station-specific data frames, each of which is the data "observation" for the respective station.
+
+```{r}
+weather_nest = 
+  nest(weather_df, data = date:tmin)
+
+weather_nest
+```
+
+This is a different way of producing a list column. The result is a lot like `listcol_df`, in that the columns in `weather_nest` are a vector and a list. 
+
+```{r}
+weather_nest |> pull(name)
+weather_nest |> pull(data)
+```
+
+Of course, if you can `nest` data you should be able to `unnest` it as well, and you can (with the caveat that you're unnesting a list column that contains a data frame).
+
+```{r}
+unnest(weather_nest, cols = data)
+```
+
+Nesting columns can help with data organization and comprehension by masking complexity you're less concerned about right now and clarifying the things you are concerned about. In the weather data, it can be helpful to think of stations as the basic unit of observation, and daily weather recordings as a more granular level of observation. Nesting can also simplify the use of analytic approaches across levels of a higher variable. 
+
+Suppose we want to fit the simple linear regression relating `tmax` to `tmin` for each station-specific data frame. First I'll write a quick function that takes a data frame as the sole argument to fit this model.
+
+```{r}
+weather_lm = function(df) {
+  lm(tmax ~ tmin, data = df)
+}
+```
+
+Let's make sure this works on a single data frame.
+
+```{r}
+weather_lm(weather_nest$data[[1]])
+```
+
+Since `weather$data` is a **_list_**, we can apply our `weather_lm` function to each data frame using `map`. 
+
+```{r}
+map(weather_nest$data, weather_lm)
+```
+
+As an aside, you can avoid the creation of a dedicated function using `map`'s syntax for "anonymous" (i.e. not named and saved) functions. This is helpful for really short operations -- here, rather than writing a separate (named) function that takes the argument `df` and returns a regression of `tmax` on `tmin`, I can use `\(df)` to indicate that same function. If you have a one-line function, this is a good option; otherwise creating a named function is probably better. 
+
+```{r}
+map(weather_nest$data, \(df) lm(tmax ~ tmin, data = df))
+```
+
+Let's use `mutate` to fit this model, and to store the result in the same dataframe.
+
+```{r}
+weather_nest = 
+  weather_nest |> 
+  mutate(models = map(data, weather_lm))
+
+weather_nest
+```
+
+This is great! We now have a data frame that has rows for each station; columns contain weather datasets and fitted models. This makes it very easy to keep track of models across stations, and to perform additional analyses. 
+
+This is, for sure, a fairly complex bit of code, but in just a few lines we're able to fit separate linear models to each of our stations. And, once you get used to list columns, `map`, and the rest of it, these lines of code are pretty clear and can be extended to larger datasets with more complex structures.
+
+
+
+
+
+## Other materials
+
+Iteration can be tricky -- the readings below will help as you work through this!
+
+* The chapter on [iteration](http://r4ds.had.co.nz/iteration.html) in R for Data Science has a useful treatment of iteration using loops and `map`
+* Jenny Bryan's [`purrr` tutorial](https://jennybc.github.io/purrr-tutorial/) has a lot of useful information and examples
+* R Programming for Data Science has information on [loops](https://bookdown.org/rdpeng/rprogdatascience/control-structures.html#for-loops) and [loop functions](https://bookdown.org/rdpeng/rprogdatascience/loop-functions.html); given Roger Peng's tendency towards base R he focuses on `lapply` and others instead of `map`
+* This [question and response](https://stackoverflow.com/questions/45101045/why-use-purrrmap-instead-of-lapply) on stack overflow explains why one might prefer `map` to `lapply`
+
+List columns take some getting used to; there are some materials to help with that.
+
+* R for Data Science has a chapter on [fitting many models](http://r4ds.had.co.nz/many-models.html)
+* Jenny Bryan's [purrr tutorial](https://jennybc.github.io/purrr-tutorial/) has useful list-column examples
+* The [R file](https://github.com/tidyverse/dplyr/blob/master/data-raw/starwars.R) used to create the `starwars` dataset (in the `tidyverse`) using the [Star Wars API](https://swapi.co) processes list output (from the API) using several `map` variants
+
+The code that I produced working examples in lecture is [here](https://github.com/p8105/iteration).

@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Writing R Packages II</title>
+
+<script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" />
+<script defer src="https://use.fontawesome.com/releases/v5.0.3/js/all.js"></script>
+<script defer src="https://use.fontawesome.com/releases/v5.0.0/js/v4-shims.js"></script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-151578452-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-151578452-1');
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">P8105</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="schedule.html">Schedule</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Topics
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="topic_what_is_data_science.html">What is Data Science?</a>
+    </li>
+    <li>
+      <a href="topic_building_blocks.html">Building Blocks</a>
+    </li>
+    <li>
+      <a href="topic_data_wrangling_i.html">Data Wrangling I</a>
+    </li>
+    <li>
+      <a href="topic_visualization_and_eda.html">Visualization and EDA</a>
+    </li>
+    <li>
+      <a href="topic_data_wrangling_ii.html">Data Wrangling II</a>
+    </li>
+    <li>
+      <a href="topic_interactivity.html">Interactivity</a>
+    </li>
+    <li>
+      <a href="topic_iteration.html">Iteration</a>
+    </li>
+    <li>
+      <a href="topic_linear_models.html">Linear Models</a>
+    </li>
+    <li>
+      <a href="topic_other_material.html">Other Materials</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Datasets
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="dataset_airbnb.html">Airbnb</a>
+    </li>
+    <li>
+      <a href="dataset_brfss.html">BRFSS</a>
+    </li>
+    <li>
+      <a href="dataset_fivethirtyeight.html">FiveThirtyEight</a>
+    </li>
+    <li>
+      <a href="dataset_instacart.html">Instacart</a>
+    </li>
+    <li>
+      <a href="dataset_mr_trash_wheel.html">Mr. Trash Wheel</a>
+    </li>
+    <li>
+      <a href="dataset_noaa.html">NOAA</a>
+    </li>
+    <li>
+      <a href="dataset_restaurant_inspections.html">NYC Restaurant Inspections</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="homework_and_projects.html">Homework and Projects</a>
+</li>
+<li>
+  <a href="course_communication.html">Communication</a>
+</li>
+<li>
+  <a href="https://github.com/P8105/p8105.github.io">
+    <span class="fa fa-github"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Writing R Packages II</h1>
+
+</div>
+
+
+<p>If you write more than two functions, you need a package – this will
+remind you what functions do and how they interact with each other, help
+you keep track of inputs and outputs, and, if you want to share you
+code, allow you to do so in a standard format. The <a
+href="writing_r_packages_i.html">first part</a> of this module covered
+getting to a complete package from scratch; this module covers some
+important but more advanced issues in R package development.</p>
+<p>This is the second of two lectures on writing R packages.</p>
+<div id="some-slides" class="section level2">
+<h2>Some slides</h2>
+<script async class="speakerdeck-embed" data-id="7c0c3b85cf824c209a4b691dda1b967b" data-ratio="1.77777777777778" src="//speakerdeck.com/assets/embed.js"></script>
+<div style="margin-bottom:5px">
+<strong>
+<a href="https://speakerdeck.com/jeffgoldsmith/p8105-writing-r-packages-ii" title="Writing R Packages II" target="_blank">Writing
+R Packages II</a> </strong> from
+<strong><a href="https://speakerdeck.com/jeffgoldsmith" target="_blank">Jeff
+Goldsmith</a></strong>.
+</div>
+<p><br></p>
+</div>
+<div id="example" class="section level2">
+<h2>Example</h2>
+<p>For today’s example, I’ll continue working on
+<code>example.package</code>, the R package we started in <a
+href="writing_r_packages_i.html">writing R packages I</a>.</p>
+<div id="library-path" class="section level3">
+<h3>Library path</h3>
+<p>You can find the path to your package library using
+<code>.libPath()</code> – opening this directory on your computer will
+show you what you’ve installed.</p>
+</div>
+<div id="search-path" class="section level3">
+<h3>Search path</h3>
+<p>Before jumping into new pacakge development stuff, we’re going to
+take a closer look at R’s search path. You can see your current search
+path at any time using <code>search()</code>.</p>
+<pre class="r"><code>search()</code></pre>
+<p>There’s not much here yet, since we haven’t loaded anything – mostly
+we have default packages and the global environment.</p>
+<p>When you call a function, R has to find it. We’ve often made the
+location of a function explicit using <code>package::function()</code>
+which tells R specifically where to look but doesn’t affect the search
+path.</p>
+<pre class="r"><code>iris = janitor::clean_names(iris)
+search()</code></pre>
+<p>The <code>iris</code> dataset is included in the
+<code>datasets</code> package, which is in the search path. We can also
+use the <code>clean_names()</code> function since we’ve been very clear
+about where R should find it. We didn’t do anything to the search path,
+though!</p>
+<p>If you don’t specify the package for a specific function, R will look
+for it in the global environment and then in attached packages – that
+is, in the search path. The <code>library()</code> function attaches a
+package to the search path, including it in the collection of packages R
+searches when trying to find a function. For example, to call
+<code>clean_names()</code> without specifying the package, we can use
+<code>library(janitor)</code> to attach the package to the search
+path.</p>
+<pre class="r"><code>library(janitor)
+search()
+
+iris = clean_names(iris)
+detach(&quot;package:janitor&quot;, unload = TRUE)</code></pre>
+<p>Why not just attach everything? In part, at least, to avoid naming
+conflicts. Both <code>MASS</code> and <code>dplyr</code> have functions
+called <code>select()</code>, for example, and they do really different
+things. If you load both packages, which version you get depends on the
+order in which they’re loaded.</p>
+<p>To use <code>tidyverse::select</code>, we load that package
+second.</p>
+<pre class="r"><code>library(MASS)
+library(dplyr)
+
+iris %&gt;% 
+  as_tibble() %&gt;% 
+  select(sepal_length)</code></pre>
+<p>Note the warning that <code>dplyr::select()</code> masks
+<code>MASS::select()</code> – these warnings are easy to overlook but
+are really important!</p>
+<p>I’ll detach both packages (and first detach <code>janitor</code>,
+since having it loaded prevents me from detaching <code>dplyr</code>),
+then reverse the order in which I attach them and try again.</p>
+<pre class="r"><code>detach(&quot;package:dplyr&quot;, unload = TRUE)
+detach(&quot;package:MASS&quot;, unload = TRUE)
+
+library(dplyr)
+library(MASS)
+
+iris %&gt;% 
+  as_tibble() %&gt;% 
+  select(sepal_length)
+
+iris %&gt;% 
+  as_tibble() %&gt;% 
+  dplyr::select(sepal_length)</code></pre>
+<p>The command that just uses <code>select</code> produces an error,
+because it’s using (implicitly) <code>MASS::select()</code>; the second
+is clear about using <code>dplyr::select</code> and works as
+desired.</p>
+<p>As you work more in R you will run into search path issues (if you
+haven’t already), and understanding how attaching packages affects the
+search path will help you resolve this. This discussion also illustrates
+why it’s best to only attach the packages you need, and to use
+<code>package::function()</code> notation in cases where a package isn’t
+used repeatedly.</p>
+</div>
+<div id="namespace" class="section level3">
+<h3><code>NAMESPACE</code></h3>
+<p>The search path discussion is particularly relevant in the context of
+writing your own packages. In particular, the <code>NAMESPACE</code>
+file determines search path associated with your package. The
+<code>NAMESPACE</code> file for <code>example.package</code> is shown
+below.</p>
+<p>We used <code>@import dplyr</code> in our roxygen comments, which
+adds the statements <code>import(dplyr)</code> and
+<code>import(purrr)</code> to the <code>NAMESPACE</code>. As a result,
+code in our package will include <code>dplyr</code> and
+<code>purrr</code> when looking for functions.</p>
+<p>We also used <code>@importFrom tibble tibble</code> and
+<code>@importFrom magrittr "%&gt;%"</code> in our roxygen comments,
+which adds the statements <code>importFrom(tibble,tibble)</code> and
+<code>importFrom(magrittr,"%&gt;%")</code> to the
+<code>NAMESPACE</code>. As a result, code in our package will include
+<em>these specific functions</em> when executing code.</p>
+<p>There’s an important but confusing distinction between import
+<strong><em>directives</em></strong> in the <code>NAMESPACE</code> and
+the <code>Import</code> <strong><em>field</em></strong> in the
+<code>DESCRIPTION</code> (shown below). Although they share a name,
+these mean different things: roughly, in the <code>NAMESPACE</code>
+we’re listing packages that need to be included in the search path,
+while in the <code>DESCRIPTION</code> we’re listing packages that have
+to be installed for our package to work.</p>
+<p>To illustrate this distinction, recall that we used
+<code>tibble::tibble()</code> in our functions rather than including
+<code>@import tibble</code> in the roxygen comments. This makes it very
+clear where <code>tidy()</code> comes from, and means we don’t need
+<code>broom</code> in the search path; thus, these don’t appear in the
+<code>NAMESPACE</code>. We do still need the packages though, so they’re
+listed as a dependency in the <code>DESCRIPTION</code>.</p>
+<p>The <code>NAMESPACE</code> and roxygen comments also include exports,
+which identify functions that are visible when your package is attached.
+In bigger, more complex packages you may have functions you don’t want
+users to have access to; for those, remove <code>@export</code> from the
+roxygen comments.</p>
+</div>
+<div id="checks" class="section level3">
+<h3>Checks</h3>
+<p>Checking yor package for common issues – things like the presence of
+all needed files, the completeness of documentation, whether the code
+and examples run – is critical to making sure your package is complete
+and self-contained. You can perform these checks using
+<code>devtools::check()</code> or a button in RStudio. This is going to
+be frustrating, at least until you start to recognize that this is a
+helpful process. The checks really get into the corners of your package
+and find things you wouldn’t expect. The messages take some practice to
+understand. Correcting issues will force you to complete all your
+documentation.</p>
+<p>You don’t have to do this for packages written for yourself, although
+I do recommend it. You <em>do</em> have to do this for packages that go
+on CRAN, which is part of the reason that CRAN packages are a bit more
+trustworthy. Many packages on GitHub has passed checks; look for a happy
+<code>build | passing</code> sticker at the top of the README!</p>
+<p>Below is the (redacted) output of checking
+<code>example.package</code>.</p>
+<p>We did pretty well! There are some warnings about our documentation
+(incomplete <code>@param</code> and <code>@example</code> roxygen
+comments), a note about being clear about where some functions come
+from, and an error in one of our examples (which needs
+<code>%&gt;%</code> to run, but doesn’t load the necessary package).
+This gives a sense of the kind of issues that checking your package will
+turn up.</p>
+</div>
+<div id="tests" class="section level3">
+<h3>Tests</h3>
+<p><em>Checking</em> a package is a process that doesn’t vary from one
+package to the next because this process isn’t concerned with whether a
+function or package works as intended – the built-in checks are for
+things like documentation, namespace, installation, etc.</p>
+<p><em>Testing</em>, in contrast, is package specific because it is
+concerned with whether functions work as intended. This is important for
+at least two reasons:</p>
+<ul>
+<li>If your code depends on other packages and those change, you should
+find out and fix the issue</li>
+<li>As you add or edit functions, you should be sure that changes don’t
+break existing code in unexpected ways</li>
+</ul>
+<p>Informal testing is common during development – you run your
+functions on code snippets and make sure they give the results you
+expect. Formal testing makes this process more rigorous and saving the
+informal tests and running them each time you check your package. Like
+other best practices for development, this takes some time to get used
+to but guards against future trouble and improves your software.</p>
+<p>The <code>testthat</code> package does as much as possible to
+facilitate formal testing. To set this up for your package, run
+<code>usethis::use_testthat()</code>. Doing so will create a directory
+<code>/tests/testthat/</code> to hold tests and a file
+<code>/tests/testthat.R</code> to run tests. It’s your job to write the
+tests!</p>
+<p>The file <code>tests/testthat/test_sim_bern.R</code> is shown below
+(note: test files have to start with <code>test</code> and be in the
+right directory):</p>
+<p>These are pretty contrived tests, but give you an idea of how testing
+in general might work. Use <code>devtools::test()</code> to run your
+tests (these will also run when you check your package); output for my
+tests is shown below.</p>
+<p>This output contains <code>.</code> for each passed test in each
+context, and will indicate when a test is failed.</p>
+</div>
+<div id="vignettes" class="section level3">
+<h3>Vignettes</h3>
+<p>Help pages for functions are great, but assume users know roughly how
+a package works and only need a reminder about some specifics. To give a
+more general introduction to a package – what functions do, how they
+interact, and why you wrote it – you need the longer-form documentation
+found in package vignettes. Fortunately, these can be written using R
+Markdown</p>
+<p>To build the infrastructure needed to include a vignette in
+<code>example.package</code>, I’ll run the lines below.</p>
+<pre class="r"><code>usethis::use_vignette(&quot;sim_vignette&quot;)</code></pre>
+<p>This makes several changes in the package directory.</p>
+<ul>
+<li>Adds <code>knitr</code> and <code>rmarkdown</code> to
+<code>Suggests</code> in <code>DESCRIPTION</code>; these packages aren’t
+dependencies, but will be needed for someone else to knit your
+vignette.</li>
+<li>Creates a new file, <code>/vignettes/sim_vignette.Rmd</code>, with
+template vignette content.</li>
+<li>Adds <code>/inst/doc</code> to <code>.gitignore</code>.</li>
+</ul>
+<p>You’ll need to edit <code>/vignettes/sim_vignette.Rmd</code>. There
+are some things you have to do:</p>
+<ul>
+<li>Replace both instances of “Vignette Title” in the YAML with an
+actual title, using the same title in both places.</li>
+<li>List yourself as author or remove that line.</li>
+</ul>
+<p>Then edit the rest of the R Markdown document to give an overview of
+the package. This often consists of organizing some of the code you’ve
+used elsewhere – either in the examples or in the code you have that
+uses the package.</p>
+<p>The vignette I wrote for <code>example.package</code> can be
+downloaded <a href="resources/sim_vignette.Rmd">here</a>.</p>
+<p>Disseminating your vignette gets complicated, unfortunately – the
+knitted RMD is in <code>/inst/doc/</code>, which git is ignoring.
+<em>Building</em> a package (going from source to bundle) using
+<code>devtools::build()</code> will compile the vignette and include it
+in the bundle, so packages installed from a bundle or binary will have
+vignettes available. That means you can check out vignettes for packages
+you’ve installed from CRAN; see what’s available with
+<code>browseVignettes()</code>, or go straight to a vignette using
+<code>vignette("dplyr")</code>.</p>
+<p>Installing from github first builds the package bundle and then
+installs that; by default, this won’t knit vignettes in case they are
+time consuming or complex. You can force the inclusion of a vignette
+using <code>devtools::install_github(build_vignettes = TRUE)</code>.</p>
+<p>For packages I put on GH, I usually include a code chunk like the one
+below in my README to let users know how to include and access the
+vignette.</p>
+<pre class="r"><code>devtools::install_github(&quot;p8105/example.package&quot;, 
+                         build_vignettes = TRUE)
+# vignette(&quot;sim_vignette&quot;)</code></pre>
+</div>
+</div>
+<div id="other-materials" class="section level2">
+<h2>Other materials</h2>
+<p>Many of these topics are touched on in the other materials for <a
+href="writing_r_packages_i.html">writing R packages I</a>; below we
+reiterate some of those and add some new resources.</p>
+<ul>
+<li>Jenny Bryan’s longer <a
+href="http://stat545.com/packages06_foofactors-package.html">illustrated
+example</a> covers many of these topics in a reasonable level of
+detail</li>
+<li>The R Packages book is a more complete reference. There are chapters
+on
+<ul>
+<li><a href="http://r-pkgs.had.co.nz/package.html#package">What is a
+package?</a></li>
+<li><a href="http://r-pkgs.had.co.nz/namespace.html">NAMESPACE</a></li>
+<li><a href="http://r-pkgs.had.co.nz/check.html">Checks</a></li>
+<li><a href="http://r-pkgs.had.co.nz/tests.html">Tests</a></li>
+<li><a href="http://r-pkgs.had.co.nz/vignettes.html">Vignettes</a></li>
+<li><a href="http://r-pkgs.had.co.nz/data.html">Data</a></li>
+<li><a href="http://r-pkgs.had.co.nz/src.html">Compiled code</a></li>
+</ul></li>
+<li>The <a
+href="https://www.tidyverse.org/articles/2017/11/usethis-1.0.0/"><code>usethis</code>
+package</a> should automate a lot of the package writing process,
+although I haven’t used it myself</li>
+<li>The official guide to <a
+href="https://cran.r-project.org/doc/manuals/r-release/R-exts.html">Writing
+R Extensions</a> also exists, although I’m not sure I exactly
+<em>recommend</em> it …</li>
+</ul>
+<p>The code that I produced working examples in lecture is <a
+href="https://github.com/p8105/example.package">here</a>.</p>
+</div>
+
+<br><br>
+<footer>
+  <img src="images/p8105_stickers.png" alt="stickers" style="width:30%">
+  <br>
+  <p class="copyright text-muted" align="center">Copyright &copy; 2019 Jeff Goldsmith</p>
+</footer>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

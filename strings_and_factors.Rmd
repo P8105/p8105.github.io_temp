@@ -1,0 +1,445 @@
+---
+title: "Strings and factors"
+output:
+  html_document: 
+    toc: true
+    toc_float: true
+---
+
+Most of the tools we examined in [Data Wrangling I](topic_data_wrangling_i.html) were general purpose things -- what tidy data is, using `dplyr` and `tidyr` for manipulation of data tables. Two variable types, strings and factors, present enough challenges to examine in some detail. Now might also be a good time to read up on the [history](https://simplystatistics.org/2015/07/24/stringsasfactors-an-unauthorized-biography/) of strings and factors in R!
+
+This is the second module in the [Data Wrangling II](topic_data_wrangling_ii.html) topic.
+
+```{r, include = FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+
+knitr::opts_chunk$set(
+	echo = TRUE,
+	warning = FALSE,
+  fig.width = 6,
+  fig.asp = .6,
+  out.width = "90%"
+)
+
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+
+scale_colour_discrete = scale_colour_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+```
+
+## Overview {.tabset .tabset-pills}
+
+### Learning Objectives
+
+Edit/manipulate strings and take control of factors.
+
+### Slide Deck
+
+<div class="vid_container">
+  <iframe 
+    src="https://speakerdeck.com/player/bfb454627b71408889958f0893413097" 
+    allowfullscreen 
+    frameborder="0"
+    class="video">
+  </iframe>
+</div>
+
+<div style="margin-bottom:5px"> <strong> <a href="https://speakerdeck.com/jeffgoldsmith/p8105-strings-and-factors" title="Strings and Factors" target="_blank">Strings and Factors</a> </strong> from <strong><a href="https://speakerdeck.com/jeffgoldsmith" target="_blank">Jeff Goldsmith</a></strong>. </div><br>
+
+***
+
+### Video Lecture
+
+<div class="vid_container">
+  <iframe 
+    src="https://www.youtube.com/embed/xFwrGu8FPRc"
+    frameborder="0" allowfullscreen class="video">
+  </iframe>
+</div>
+
+***
+
+## Example
+
+I'll write code for today's content in a new R Markdown document called `strings_and_factors.Rmd`, and put it in the same directory / GitHub repo as `reading_data.Rmd`. Since we'll revisit some scraped examples, I'll load `rvest` now; we'll also use some datasets in `p8105.datasets` so I'll load that as well. And finally, we'll use some of [these examples](./resources/data_import_examples.zip), so I'll make sure I have them in a `data` subdirectory.. 
+
+```{r}
+library(rvest)
+library(p8105.datasets)
+```
+
+### Strings and regex
+
+Lots of the examples below are drawn from materials by [Jeff Leek](https://docs.google.com/presentation/d/1rLNJVyWuIEQqkqTWUlCY4G-l7H610wM1IRz3CL67Gec).
+
+The most frequent operation involving strings is to search for an exact match. You can use `str_detect` to find cases where the match exists (often useful in conjunction with `filter`), and you can use `str_replace` to replace an instance of a match with something else (often useful in conjunction with `mutate`). In the following examples we'll mostly focus on vectors to avoid the complication of data frames, but we'll see those shortly. 
+
+```{r}
+string_vec = c("my", "name", "is", "jeff")
+
+str_detect(string_vec, "jeff")
+str_replace(string_vec, "jeff", "Jeff")
+```
+
+For exact matches, you can designate matches at the beginning or end of a line.
+
+```{r}
+string_vec = c(
+  "i think we all rule for participating",
+  "i think i have been caught",
+  "i think this will be quite fun actually",
+  "it will be fun, i think"
+  )
+
+str_detect(string_vec, "^i think")
+str_detect(string_vec, "i think$")
+```
+
+You can designate a list of characters that will count as a match.
+
+```{r}
+string_vec = c(
+  "Time for a Pumpkin Spice Latte!",
+  "went to the #pumpkinpatch last weekend",
+  "Pumpkin Pie is obviously the best pie",
+  "SMASHING PUMPKINS -- LIVE IN CONCERT!!"
+  )
+
+str_detect(string_vec,"[Pp]umpkin")
+```
+
+You don't have to list these; instead, you can provide a range of letters or numbers that count as a match.
+
+```{r}
+string_vec = c(
+  '7th inning stretch',
+  '1st half soon to begin. Texas won the toss.',
+  'she is 5 feet 4 inches tall',
+  '3AM - cant sleep :('
+  )
+
+str_detect(string_vec, "^[0-9][a-zA-Z]")
+```
+
+The character `.` matches anything.
+
+```{r}
+string_vec = c(
+  'Its 7:11 in the evening',
+  'want to go to 7-11?',
+  'my flight is AA711',
+  'NetBios: scanning ip 203.167.114.66'
+  )
+
+str_detect(string_vec, "7.11")
+```
+
+Some characters are "special". These include `[` and `]`, `(` and `)`, and `.`. If you want to search for these, you have to indicate they're special using `\`. Unfortunately, `\` is also special, so things get weird.
+
+```{r}
+string_vec = c(
+  'The CI is [2, 5]',
+  ':-]',
+  ':-[',
+  'I found the answer on pages [6-7]'
+  )
+
+str_detect(string_vec, "\\[")
+```
+
+There are a lot of other regular expression resources; we're really only scratching the surface. The stuff we have already will be useful and it's probably not worth going down the regex rabbit hole. That said, it's helpful to know what other functions exist in `stringr` -- you should at least know they exist even if you don't know exactly how they work right now! 
+
+### Thoughts on factors
+
+Factors are maybe the least intuitive of `R`'s data types. They are very useful, but they also do things you don't expect; this is especially bad when you have factors but think you have characters -- which happens more than you'd expect, because R uses factors a lot ([mostly for historical reasons](https://simplystatistics.org/2015/07/24/stringsasfactors-an-unauthorized-biography/)). Folks get pretty [riled](https://twitter.com/JennyBryan/status/630052228624068609/photo/1) [up](https://cran.r-project.org/web/packages/hellno/hellno.pdf) about factors.
+
+Factors are the way to store categorical variables in R. They can take on specific levels (e.g. male and female) which are usually presented as characters but are, in fact, stored by R as integers. These integer values are used by functions throughout R -- in making plots, in organizing tables, in determining the "reference" category -- but most of the time are hidden by easier-to-read character string labels. This close relationship to strings, when in fact there is a lot of added structure, is why factors can be so confusing.
+
+This is the kind of thing that can get you in trouble. 
+
+```{r}
+vec_sex = factor(c("male", "male", "female", "female"))
+vec_sex
+as.numeric(vec_sex)
+
+vec_sex = fct_relevel(vec_sex, "male")
+vec_sex
+as.numeric(vec_sex)
+```
+
+The previous code also illustrates [_coersion_](http://r4ds.had.co.nz/vectors.html#coercion): forcing a variable from one type (e.g. factor) to another (e.g. numeric). Understanding how R coerces variables is important, because it sometimes happens unintentionally and can break your code or impact your analyses. 
+
+For this reason, it's important to be deliberate factors, particularly by using functions in [`forcats`](https://forcats.tidyverse.org).
+
+
+
+### NSDUH
+
+We'll revisit the table scraped from the National Survey on Drug Use and Health data on [this page](http://samhda.s3-us-gov-west-1.amazonaws.com/s3fs-public/field-uploads/2k15StateFiles/NSDUHsaeShortTermCHG2015.htm). In [reading data from the web](reading_data_from_the_web.html), we loaded this data using the code below, but noted it wasn't tidy. 
+
+```{r}
+nsduh_url = "http://samhda.s3-us-gov-west-1.amazonaws.com/s3fs-public/field-uploads/2k15StateFiles/NSDUHsaeShortTermCHG2015.htm"
+
+table_marj = 
+  read_html(nsduh_url) |> 
+  html_table() |> 
+  first() |>
+  slice(-1)
+```
+
+There are a few steps we need to implement to tidy these data. For now I'm not interested in the p-values (I'd rather just see the data); we also have age groups and year ranges in column titles, both of which are, in fact, variables. Lastly, the table includes letters as superscripts next to table entries; if we only want the percents we'll need to strip these out. 
+
+```{r}
+data_marj = 
+  table_marj |>
+  select(-contains("P Value")) |>
+  pivot_longer(
+    -State,
+    names_to = "age_year", 
+    values_to = "percent") |>
+  separate(age_year, into = c("age", "year"), sep = "\\(") |>
+  mutate(
+    year = str_replace(year, "\\)", ""),
+    percent = str_replace(percent, "[a-c]$", ""),
+    percent = as.numeric(percent)) |>
+  filter(!(State %in% c("Total U.S.", "Northeast", "Midwest", "South", "West")))
+```
+
+We used `stringr` and regular expressions a couple of times above:
+
+* in `separate`, we split age and year at the open parentheses using `"\\("`
+* we stripped out the close parenthesis in `mutate`
+* to remove character superscripts, we replaced any character using `"[a-c]$"`
+
+Let's quickly visualize these data for the 12-17 age group; to make the plot readable, we'll treat `State` as a factor are reorder according to the median `percent` value. 
+
+```{r}
+data_marj |>
+  filter(age == "12-17") |> 
+  mutate(State = fct_reorder(State, percent)) |> 
+  ggplot(aes(x = State, y = percent, color = year)) + 
+    geom_point() + 
+    theme(axis.text.x = element_text(angle = 90, hjust = 1))
+```
+
+### Restaurant inspections
+
+As a kind of involved example of strings and factors, we'll take a look at the [NYC Restuarant Inspections](dataset_restaurant_inspections.html) data. Although we won't talk about this in detail now, it's worth mentioning that these data were collected using the NYC Open Data API; code is available with the data description.
+
+First we'll import the data and take a look.
+
+```{r}
+data("rest_inspec")
+
+rest_inspec |> 
+  group_by(boro, grade) |> 
+  summarize(n = n()) |> 
+  pivot_wider(names_from = grade, values_from = n)
+```
+
+To simplify things, I'll remove inspections with scores other than `A`, `B`, or `C`, and also remove the restaurants with missing boro information. I'll also clean up boro names a bit.
+
+```{r}
+rest_inspec =
+  rest_inspec |>
+  filter(grade %in% c("A", "B", "C"), boro != "Missing") |> 
+  mutate(boro = str_to_title(boro))
+```
+
+Let's focus only on pizza places for now, and re-examine grades by borough.
+
+```{r}
+rest_inspec |> 
+  filter(str_detect(dba, "Pizza")) |> 
+  group_by(boro, grade) |> 
+  summarize(n = n()) |> 
+  pivot_wider(names_from = grade, values_from = n)
+```
+
+That doesn't look right -- for sure there are more pizza place ratings than that! The problem is that the match in `str_detect` is case-sensitive until we tell it not to be:
+
+```{r}
+rest_inspec |> 
+  filter(str_detect(dba, "[Pp][Ii][Zz][Zz][Aa]")) |> 
+  group_by(boro, grade) |> 
+  summarize(n = n()) |> 
+  pivot_wider(names_from = grade, values_from = n)
+```
+
+The table is okay but I'd like to visualize this. 
+
+```{r}
+rest_inspec |> 
+  filter(str_detect(dba, "[Pp][Ii][Zz][Zz][Aa]")) |>
+  ggplot(aes(x = boro, fill = grade)) + 
+  geom_bar() 
+```
+
+Might help to have things in a different order -- maybe number of pizza places? Fortunately this can be done using `fct_infreq`. 
+
+```{r}
+rest_inspec |> 
+  filter(str_detect(dba, "[Pp][Ii][Zz][Zz][Aa]")) |>
+  mutate(boro = fct_infreq(boro)) |>
+  ggplot(aes(x = boro, fill = grade)) + 
+  geom_bar() 
+```
+
+Suppose I want to rename a borough. I could try using `str_replace`.
+
+```{r}
+rest_inspec |> 
+  filter(str_detect(dba, "[Pp][Ii][Zz][Zz][Aa]")) |>
+  mutate(
+    boro = fct_infreq(boro),
+    boro = str_replace(boro, "Manhattan", "The City")) |>
+  ggplot(aes(x = boro, fill = grade)) + 
+  geom_bar() 
+```
+
+This renamed the borough, but then converted the result back to a string -- which, when plotted, was implicitly made a factor and ordered alphabetically. I could switch the order in which I rename and encode the factor order I want, but that might not always work. 
+
+If I tried base R (maybe because I found some code online), I might try to do this using `replace`.
+
+```{r, warning = TRUE}
+rest_inspec |> 
+  filter(str_detect(dba, "[Pp][Ii][Zz][Zz][Aa]")) |>
+  mutate(
+    boro = fct_infreq(boro),
+    boro = replace(boro, which(boro == "Manhattan"), "The City")) |>
+  ggplot(aes(x = boro, fill = grade)) + 
+  geom_bar()
+```
+
+That didn't work at all! Factors have very specific values, trying to use a value that is not an existing factor level won't work. 
+
+Fortunately there is a dedicated function for renaming factor levels:
+
+```{r}
+rest_inspec |> 
+  filter(str_detect(dba, regex("pizza", ignore_case = TRUE))) |>
+  mutate(
+    boro = fct_infreq(boro),
+    boro = fct_recode(boro, "The City" = "Manhattan")) |>
+  ggplot(aes(x = boro, fill = grade)) + 
+  geom_bar()
+```
+
+Success!
+
+
+### Weather data
+
+We saw factors in in [Viz Pt 2](visualization_pt2.html). In that case, we were interested in reordering a factor variable in order to produce clearer plots -- `ggplot` uses factor levels to determine the order in which categories appear. Let's revisit those examples now. 
+
+Our first step is to load the data we used.
+
+```{r weather_data_create, cache = TRUE}
+weather_df = 
+  rnoaa::meteo_pull_monitors(
+    c("USW00094728", "USW00022534", "USS0023B17S"),
+    var = c("PRCP", "TMIN", "TMAX"), 
+    date_min = "2021-01-01",
+    date_max = "2023-12-31") |>
+  mutate(
+    name = recode(
+      id, 
+      USW00094728 = "CentralPark_NY", 
+      USW00022534 = "Molokai_HI",
+      USS0023B17S = "Waterhole_WA"),
+    tmin = tmin / 10,
+    tmax = tmax / 10) |>
+  select(name, id, everything())
+
+weather_df
+```
+
+Our first example reordered `name` "by hand" using `fct_relevel`:
+
+```{r}
+weather_df |>
+  mutate(name = forcats::fct_relevel(name, c("Molokai_HI", "CentralPark_NY", "Waterhole_WA"))) |> 
+  ggplot(aes(x = name, y = tmax)) + 
+  geom_violin(aes(fill = name), color = "blue", alpha = .5) + 
+  theme(legend.position = "bottom")
+```
+
+We could instead reorder `name` according to `tmax` values in each name using `fct_reorder`:
+
+```{r}
+weather_df |>
+  mutate(name = forcats::fct_reorder(name, tmax)) |> 
+  ggplot(aes(x = name, y = tmax)) + 
+  geom_violin(aes(fill = name), color = "blue", alpha = .5) + 
+  theme(legend.position = "bottom")
+```
+
+Although you may not have seen linear regression previously, the ordering of factor variables play an important in this case as well. Specifically, the ordering determines the "reference" category, and is something that can be adjusted as needed. 
+
+```{r}
+weather_df |>
+  lm(tmax ~ name, data = _)
+
+weather_df |>
+  mutate(name = forcats::fct_relevel(name, c("Molokai_HI", "CentralPark_NY", "Waterhole_WA"))) |> 
+  lm(tmax ~ name, data = _)
+```
+
+In this example, we're also using a feature of `|>` that allows us to specify where the tibble goes: `_` is a placeholder for the result of the preceding call. 
+
+### PULSE data
+
+Let's revisit a [dataset](./data/public_pulse_data.sas7bdat) we've seen a few times now. In [tidy data](tidy_data.html) we spent some time tidying the PULSE dataset. As part of that we used tools available to us at the time, but now we have some better tools. 
+
+The code below updates the data processing pipeline for the PULSE data using `stringr` and `forcats`. The result is the same, and the differences are pretty small, but this is a bit cleaner. 
+
+```{r}
+pulse_data = 
+  haven::read_sas("./data/public_pulse_data.sas7bdat") |>
+  janitor::clean_names() |>
+  pivot_longer(
+    bdi_score_bl:bdi_score_12m,
+    names_to = "visit", 
+    names_prefix = "bdi_score_",
+    values_to = "bdi") |>
+  select(id, visit, everything()) |>
+  mutate(
+    visit = str_replace(visit, "bl", "00m"),
+    visit = factor(visit)) |>
+  arrange(id, visit)
+
+print(pulse_data, n = 12)
+```
+
+
+### Airbnb
+
+We could also use factors in an exploratory analysis of the [Airbnb](dataset_airbnb.html) data, for example when looking at the distribution of prices in various neighborhoods. Ordering these according to the median price makes for clearer plots than ordering neighborhoods alphabetically. 
+
+```{r}
+data("nyc_airbnb")
+
+nyc_airbnb |>
+  filter(neighbourhood_group == "Manhattan") |> 
+  mutate(
+    neighbourhood = fct_reorder(neighbourhood, price)) |> 
+  ggplot(aes(x = neighbourhood, y = price)) +
+  geom_boxplot() +
+  coord_flip() + 
+  ylim(0, 1000)
+```
+
+
+## Other materials
+
+* R for Data Science has chapters on both [strings / regex](http://r4ds.had.co.nz/strings.html) and [factors](http://r4ds.had.co.nz/factors.html)
+* There are useful materials by Jenny Bryan on [strings / regex](http://stat545.com/block022_regular-expression.html) and [factors](http://stat545.com/block029_factors.html) as well
+* Dealing with text entries can be a [real challenge](https://www.youtube.com/watch?v=15nNY7uofNw)
+* Cheatsheet for [stringr](https://github.com/rstudio/cheatsheets/blob/main/strings.pdf)
+
+The code that I produced working examples in lecture is [here](https://github.com/P8105/data_wrangling_ii).

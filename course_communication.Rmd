@@ -1,0 +1,32 @@
+---
+title: "Course Communication"
+output:
+  html_document: 
+    toc: true
+    toc_float: true
+---
+
+### Discussion board
+
+The course's discussion board is hosted on CourseWorks. The discussion board for each module should be used to ask questions about course content -- how code works, why it might not, and possible solutions. The teaching team will supervise the discussion board and respond regularly, but students are encouraged to be active in both asking and answering questions throughout each module.
+
+Some guidance on how best to ask questions on a discussion board can be found [here](https://stackoverflow.com/help/how-to-ask) and [here](https://jvns.ca/blog/good-questions/).
+
+
+### Slack
+
+We will use Slack for communication during lecture sessions. Each topic will have a slack channel (i.e. a discussion thread organized around a topic), which will be monitored during class. This is intended to provide real-time answers to questions in class, and will be used to convey solutions to in-class exercises. Slack channels are not intended to replace the discussion board on CourseWorks for more involved questions about content. 
+
+Sign up for the course Slack workspace [here](https://join.slack.com/t/p8105datascie-yda1420/shared_invite/zt-229wtukt2-YdPBm3eVRaBLceJhagbjAQ). 
+
+
+### Office hours
+
+In addition to the resources above, virtual office hours will be held every day; office hour times and locations are available on the syllabus and Google Calendar (on the main course website).
+
+
+### Email
+
+Email addresses (UNIs) are provided for the instructor and lead TAs, and we will try to answer emails promptly. This channel of communication is intended for issues that fall outside of those above, such as questions about course policies or grades. 
+
+

@@ -1,0 +1,13 @@
+---
+title: "Visualization and EDA"
+---
+
+Visualization and exploratory numerical analysis are the analytic components that immediately follow data wrangling. In addition to helping identify additional necessary wrangling steps, these are your first chance to explore the data in detail: you can explore patterns, identify trends, formulate hypotheses, and be surprised by preliminary findings. We'll discuss the elements of a good graphic before learning how to produce them, and then move on to tools for exploratory analyses using grouped data.  
+
+The topic is made up of the following components:
+
+* [Visualization with `ggplot2` Pt. 1](visualization_pt1.html)
+* [Visualization with `ggplot2` Pt. 2](visualization_pt2.html)
+* [Exploratory analysis using `group_by`](exploratory_analysis.html)
+
+The code that I produced working examples in lecture is [here](https://github.com/P8105/viz_and_eda).
