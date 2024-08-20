@@ -1,0 +1,7 @@
+---
+title: "About this website"
+---
+
+This is an [R Markdown website](http://rmarkdown.rstudio.com/rmarkdown_websites.html), created by [Jeff Goldsmith](http://jeffgoldsmith.com) for Data Science I at [Columbia Biostatistics](https://www.mailman.columbia.edu/become-student/departments/biostatistics).
+
+

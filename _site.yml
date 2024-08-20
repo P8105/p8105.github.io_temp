@@ -1,0 +1,58 @@
+name: "P8105"
+output_dir: '.'
+navbar:
+  title: P8105
+  right:
+  - text: Schedule
+    href: schedule.html
+  - text: Topics
+    menu:
+    - text: What is Data Science?
+      href: topic_what_is_data_science.html
+    - text: Building Blocks
+      href: topic_building_blocks.html
+    - text: Data Wrangling I
+      href: topic_data_wrangling_i.html
+    - text: Visualization and EDA
+      href: topic_visualization_and_eda.html
+    - text: Data Wrangling II
+      href: topic_data_wrangling_ii.html
+    - text: Interactivity
+      href: topic_interactivity.html
+    - text: Iteration
+      href: topic_iteration.html
+    - text: Linear Models
+      href: topic_linear_models.html
+    - text: Other Materials
+      href: topic_other_material.html
+  - text: Datasets
+    menu:
+    - text: Airbnb
+      href: dataset_airbnb.html
+    - text: BRFSS
+      href: dataset_brfss.html
+    - text: FiveThirtyEight
+      href: dataset_fivethirtyeight.html
+    - text: Instacart
+      href: dataset_instacart.html
+    - text: Mr. Trash Wheel
+      href: dataset_mr_trash_wheel.html
+    - text: NOAA
+      href: dataset_noaa.html
+    - text: NYC Restaurant Inspections
+      href: dataset_restaurant_inspections.html
+  - text: Homework and Projects
+    href: homework_and_projects.html
+  - text: Communication
+    href: course_communication.html
+  - icon: fa-github
+    href: https://github.com/P8105/p8105.github.io
+output:
+  html_document:
+    theme: cosmo
+    include:
+      in_header: header.html
+      after_body: footer.html
+    css: styles.css
+    lib_dir: site_libs
+    self_contained: no
