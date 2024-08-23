@@ -1,0 +1,57 @@
+---
+title: "NYC Airbnb"
+author: "Jeff Goldsmith"
+date: "10/9/2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  fig.width = 6,
+  fig.asp = .6,
+  out.width = "90%"
+)
+```
+
+## Data import
+
+I'll load the tidyverse and the dataset. I'm also doing a bit of editing and renaming to make my life easier. 
+
+```{r}
+
+```
+
+## Understanding variables
+
+Next I'll do a bit of inspection to make sure I understand the data structure.
+
+```{r}
+
+```
+
+## Brainstorming questions
+
+### Does rating vary by neighborhood, room type, or both?
+
+
+### Do hosts with more listings have higher or lower ratings?
+
+
+### Where are rentals located?
+
+
+### Other questions
+
+There are several questions we didn't get to:
+
+* How is price related to other variables?
+* How are descriptions related to number of reviews?
+* Which rentals make the most money?
+* What's different about low-availability rooms?
+
+Of these, the question dealing with descriptions is one we're not in a position to handle yet -- that involves parsing character strings, which we'll get to shortly. The others we could at least explore using the tools we have at our disposal now.
+
+
+## Discussion
+
+Need a discussion.

@@ -1,0 +1,91 @@
+---
+title: "How do we measure differences?"
+runtime: shiny
+output: 
+  flexdashboard::flex_dashboard:
+    theme: cosmo
+    orientation: columns
+    vertical_layout: fill
+    source_code: embed
+---
+  
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(tidyverse)
+library(broom)
+```
+
+Column {.sidebar}
+-----------------------------------------------------------------------
+  
+How are sample size, effect size, false positive, and false negative rates related?
+  
+The power of a test ($P$, $1-\beta$) is the probability that a test will detect an effect, if an effect is really there. When your power is high, your false negative rate is low.
+
+The significance level of a test ($\alpha$) is the probability that a test will detect an effect, if an effect is really *not* there. When your significance level is low, your false positive rate is low.
+
+We would like to not be fooled too often by either false negatives or false positives, so we choose large enough sample sizes for the effect size we expect to see.
+
+#### Move the sliders to explore the relationships
+
+```{r}
+sliderInput("Power", "Power threshold", min = 1, max = 99, 
+            value = 80, post = "%")
+
+sliderInput("SigLevel", "Significance level", min = 1, max = 20, 
+            value = 5, post = "%")
+
+sliderInput("Baseline", "Baseline conversion rate", min = 1, max = 50, 
+            value = 10, post = "%")
+```
+
+The sample sizes here are per variation (A and B in an A/B test), not the test as a whole.
+
+
+Column 
+-----------------------------------------------------------------------
+  
+### Power calculation {data-height=800}
+  
+```{r}
+
+renderPlot({
+  seq(1000, 1e4, by = 1000) %>%
+    map_df(~ power.prop.test(p1 = input$Baseline / 100,
+                             p2 = seq(input$Baseline / 100, input$Baseline * 1.5 / 100, 
+                                      by=0.001), 
+                             n = .x, 
+                             power = NULL, 
+                             sig.level = input$SigLevel / 100) %>%
+             tidy()) %>%
+    mutate(effect = (p2 / p1 - 1)) %>%
+    ggplot(aes(effect, power, color = n, group = n)) + 
+    geom_hline(yintercept = input$Power / 100, linetype = 2, color = "gray50", alpha = 0.5, size = 1.5) +
+    geom_line(size = 1.5, alpha = 0.7) +
+    theme_minimal(base_size = 18) +
+    scale_y_continuous(labels = scales::percent_format(),
+                       limits = c(0, NA)) +
+    scale_x_continuous(labels = scales::percent_format()) +
+    scale_color_gradient(high = "#0077CC", low = "#B8E0C5",
+                         labels = scales::comma_format()) +
+    labs(x = "Effect size (relative % change in rate)", y = "Power", color = "Sample size") 
+})
+```
+
+### With those parameters, you can measure... {data-height=200}
+
+```{r}
+renderTable({
+  seq(1000, 1e4, by = 1000) %>%
+    map_df(~ power.prop.test(p1 = input$Baseline / 100,
+                             p2 = NULL, 
+                             n = .x, 
+                             power = input$Power / 100, 
+                             sig.level = input$SigLevel / 100) %>%
+             tidy()) %>%
+    mutate(effect = scales::percent(p2 / p1 - 1),
+           n = scales::comma(n)) %>% 
+    select(`A relative % change of` = effect, 
+           `With a sample size in each group of` = n)
+})
+```

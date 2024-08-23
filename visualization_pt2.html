@@ -13,7 +13,7 @@
 
 <title>Visualization with ggplot2</title>
 
-<script src="site_libs/header-attrs-2.24/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.28/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
@@ -484,16 +484,6 @@ I’m also going to take advantage of features in the
 <code>tidyverse</code> and <code>patchwork</code> packages, so I’ll load
 those next.</p>
 <pre class="r"><code>library(tidyverse)
-## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-## ✔ dplyr     1.1.3     ✔ readr     2.1.4
-## ✔ forcats   1.0.0     ✔ stringr   1.5.0
-## ✔ ggplot2   3.4.3     ✔ tibble    3.2.1
-## ✔ lubridate 1.9.2     ✔ tidyr     1.3.0
-## ✔ purrr     1.0.2     
-## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-## ✖ dplyr::filter() masks stats::filter()
-## ✖ dplyr::lag()    masks stats::lag()
-## ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors
 library(patchwork)</code></pre>
 <p>We’ll still work with NOAA weather data, which is loaded using the
 same code as in <a href="visualization_pt1.html">Visualization Pt
@@ -513,41 +503,34 @@ same code as in <a href="visualization_pt1.html">Visualization Pt
     tmin = tmin / 10,
     tmax = tmax / 10) |&gt;
   select(name, id, everything())
-## Registered S3 method overwritten by &#39;hoardr&#39;:
-##   method           from
-##   print.cache_info httr
-## using cached file: /Users/jeffgoldsmith/Library/Caches/org.R-project.R/R/rnoaa/noaa_ghcnd/USW00094728.dly
-## date created (size, mb): 2023-09-19 15:41:55.07359 (8.524)
-## file min/max dates: 1869-01-01 / 2023-09-30
-## using cached file: /Users/jeffgoldsmith/Library/Caches/org.R-project.R/R/rnoaa/noaa_ghcnd/USW00022534.dly
-## date created (size, mb): 2023-09-25 10:06:23.827176 (3.83)
-## file min/max dates: 1949-10-01 / 2023-09-30
-## using cached file: /Users/jeffgoldsmith/Library/Caches/org.R-project.R/R/rnoaa/noaa_ghcnd/USS0023B17S.dly
-## date created (size, mb): 2023-09-19 15:42:03.139582 (0.994)
-## file min/max dates: 1999-09-01 / 2023-09-30
+## using cached file: /Users/jeff/Library/Caches/org.R-project.R/R/rnoaa/noaa_ghcnd/USW00094728.dly
+## date created (size, mb): 2023-11-15 11:33:02.320095 (8.544)
+## file min/max dates: 1869-01-01 / 2023-11-30
+## using cached file: /Users/jeff/Library/Caches/org.R-project.R/R/rnoaa/noaa_ghcnd/USW00022534.dly
+## date created (size, mb): 2024-08-23 08:53:49.293889 (3.911)
+## file min/max dates: 1949-10-01 / 2024-08-31
+## using cached file: /Users/jeff/Library/Caches/org.R-project.R/R/rnoaa/noaa_ghcnd/USS0023B17S.dly
+## date created (size, mb): 2024-08-23 08:53:53.443882 (1.033)
+## file min/max dates: 1999-09-01 / 2024-08-31
 
 weather_df
-## # A tibble: 3,009 × 6
-##    name           id          date        prcp  tmax  tmin
-##    &lt;chr&gt;          &lt;chr&gt;       &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
-##  1 CentralPark_NY USW00094728 2021-01-01   157   4.4   0.6
-##  2 CentralPark_NY USW00094728 2021-01-02    13  10.6   2.2
-##  3 CentralPark_NY USW00094728 2021-01-03    56   3.3   1.1
-##  4 CentralPark_NY USW00094728 2021-01-04     5   6.1   1.7
-##  5 CentralPark_NY USW00094728 2021-01-05     0   5.6   2.2
-##  6 CentralPark_NY USW00094728 2021-01-06     0   5     1.1
-##  7 CentralPark_NY USW00094728 2021-01-07     0   5    -1  
-##  8 CentralPark_NY USW00094728 2021-01-08     0   2.8  -2.7
-##  9 CentralPark_NY USW00094728 2021-01-09     0   2.8  -4.3
-## 10 CentralPark_NY USW00094728 2021-01-10     0   5    -1.6
-## # ℹ 2,999 more rows</code></pre>
+## # A tibble: 3,254 × 6
+##   name           id          date        prcp  tmax  tmin
+##   &lt;chr&gt;          &lt;chr&gt;       &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1 CentralPark_NY USW00094728 2021-01-01   157   4.4   0.6
+## 2 CentralPark_NY USW00094728 2021-01-02    13  10.6   2.2
+## 3 CentralPark_NY USW00094728 2021-01-03    56   3.3   1.1
+## 4 CentralPark_NY USW00094728 2021-01-04     5   6.1   1.7
+## 5 CentralPark_NY USW00094728 2021-01-05     0   5.6   2.2
+## # ℹ 3,249 more rows</code></pre>
 <p>As a starting point, let’s revisit the scatterplot of
 <code>tmax</code> against <code>tmin</code> made in <a
 href="visualization_pt1.html">Visualization Pt 1</a>.</p>
 <pre class="r"><code>weather_df |&gt; 
   ggplot(aes(x = tmin, y = tmax)) + 
   geom_point(aes(color = name), alpha = .5)
-## Warning: Removed 51 rows containing missing values (`geom_point()`).</code></pre>
+## Warning: Removed 37 rows containing missing values or values outside the scale
+## range (`geom_point()`).</code></pre>
 <p><img src="visualization_pt2_files/figure-html/unnamed-chunk-3-1.png" width="90%" /></p>
 <div id="labels" class="section level3">
 <h3>Labels</h3>
@@ -566,7 +549,8 @@ labels, plot titles, and captions, all of which can be controlled using
     color = &quot;Location&quot;,
     caption = &quot;Data from the rnoaa package&quot;
   )
-## Warning: Removed 51 rows containing missing values (`geom_point()`).</code></pre>
+## Warning: Removed 37 rows containing missing values or values outside the scale
+## range (`geom_point()`).</code></pre>
 <p><img src="visualization_pt2_files/figure-html/unnamed-chunk-4-1.png" width="90%" /></p>
 </div>
 <div id="scales" class="section level3">
@@ -592,7 +576,8 @@ in <code>scale_x_*</code> and <code>scale_y_*</code> where
   scale_x_continuous(
     breaks = c(-15, 0, 15), 
     labels = c(&quot;-15º C&quot;, &quot;0&quot;, &quot;15&quot;))
-## Warning: Removed 51 rows containing missing values (`geom_point()`).</code></pre>
+## Warning: Removed 37 rows containing missing values or values outside the scale
+## range (`geom_point()`).</code></pre>
 <p><img src="visualization_pt2_files/figure-html/unnamed-chunk-5-1.png" width="90%" /></p>
 <p>There are a variety of other <code>scale_x_*</code> and
 <code>scale_y_*</code> options – it can be helpful to know how and where
@@ -614,9 +599,11 @@ what I want.</p>
   scale_y_continuous(
     trans = &quot;sqrt&quot;, 
     position = &quot;right&quot;)
-## Warning in self$trans$transform(x): NaNs produced
-## Warning: Transformation introduced infinite values in continuous y-axis
-## Warning: Removed 217 rows containing missing values (`geom_point()`).</code></pre>
+## Warning in transformation$transform(x): NaNs produced
+## Warning in scale_y_continuous(trans = &quot;sqrt&quot;, position = &quot;right&quot;): sqrt
+## transformation introduced infinite values.
+## Warning: Removed 211 rows containing missing values or values outside the scale
+## range (`geom_point()`).</code></pre>
 <p><img src="visualization_pt2_files/figure-html/unnamed-chunk-6-1.png" width="90%" /></p>
 <p>For many graph options there are several ways to produce the desired
 result, and you should feel free to use whichever is most convenient.
@@ -639,7 +626,8 @@ color scale and the name in the plot legend.</p>
     color = &quot;Location&quot;,
     caption = &quot;Data from the rnoaa package&quot;) + 
   scale_color_hue(h = c(100, 300))
-## Warning: Removed 51 rows containing missing values (`geom_point()`).</code></pre>
+## Warning: Removed 37 rows containing missing values or values outside the scale
+## range (`geom_point()`).</code></pre>
 <p><img src="visualization_pt2_files/figure-html/unnamed-chunk-7-1.png" width="90%" /></p>
 <p>Trying to create your own color scheme usually doesn’t go well; I
 encourage you to use the <a
@@ -663,7 +651,8 @@ works nicely!</p>
   )
 
 ggp_temp_plot
-## Warning: Removed 51 rows containing missing values (`geom_point()`).</code></pre>
+## Warning: Removed 37 rows containing missing values or values outside the scale
+## range (`geom_point()`).</code></pre>
 <p><img src="visualization_pt2_files/figure-html/unnamed-chunk-8-1.png" width="90%" /></p>
 <p>We used <code>discrete = TRUE</code> because the <code>color</code>
 aesthetic is mapped to a discrete variable. In other cases (for example,
@@ -685,7 +674,8 @@ bottom to ensure the graphic takes up the available left-to-right
 space.</p>
 <pre class="r"><code>ggp_temp_plot + 
   theme(legend.position = &quot;bottom&quot;)
-## Warning: Removed 51 rows containing missing values (`geom_point()`).</code></pre>
+## Warning: Removed 37 rows containing missing values or values outside the scale
+## range (`geom_point()`).</code></pre>
 <p><img src="visualization_pt2_files/figure-html/unnamed-chunk-9-1.png" width="90%" /></p>
 <p>Quick tip: <code>legend.position = "none"</code> will remove the
 legend. This is helpful when multiple plots use the same color scheme or
@@ -696,20 +686,23 @@ recommend using a built-in theme. By default this is
 <pre class="r"><code>ggp_temp_plot + 
   theme_bw() + 
   theme(legend.position = &quot;bottom&quot;)
-## Warning: Removed 51 rows containing missing values (`geom_point()`).</code></pre>
+## Warning: Removed 37 rows containing missing values or values outside the scale
+## range (`geom_point()`).</code></pre>
 <p><img src="visualization_pt2_files/figure-html/unnamed-chunk-10-1.png" width="90%" /></p>
 <p>… and here’s <code>theme_classic()</code>:</p>
 <pre class="r"><code>ggp_temp_plot + 
   theme_classic() + 
   theme(legend.position = &quot;bottom&quot;)
-## Warning: Removed 51 rows containing missing values (`geom_point()`).</code></pre>
+## Warning: Removed 37 rows containing missing values or values outside the scale
+## range (`geom_point()`).</code></pre>
 <p><img src="visualization_pt2_files/figure-html/unnamed-chunk-11-1.png" width="90%" /></p>
 <p>… and, for some reason, here’s the Excel 2003 theme from <a
 href="https://jrnold.github.io/ggthemes/"><code>ggthemes</code></a>:</p>
 <pre class="r"><code>ggp_temp_plot + 
   ggthemes::theme_excel() + 
   theme(legend.position = &quot;bottom&quot;)
-## Warning: Removed 51 rows containing missing values (`geom_point()`).</code></pre>
+## Warning: Removed 37 rows containing missing values or values outside the scale
+## range (`geom_point()`).</code></pre>
 <p><img src="visualization_pt2_files/figure-html/unnamed-chunk-12-1.png" width="90%" /></p>
 <p>Don’t use the Excel 2003 theme (the first two are fine, and
 <code>ggthemes</code> has other very nice themes as well).</p>
@@ -741,8 +734,10 @@ Solution
   theme_minimal() + 
   theme(legend.position = &quot;bottom&quot;)
 ## `geom_smooth()` using method = &#39;gam&#39; and formula = &#39;y ~ s(x, bs = &quot;cs&quot;)&#39;
-## Warning: Removed 51 rows containing non-finite values (`stat_smooth()`).
-## Warning: Removed 54 rows containing missing values (`geom_point()`).</code></pre>
+## Warning: Removed 37 rows containing non-finite outside the scale range
+## (`stat_smooth()`).
+## Warning: Removed 39 rows containing missing values or values outside the scale
+## range (`geom_point()`).</code></pre>
 <p><img src="visualization_pt2_files/figure-html/unnamed-chunk-13-1.png" width="90%" /></p>
 </details>
 </div>
@@ -796,8 +791,10 @@ molokai_df =
 ggplot(data = molokai_df, aes(x = date, y = tmax, color = name)) + 
   geom_point() + 
   geom_line(data = central_park_df) 
-## Warning: Removed 8 rows containing missing values (`geom_point()`).
-## Warning: Removed 13 rows containing missing values (`geom_line()`).</code></pre>
+## Warning: Removed 1 row containing missing values or values outside the scale
+## range (`geom_point()`).
+## Warning: Removed 18 rows containing missing values or values outside the scale
+## range (`geom_line()`).</code></pre>
 <p><img src="visualization_pt2_files/figure-html/unnamed-chunk-15-1.png" width="90%" /></p>
 <p>More realistically, it’s sometimes necessary to overlay data
 summaries on a plot of the complete data. Depending on the setting, one
@@ -838,10 +835,11 @@ tmax_date_p =
   theme(legend.position = &quot;bottom&quot;)
 
 (tmax_tmin_p + prcp_dens_p) / tmax_date_p
-## Warning: Removed 51 rows containing missing values (`geom_point()`).
+## Warning: Removed 37 rows containing missing values or values outside the scale
+## range (`geom_point()`).
 ## `geom_smooth()` using method = &#39;gam&#39; and formula = &#39;y ~ s(x, bs = &quot;cs&quot;)&#39;
-## Warning: Removed 51 rows containing non-finite values (`stat_smooth()`).
-## Removed 51 rows containing missing values (`geom_point()`).</code></pre>
+## Warning: Removed 37 rows containing non-finite outside the scale range (`stat_smooth()`).
+## Removed 37 rows containing missing values or values outside the scale range (`geom_point()`).</code></pre>
 <p><img src="visualization_pt2_files/figure-html/unnamed-chunk-16-1.png" width="90%" /></p>
 <p>The package is already very helpful but is under active development –
 some features may change or be added over time – so check the package
@@ -871,7 +869,8 @@ variable using <code>forcats::fct_reorder</code>.</p>
   ggplot(aes(x = name, y = tmax)) + 
   geom_violin(aes(fill = name), color = &quot;blue&quot;, alpha = .5) + 
   theme(legend.position = &quot;bottom&quot;)
-## Warning: Removed 51 rows containing non-finite values (`stat_ydensity()`).</code></pre>
+## Warning: Removed 37 rows containing non-finite outside the scale range
+## (`stat_ydensity()`).</code></pre>
 <p><img src="visualization_pt2_files/figure-html/unnamed-chunk-17-1.png" width="90%" /></p>
 <p>A second example reorders <code>name</code> according to
 <code>tmax</code> values in each name:</p>
@@ -883,10 +882,11 @@ variable using <code>forcats::fct_reorder</code>.</p>
 ## Warning: There was 1 warning in `mutate()`.
 ## ℹ In argument: `name = forcats::fct_reorder(name, tmax)`.
 ## Caused by warning:
-## ! `fct_reorder()` removing 51 missing values.
+## ! `fct_reorder()` removing 37 missing values.
 ## ℹ Use `.na_rm = TRUE` to silence this message.
 ## ℹ Use `.na_rm = FALSE` to preserve NAs.
-## Warning: Removed 51 rows containing non-finite values (`stat_ydensity()`).</code></pre>
+## Warning: Removed 37 rows containing non-finite outside the scale range
+## (`stat_ydensity()`).</code></pre>
 <p><img src="visualization_pt2_files/figure-html/unnamed-chunk-18-1.png" width="90%" /></p>
 <p>We’ll learn more about the <a
 href="http://forcats.tidyverse.org/index.html"><code>forcats</code></a>
@@ -914,7 +914,8 @@ directly:</p>
   geom_density(alpha = .5) + 
   facet_grid(~name) + 
   viridis::scale_fill_viridis(discrete = TRUE)
-## Warning: Removed 102 rows containing non-finite values (`stat_density()`).</code></pre>
+## Warning: Removed 74 rows containing non-finite outside the scale range
+## (`stat_density()`).</code></pre>
 <p><img src="visualization_pt2_files/figure-html/unnamed-chunk-19-1.png" width="90%" /></p>
 <p>Our emphasis on data tidiness in previous examples is helpful in
 visualization. The code below imports and tidies the PULSE data, and
@@ -938,7 +939,8 @@ variable into a factor with an informative ordering.</p>
 
 ggplot(pulse_data, aes(x = visit, y = bdi)) + 
   geom_boxplot()
-## Warning: Removed 879 rows containing non-finite values (`stat_boxplot()`).</code></pre>
+## Warning: Removed 879 rows containing non-finite outside the scale range
+## (`stat_boxplot()`).</code></pre>
 <p><img src="visualization_pt2_files/figure-html/unnamed-chunk-20-1.png" width="90%" /></p>
 <p>As a final example, we’ll revisit the FAS data. We’ve seen code for
 data import and organization and for joining the litters and pups data.
@@ -955,7 +957,7 @@ across values of dose category and treatment day.</p>
         1 ~ &quot;male&quot;, 
         2 ~ &quot;female&quot;))
 ## Rows: 313 Columns: 6
-## ── Column specification ────────────────────────────────────────────────────────
+## ── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────
 ## Delimiter: &quot;,&quot;
 ## chr (1): Litter Number
 ## dbl (5): Sex, PD ears, PD eyes, PD pivot, PD walk
@@ -968,7 +970,7 @@ litter_data =
   janitor::clean_names() |&gt;
   separate(group, into = c(&quot;dose&quot;, &quot;day_of_tx&quot;), sep = 3)
 ## Rows: 49 Columns: 8
-## ── Column specification ────────────────────────────────────────────────────────
+## ── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────
 ## Delimiter: &quot;,&quot;
 ## chr (2): Group, Litter Number
 ## dbl (6): GD0 weight, GD18 weight, GD of Birth, Pups born alive, Pups dead @ ...

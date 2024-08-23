@@ -13,7 +13,7 @@
 
 <title>Midterm project</title>
 
-<script src="site_libs/header-attrs-2.24/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.28/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
@@ -452,7 +452,7 @@ science, and are the main focus of this project.</p>
 </div>
 <div id="due-date" class="section level3">
 <h3>Due date</h3>
-<p>Due: October 23 at 11:59pm.</p>
+<p>Due: October 21 at 11:59pm.</p>
 </div>
 <div id="reproducibility" class="section level3">
 <h3>Reproducibility</h3>
@@ -504,79 +504,6 @@ package website</a>. We’ll use the “koRpus” count.
 in your report, and running
 <code>wordcountaddin::text_stats("p8105_mtp_YOURUNI.Rmd")</code> in your
 document can interfere with our automated reproducibility checks.</p>
-</div>
-<div id="data" class="section level2">
-<h2>Data</h2>
-<p>A common step when moving is to file a <a
-href="https://www.usps.com/manage/forward.htm">Change of Address</a>
-form with the United States Post Office to ensure that mail is delivered
-to a new address. In response to broad interest, the USPS makes
-aggregate Change of Address (COA) data publicly available. In this
-project, we’ll look at COA data in New York City between 2018 and 2022.
-This <a href="data/USPS%20CHANGE%20OF%20ADDRESS%20NYC.xlsx">dataset</a>
-includes the total number of COAs to and from each ZIP code in NYC for
-each calendar month. In each sheet, the <code>TOTAL PERM IN</code> and
-<code>TOTAL PERM OUT</code> indicate the total number of permanent
-address changes going into and out of each ZIP code.</p>
-<p>NYC is divided into five boroughs. Each of these boroughs is it’s own
-county, and in some cases the borough name and county name differ; for
-example, Manhattan is New York County. Moreover, boroughs are divided
-into neighborhoods. COA data provided by USPS may not accurately reflect
-NYC’s counties, boroughs, and neighborhoods, and a supplementary dataset
-including these is available <a
-href="data/Zip%20Codes.csv">here</a>.</p>
-</div>
-<div id="problems" class="section level2">
-<h2>Problems</h2>
-<div id="problem-1-data-import-cleaning-and-quality-control."
-class="section level3">
-<h3>Problem 1 – Data import, cleaning, and quality control.</h3>
-<p>Provide a brief introduction to the raw data and the goals of your
-report.</p>
-<p>Import, tidy, combine, and otherwise clean the data. In the ZIP code
-data, create a <code>borough</code> variable using county names. When
-importing COA data, add a <code>year</code> variable for later use;
-also, create a <code>net_change</code> variable by subtracting outbound
-COAs from inbound COAs. Resolve any issues that arise when merging COA
-and ZIP code data. Restrict your dataset to only variables necessary for
-later parts of this report. Describe the major steps in the data
-wrangling process in words, including what steps you took to address
-data quality issues.</p>
-<p>Briefly describe the resulting <em>tidy</em> dataset. How many total
-observations exist? How many unique ZIP codes are included, and how many
-unique neighborhoods?</p>
-<p>Compare the <code>city</code> variable in the COA database to the
-<code>borough</code> variable you created using the ZIP code database.
-Make two small tables to show the most common values of
-<code>city</code> in the <code>borough</code> of Manhattan and of
-Queens. Comment on the any data quality issues you observe.</p>
-<p>There are 60 months between 2018 and 2022, but many ZIP codes have
-fewer than 60 observations; most of these are also missing
-<code>neighborhood</code> values. Discuss why this might be the case,
-using a few concrete examples as illustration.</p>
-</div>
-<div id="problem-2-eda-and-visualization" class="section level3">
-<h3>Problem 2 – EDA and Visualization</h3>
-<p>Create a reader-friendly table showing the average of
-<code>net_change</code> in each borough and year. Comment on trends in
-this table.</p>
-<p>Make a table showing, across all observed data, the five lowest
-values of <code>net_change</code>. This table should include ZIP code,
-neighborhood, and the year and month. Make a similar table showing,
-across data observed before 2020, the five highest values of
-<code>net_change</code>. This table should include ZIP code,
-neighborhood, and the year and month.</p>
-<p>Understanding monthly <code>net_change</code> over the five-year
-period can give insights into trends in moving. Make a plot showing
-neighborhood-level average <code>net_change</code> values
-(i.e. averaging across ZIP codes within neighborhoods) against month
-over all five years. Your plot should facilitate comparisons across
-boroughs. Include this visualization in your report and export it to a
-<code>results</code> directory in your repository. Comment on any
-significant elements of this plot.</p>
-<p>Lastly, note any limitations of this dataset for understanding
-changes in ZIP code level population sizes.</p>
-</div>
 </div>
 
 <br><br>

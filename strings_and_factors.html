@@ -13,7 +13,7 @@
 
 <title>Strings and factors</title>
 
-<script src="site_libs/header-attrs-2.24/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.28/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
@@ -487,13 +487,8 @@ also use some datasets in <code>p8105.datasets</code> so I’ll load that
 as well. And finally, we’ll use some of <a
 href="./resources/data_import_examples.zip">these examples</a>, so I’ll
 make sure I have them in a <code>data</code> subdirectory..</p>
-<pre class="r"><code>library(rvest)</code></pre>
-<pre><code>## 
-## Attaching package: &#39;rvest&#39;</code></pre>
-<pre><code>## The following object is masked from &#39;package:readr&#39;:
-## 
-##     guess_encoding</code></pre>
-<pre class="r"><code>library(p8105.datasets)</code></pre>
+<pre class="r"><code>library(rvest)
+library(p8105.datasets)</code></pre>
 <div id="strings-and-regex" class="section level3">
 <h3>Strings and regex</h3>
 <p>Lots of the examples below are drawn from materials by <a
@@ -830,30 +825,26 @@ examples now.</p>
 <pre><code>## Registered S3 method overwritten by &#39;hoardr&#39;:
 ##   method           from
 ##   print.cache_info httr</code></pre>
-<pre><code>## using cached file: /Users/jeffgoldsmith/Library/Caches/org.R-project.R/R/rnoaa/noaa_ghcnd/USW00094728.dly</code></pre>
-<pre><code>## date created (size, mb): 2023-09-28 10:20:04.003054 (8.524)</code></pre>
-<pre><code>## file min/max dates: 1869-01-01 / 2023-09-30</code></pre>
-<pre><code>## using cached file: /Users/jeffgoldsmith/Library/Caches/org.R-project.R/R/rnoaa/noaa_ghcnd/USW00022534.dly</code></pre>
-<pre><code>## date created (size, mb): 2023-09-28 10:20:09.885503 (3.83)</code></pre>
-<pre><code>## file min/max dates: 1949-10-01 / 2023-09-30</code></pre>
-<pre><code>## using cached file: /Users/jeffgoldsmith/Library/Caches/org.R-project.R/R/rnoaa/noaa_ghcnd/USS0023B17S.dly</code></pre>
-<pre><code>## date created (size, mb): 2023-09-28 10:20:11.8066 (0.994)</code></pre>
-<pre><code>## file min/max dates: 1999-09-01 / 2023-09-30</code></pre>
+<pre><code>## using cached file: /Users/jeff/Library/Caches/org.R-project.R/R/rnoaa/noaa_ghcnd/USW00094728.dly</code></pre>
+<pre><code>## date created (size, mb): 2023-11-15 11:33:02.320095 (8.544)</code></pre>
+<pre><code>## file min/max dates: 1869-01-01 / 2023-11-30</code></pre>
+<pre><code>## using cached file: /Users/jeff/Library/Caches/org.R-project.R/R/rnoaa/noaa_ghcnd/USW00022534.dly</code></pre>
+<pre><code>## date created (size, mb): 2024-08-23 08:53:49.293889 (3.911)</code></pre>
+<pre><code>## file min/max dates: 1949-10-01 / 2024-08-31</code></pre>
+<pre><code>## using cached file: /Users/jeff/Library/Caches/org.R-project.R/R/rnoaa/noaa_ghcnd/USS0023B17S.dly</code></pre>
+<pre><code>## date created (size, mb): 2024-08-23 08:53:53.443882 (1.033)</code></pre>
+<pre><code>## file min/max dates: 1999-09-01 / 2024-08-31</code></pre>
 <pre class="r"><code>weather_df</code></pre>
-<pre><code>## # A tibble: 3,009 × 6
-##    name           id          date        prcp  tmax  tmin
-##    &lt;chr&gt;          &lt;chr&gt;       &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
-##  1 CentralPark_NY USW00094728 2021-01-01   157   4.4   0.6
-##  2 CentralPark_NY USW00094728 2021-01-02    13  10.6   2.2
-##  3 CentralPark_NY USW00094728 2021-01-03    56   3.3   1.1
-##  4 CentralPark_NY USW00094728 2021-01-04     5   6.1   1.7
-##  5 CentralPark_NY USW00094728 2021-01-05     0   5.6   2.2
-##  6 CentralPark_NY USW00094728 2021-01-06     0   5     1.1
-##  7 CentralPark_NY USW00094728 2021-01-07     0   5    -1  
-##  8 CentralPark_NY USW00094728 2021-01-08     0   2.8  -2.7
-##  9 CentralPark_NY USW00094728 2021-01-09     0   2.8  -4.3
-## 10 CentralPark_NY USW00094728 2021-01-10     0   5    -1.6
-## # ℹ 2,999 more rows</code></pre>
+<pre><code>## # A tibble: 3,254 × 6
+##   name           id          date        prcp  tmax  tmin
+##   &lt;chr&gt;          &lt;chr&gt;       &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1 CentralPark_NY USW00094728 2021-01-01   157   4.4   0.6
+## 2 CentralPark_NY USW00094728 2021-01-02    13  10.6   2.2
+## 3 CentralPark_NY USW00094728 2021-01-03    56   3.3   1.1
+## 4 CentralPark_NY USW00094728 2021-01-04     5   6.1   1.7
+## 5 CentralPark_NY USW00094728 2021-01-05     0   5.6   2.2
+## 6 CentralPark_NY USW00094728 2021-01-06     0   5     1.1
+## # ℹ 3,248 more rows</code></pre>
 <p>Our first example reordered <code>name</code> “by hand” using
 <code>fct_relevel</code>:</p>
 <pre class="r"><code>weather_df |&gt;
@@ -883,7 +874,7 @@ something that can be adjusted as needed.</p>
 ## 
 ## Coefficients:
 ##      (Intercept)    nameMolokai_HI  nameWaterhole_WA  
-##            18.26             10.11            -10.51</code></pre>
+##            18.22             10.17            -10.66</code></pre>
 <pre class="r"><code>weather_df |&gt;
   mutate(name = forcats::fct_relevel(name, c(&quot;Molokai_HI&quot;, &quot;CentralPark_NY&quot;, &quot;Waterhole_WA&quot;))) |&gt; 
   lm(tmax ~ name, data = _)</code></pre>
@@ -894,7 +885,7 @@ something that can be adjusted as needed.</p>
 ## 
 ## Coefficients:
 ##        (Intercept)  nameCentralPark_NY    nameWaterhole_WA  
-##              28.37              -10.11              -20.63</code></pre>
+##              28.40              -10.17              -20.84</code></pre>
 <p>In this example, we’re also using a feature of <code>|&gt;</code>
 that allows us to specify where the tibble goes: <code>_</code> is a
 placeholder for the result of the preceding call.</p>

@@ -1,0 +1,25 @@
+---
+title: "Exploring Vector Classes"
+author: "Jeff Goldsmith"
+date: 2019-09-10
+output: html_document
+---
+
+```{r setup, include = FALSE}
+library(tidyverse)
+```
+
+The purpose of this file is to examine a few data types (or data classes) in R.
+
+First we create a dataframe containing variables of four different types.
+
+```{r}
+example_df = tibble(
+  vec_numeric = 5:8,
+  vec_char = c("My", "name", "is", "Jeff"),
+  vec_logical = c(TRUE, TRUE, TRUE, FALSE),
+  vec_factor = factor(c("male", "male", "female", "female"))
+)
+```
+
+The variable `vec_numeric` has class `r class(pull(example_df, vec_numeric))`, and the variable `vec_factor` has class `r class(pull(example_df, vec_factor))`.

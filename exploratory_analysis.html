@@ -13,7 +13,7 @@
 
 <title>Exploratory analysis using data summaries</title>
 
-<script src="site_libs/header-attrs-2.24/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.28/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
@@ -508,7 +508,8 @@ for example, this histogram of precipitation values:</p>
   ggplot(aes(x = prcp)) + 
   geom_histogram()
 ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-## Warning: Removed 15 rows containing non-finite values (`stat_bin()`).</code></pre>
+## Warning: Removed 15 rows containing non-finite outside the scale range
+## (`stat_bin()`).</code></pre>
 <p><img src="exploratory_analysis_files/figure-html/unnamed-chunk-2-1.png" width="90%" /></p>
 <p>This is clearly a very skewed distribution; any formal analyses
 involving preciptation as a predictor or outcome might be influenced by
@@ -977,7 +978,8 @@ result. You could do so using:</p>
     centered_tmax = tmax - mean_tmax) |&gt; 
   ggplot(aes(x = date, y = centered_tmax, color = name)) + 
     geom_point() 
-## Warning: Removed 17 rows containing missing values (`geom_point()`).</code></pre>
+## Warning: Removed 17 rows containing missing values or values outside the scale
+## range (`geom_point()`).</code></pre>
 <p><img src="exploratory_analysis_files/figure-html/unnamed-chunk-18-1.png" width="90%" /></p>
 </div>
 <div id="window-functions" class="section level3">

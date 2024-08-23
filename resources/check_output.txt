@@ -1,0 +1,43 @@
+Updating example.package documentation
+Loading example.package
+Warning: @examples [sim_bern_mean.R#12]: requires a value
+Warning: @param [simulate_nrep.R#4]: requires name and description
+Warning: @examples [simulate_nrep.R#13]: requires a value
+
+...
+
+* checking package namespace information ... OK
+* checking package dependencies ... OK
+* checking if this is a source package ... OK
+* checking if there is a namespace ... OK
+
+...
+
+* checking R code for possible problems ... NOTE
+sim_bern_mean: no visible global function definition for ‘rbinom’
+sim_regression: no visible global function definition for ‘rnorm’
+sim_regression: no visible binding for global variable ‘x’
+
+...
+
+* checking examples ... ERROR
+Running examples in ‘example.package-Ex.R’ failed
+The error most likely occurred in:
+
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+> ### Name: sim_regression
+> ### Title: Simulate from an SLR
+> ### Aliases: sim_regression
+> 
+> ### ** Examples
+> 
+> # simulate a dataset and return estimates
+> sim_regression(30, 2, 3)
+Error in lm(y ~ x, data = sim_data) %>% broom::tidy() : 
+  could not find function "%>%"
+Calls: sim_regression
+Execution halted
+* DONE
+Status: 1 ERROR, 1 WARNING, 2 NOTEs
+
+...

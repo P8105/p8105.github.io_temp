@@ -13,7 +13,7 @@
 
 <title>Visualization with ggplot2</title>
 
-<script src="site_libs/header-attrs-2.24/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.28/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
@@ -505,31 +505,29 @@ chunk.</p>
     tmin = tmin / 10,
     tmax = tmax / 10) |&gt;
   select(name, id, everything())
-## using cached file: /Users/jeffgoldsmith/Library/Caches/org.R-project.R/R/rnoaa/noaa_ghcnd/USW00094728.dly
-## date created (size, mb): 2023-09-19 15:41:55.07359 (8.524)
-## file min/max dates: 1869-01-01 / 2023-09-30
-## using cached file: /Users/jeffgoldsmith/Library/Caches/org.R-project.R/R/rnoaa/noaa_ghcnd/USW00022534.dly
-## date created (size, mb): 2023-09-25 10:06:23.827176 (3.83)
-## file min/max dates: 1949-10-01 / 2023-09-30
-## using cached file: /Users/jeffgoldsmith/Library/Caches/org.R-project.R/R/rnoaa/noaa_ghcnd/USS0023B17S.dly
-## date created (size, mb): 2023-09-19 15:42:03.139582 (0.994)
-## file min/max dates: 1999-09-01 / 2023-09-30
+## Registered S3 method overwritten by &#39;hoardr&#39;:
+##   method           from
+##   print.cache_info httr
+## using cached file: /Users/jeff/Library/Caches/org.R-project.R/R/rnoaa/noaa_ghcnd/USW00094728.dly
+## date created (size, mb): 2023-11-15 11:33:02.320095 (8.544)
+## file min/max dates: 1869-01-01 / 2023-11-30
+## using cached file: /Users/jeff/Library/Caches/org.R-project.R/R/rnoaa/noaa_ghcnd/USW00022534.dly
+## date created (size, mb): 2024-08-23 08:53:49.293889 (3.911)
+## file min/max dates: 1949-10-01 / 2024-08-31
+## using cached file: /Users/jeff/Library/Caches/org.R-project.R/R/rnoaa/noaa_ghcnd/USS0023B17S.dly
+## date created (size, mb): 2024-08-23 08:53:53.443882 (1.033)
+## file min/max dates: 1999-09-01 / 2024-08-31
 
 weather_df
 ## # A tibble: 2,190 × 6
-##    name           id          date        prcp  tmax  tmin
-##    &lt;chr&gt;          &lt;chr&gt;       &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
-##  1 CentralPark_NY USW00094728 2021-01-01   157   4.4   0.6
-##  2 CentralPark_NY USW00094728 2021-01-02    13  10.6   2.2
-##  3 CentralPark_NY USW00094728 2021-01-03    56   3.3   1.1
-##  4 CentralPark_NY USW00094728 2021-01-04     5   6.1   1.7
-##  5 CentralPark_NY USW00094728 2021-01-05     0   5.6   2.2
-##  6 CentralPark_NY USW00094728 2021-01-06     0   5     1.1
-##  7 CentralPark_NY USW00094728 2021-01-07     0   5    -1  
-##  8 CentralPark_NY USW00094728 2021-01-08     0   2.8  -2.7
-##  9 CentralPark_NY USW00094728 2021-01-09     0   2.8  -4.3
-## 10 CentralPark_NY USW00094728 2021-01-10     0   5    -1.6
-## # ℹ 2,180 more rows</code></pre>
+##   name           id          date        prcp  tmax  tmin
+##   &lt;chr&gt;          &lt;chr&gt;       &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1 CentralPark_NY USW00094728 2021-01-01   157   4.4   0.6
+## 2 CentralPark_NY USW00094728 2021-01-02    13  10.6   2.2
+## 3 CentralPark_NY USW00094728 2021-01-03    56   3.3   1.1
+## 4 CentralPark_NY USW00094728 2021-01-04     5   6.1   1.7
+## 5 CentralPark_NY USW00094728 2021-01-05     0   5.6   2.2
+## # ℹ 2,185 more rows</code></pre>
 <p>We’ll start with a basic scatterplot to develop our understanding of
 <code>ggplot</code>’s data + mappings + geoms approach, and build
 quickly from there.</p>
@@ -548,7 +546,8 @@ variables, but not what I want to show. Below I add a <code>geom</code>
 to define my first scatterplot.</p>
 <pre class="r"><code>ggplot(weather_df, aes(x = tmin, y = tmax)) + 
   geom_point()
-## Warning: Removed 17 rows containing missing values (`geom_point()`).</code></pre>
+## Warning: Removed 17 rows containing missing values or values outside the scale
+## range (`geom_point()`).</code></pre>
 <p><img src="visualization_pt1_files/figure-html/unnamed-chunk-4-1.png" width="90%" /></p>
 <p>The code below could be used instead to produce the same figure.
 Using this style can be helpful if you want to do some pre-processing
@@ -581,7 +580,8 @@ variables to learn about using additional aesthetic mappings.</p>
 <code>color</code> aesthetic:</p>
 <pre class="r"><code>ggplot(weather_df, aes(x = tmin, y = tmax)) + 
   geom_point(aes(color = name))
-## Warning: Removed 17 rows containing missing values (`geom_point()`).</code></pre>
+## Warning: Removed 17 rows containing missing values or values outside the scale
+## range (`geom_point()`).</code></pre>
 <p><img src="visualization_pt1_files/figure-html/unnamed-chunk-7-1.png" width="90%" /></p>
 <p>Nice! We get colors and have a handly legend. Maybe next I’ll add a
 smooth curve and make the data points a bit transparent.</p>
@@ -589,8 +589,10 @@ smooth curve and make the data points a bit transparent.</p>
   geom_point(aes(color = name), alpha = .5) +
   geom_smooth(se = FALSE)
 ## `geom_smooth()` using method = &#39;gam&#39; and formula = &#39;y ~ s(x, bs = &quot;cs&quot;)&#39;
-## Warning: Removed 17 rows containing non-finite values (`stat_smooth()`).
-## Warning: Removed 17 rows containing missing values (`geom_point()`).</code></pre>
+## Warning: Removed 17 rows containing non-finite outside the scale range
+## (`stat_smooth()`).
+## Warning: Removed 17 rows containing missing values or values outside the scale
+## range (`geom_point()`).</code></pre>
 <p><img src="visualization_pt1_files/figure-html/unnamed-chunk-8-1.png" width="90%" /></p>
 <p>Neat! The curve gives a sense of the relationship between variables,
 and the transparency shows where data are overlapping. I can’t help but
@@ -606,8 +608,10 @@ name as well.</p>
   geom_smooth(se = FALSE) + 
   facet_grid(. ~ name)
 ## `geom_smooth()` using method = &#39;loess&#39; and formula = &#39;y ~ x&#39;
-## Warning: Removed 17 rows containing non-finite values (`stat_smooth()`).
-## Warning: Removed 17 rows containing missing values (`geom_point()`).</code></pre>
+## Warning: Removed 17 rows containing non-finite outside the scale range
+## (`stat_smooth()`).
+## Warning: Removed 17 rows containing missing values or values outside the scale
+## range (`geom_point()`).</code></pre>
 <p><img src="visualization_pt1_files/figure-html/unnamed-chunk-9-1.png" width="90%" /></p>
 <p>Awesome! I’ve learned a lot about these data. However, the
 relationship between minimum and maximum temperature is now kinda
@@ -618,8 +622,10 @@ to learn about precipitation, so let’s do that.</p>
   geom_smooth(se = FALSE) + 
   facet_grid(. ~ name)
 ## `geom_smooth()` using method = &#39;loess&#39; and formula = &#39;y ~ x&#39;
-## Warning: Removed 17 rows containing non-finite values (`stat_smooth()`).
-## Warning: Removed 19 rows containing missing values (`geom_point()`).</code></pre>
+## Warning: Removed 17 rows containing non-finite outside the scale range
+## (`stat_smooth()`).
+## Warning: Removed 19 rows containing missing values or values outside the scale
+## range (`geom_point()`).</code></pre>
 <p><img src="visualization_pt1_files/figure-html/unnamed-chunk-10-1.png" width="90%" /></p>
 <p>Way more interesting! You get a whole range of temperatures in
 Central Park (sometimes it’s maybe too hot); it’s more temperate near
@@ -658,7 +664,8 @@ you create way more plots for yourself than for others.</p>
 <pre class="r"><code>ggplot(weather_df, aes(x = date, y = tmax, color = name)) + 
   geom_smooth(se = FALSE) 
 ## `geom_smooth()` using method = &#39;loess&#39; and formula = &#39;y ~ x&#39;
-## Warning: Removed 17 rows containing non-finite values (`stat_smooth()`).</code></pre>
+## Warning: Removed 17 rows containing non-finite outside the scale range
+## (`stat_smooth()`).</code></pre>
 <p><img src="visualization_pt1_files/figure-html/unnamed-chunk-12-1.png" width="90%" /></p>
 <p>When you’re making a scatterplot with lots of data, there’s a limit
 to how much you can avoid overplotting using alpha levels and
@@ -667,7 +674,11 @@ transparency. In these cases <code>geom_hex()</code>,
 handy:</p>
 <pre class="r"><code>ggplot(weather_df, aes(x = tmax, y = tmin)) + 
   geom_hex()
-## Warning: Removed 17 rows containing non-finite values (`stat_binhex()`).</code></pre>
+## Warning: Removed 17 rows containing non-finite outside the scale range
+## (`stat_binhex()`).
+## Warning: Computation failed in `stat_binhex()`.
+## Caused by error in `compute_group()`:
+## ! The package &quot;hexbin&quot; is required for `stat_bin_hex()`.</code></pre>
 <p><img src="visualization_pt1_files/figure-html/unnamed-chunk-13-1.png" width="90%" /></p>
 <p>There are lots of aesthetics, and these depend to some extent on the
 geom – <code>color</code> worked for both <code>geom_point()</code> and
@@ -702,20 +713,23 @@ necessary, some new aesthetics.</p>
 <pre class="r"><code>ggplot(weather_df, aes(x = tmax)) + 
   geom_histogram()
 ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-## Warning: Removed 17 rows containing non-finite values (`stat_bin()`).</code></pre>
+## Warning: Removed 17 rows containing non-finite outside the scale range
+## (`stat_bin()`).</code></pre>
 <p><img src="visualization_pt1_files/figure-html/unnamed-chunk-15-1.png" width="90%" /></p>
 <p>You can play around with things like the bin width and set the fill
 color using an aesthetic mapping.</p>
 <pre class="r"><code>ggplot(weather_df, aes(x = tmax, fill = name)) + 
   geom_histogram(position = &quot;dodge&quot;, binwidth = 2)
-## Warning: Removed 17 rows containing non-finite values (`stat_bin()`).</code></pre>
+## Warning: Removed 17 rows containing non-finite outside the scale range
+## (`stat_bin()`).</code></pre>
 <p><img src="visualization_pt1_files/figure-html/unnamed-chunk-16-1.png" width="90%" /></p>
 <p>The <code>position = "dodge"</code> places the bars for each group
 side-by-side, but this gets sort of hard to understand. I often prefer
 density plots in place of histograms.</p>
 <pre class="r"><code>ggplot(weather_df, aes(x = tmax, fill = name)) + 
   geom_density(alpha = .4, adjust = .5, color = &quot;blue&quot;)
-## Warning: Removed 17 rows containing non-finite values (`stat_density()`).</code></pre>
+## Warning: Removed 17 rows containing non-finite outside the scale range
+## (`stat_density()`).</code></pre>
 <p><img src="visualization_pt1_files/figure-html/unnamed-chunk-17-1.png" width="90%" /></p>
 <p>The <code>adjust</code> parameter in density plots is similar to the
 <code>binwidth</code> parameter in histograms, and it helps to try a few
@@ -729,7 +743,8 @@ the density.</p>
 <p>Histograms and densities are one way of investigating univariate
 distributions; boxplots are another.</p>
 <pre class="r"><code>ggplot(weather_df, aes(x = name, y = tmax)) + geom_boxplot()
-## Warning: Removed 17 rows containing non-finite values (`stat_boxplot()`).</code></pre>
+## Warning: Removed 17 rows containing non-finite outside the scale range
+## (`stat_boxplot()`).</code></pre>
 <p><img src="visualization_pt1_files/figure-html/unnamed-chunk-18-1.png" width="90%" /></p>
 <p>Violin plots are sometimes nice, but folks complain that they don’t
 <a
@@ -738,9 +753,12 @@ like violins</a>.</p>
 <pre class="r"><code>ggplot(weather_df, aes(x = name, y = tmax)) + 
   geom_violin(aes(fill = name), alpha = .5) + 
   stat_summary(fun = &quot;median&quot;, color = &quot;blue&quot;)
-## Warning: Removed 17 rows containing non-finite values (`stat_ydensity()`).
-## Warning: Removed 17 rows containing non-finite values (`stat_summary()`).
-## Warning: Removed 3 rows containing missing values (`geom_segment()`).</code></pre>
+## Warning: Removed 17 rows containing non-finite outside the scale range
+## (`stat_ydensity()`).
+## Warning: Removed 17 rows containing non-finite outside the scale range
+## (`stat_summary()`).
+## Warning: Removed 3 rows containing missing values or values outside the scale
+## range (`geom_segment()`).</code></pre>
 <p><img src="visualization_pt1_files/figure-html/unnamed-chunk-19-1.png" width="90%" /></p>
 <p>Ridge plots were the trendiest plot of 2017, and were a replacement
 for both boxplots and violin plots. They’re implemented in the <a
@@ -750,7 +768,7 @@ of the distribution matters.</p>
 <pre class="r"><code>ggplot(weather_df, aes(x = tmax, y = name)) + 
   geom_density_ridges(scale = .85)
 ## Picking joint bandwidth of 1.54
-## Warning: Removed 17 rows containing non-finite values
+## Warning: Removed 17 rows containing non-finite outside the scale range
 ## (`stat_density_ridges()`).</code></pre>
 <p><img src="visualization_pt1_files/figure-html/unnamed-chunk-20-1.png" width="90%" /></p>
 <p><strong><em>Learning Assessment:</em></strong> Make plots that
@@ -825,7 +843,8 @@ document. As an example, the code chunk below has set
 <code>fig.width = 12</code>.</p>
 <pre class="r"><code>ggplot(weather_df, aes(x = tmin, y = tmax)) + 
   geom_point(aes(color = name))
-## Warning: Removed 17 rows containing missing values (`geom_point()`).</code></pre>
+## Warning: Removed 17 rows containing missing values or values outside the scale
+## range (`geom_point()`).</code></pre>
 <p><img src="visualization_pt1_files/figure-html/unnamed-chunk-27-1.png" width="90%" /></p>
 <p>Usually you can get by with setting reasonable defaults, but keep a
 careful eye on figures you intend to show others – everything should be

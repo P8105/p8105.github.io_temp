@@ -1,0 +1,3 @@
+* The mean of the sample is `r mean(pull(ls_df, norm_samp))`
+* The median of the sample is `r median(pull(ls_df, norm_samp))`
+* The median of the sample is `r median(pull(ls_df, norm_samp))`

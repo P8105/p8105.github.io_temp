@@ -13,7 +13,7 @@
 
 <title>Linear models</title>
 
-<script src="site_libs/header-attrs-2.24/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.28/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
@@ -625,34 +625,26 @@ exercise.</p>
 fitted values to a dataframe.</p>
 <pre class="r"><code>modelr::add_residuals(nyc_airbnb, fit)</code></pre>
 <pre><code>## # A tibble: 40,492 × 6
-##    price stars borough neighborhood room_type        resid
-##    &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt;   &lt;chr&gt;        &lt;fct&gt;            &lt;dbl&gt;
-##  1    99   5   Bronx   City Island  Private room      9.47
-##  2   200  NA   Bronx   City Island  Private room     NA   
-##  3   300  NA   Bronx   City Island  Entire home/apt  NA   
-##  4   125   5   Bronx   City Island  Entire home/apt  35.5 
-##  5    69   5   Bronx   City Island  Private room    -20.5 
-##  6   125   5   Bronx   City Island  Entire home/apt  35.5 
-##  7    85   5   Bronx   City Island  Entire home/apt  -4.53
-##  8    39   4.5 Bronx   Allerton     Private room    -34.5 
-##  9    95   5   Bronx   Allerton     Entire home/apt   5.47
-## 10   125   4.5 Bronx   Allerton     Entire home/apt  51.5 
-## # ℹ 40,482 more rows</code></pre>
+##   price stars borough neighborhood room_type        resid
+##   &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt;   &lt;chr&gt;        &lt;fct&gt;            &lt;dbl&gt;
+## 1    99     5 Bronx   City Island  Private room      9.47
+## 2   200    NA Bronx   City Island  Private room     NA   
+## 3   300    NA Bronx   City Island  Entire home/apt  NA   
+## 4   125     5 Bronx   City Island  Entire home/apt  35.5 
+## 5    69     5 Bronx   City Island  Private room    -20.5 
+## 6   125     5 Bronx   City Island  Entire home/apt  35.5 
+## # ℹ 40,486 more rows</code></pre>
 <pre class="r"><code>modelr::add_predictions(nyc_airbnb, fit)</code></pre>
 <pre><code>## # A tibble: 40,492 × 6
-##    price stars borough neighborhood room_type        pred
-##    &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt;   &lt;chr&gt;        &lt;fct&gt;           &lt;dbl&gt;
-##  1    99   5   Bronx   City Island  Private room     89.5
-##  2   200  NA   Bronx   City Island  Private room     NA  
-##  3   300  NA   Bronx   City Island  Entire home/apt  NA  
-##  4   125   5   Bronx   City Island  Entire home/apt  89.5
-##  5    69   5   Bronx   City Island  Private room     89.5
-##  6   125   5   Bronx   City Island  Entire home/apt  89.5
-##  7    85   5   Bronx   City Island  Entire home/apt  89.5
-##  8    39   4.5 Bronx   Allerton     Private room     73.5
-##  9    95   5   Bronx   Allerton     Entire home/apt  89.5
-## 10   125   4.5 Bronx   Allerton     Entire home/apt  73.5
-## # ℹ 40,482 more rows</code></pre>
+##   price stars borough neighborhood room_type        pred
+##   &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt;   &lt;chr&gt;        &lt;fct&gt;           &lt;dbl&gt;
+## 1    99     5 Bronx   City Island  Private room     89.5
+## 2   200    NA Bronx   City Island  Private room     NA  
+## 3   300    NA Bronx   City Island  Entire home/apt  NA  
+## 4   125     5 Bronx   City Island  Entire home/apt  89.5
+## 5    69     5 Bronx   City Island  Private room     89.5
+## 6   125     5 Bronx   City Island  Entire home/apt  89.5
+## # ℹ 40,486 more rows</code></pre>
 <p>Like many things in the tidyverse, the first argument is a dataframe.
 That makes it easy to included steps adding residuals or predictions in
 pipeline of commands to conduct inspections and perform diagnostics.</p>
@@ -970,7 +962,6 @@ using a mixed-model spinoff of the <code>broom</code> package.</p>
 <pre class="r"><code>manhattan_airbnb |&gt; 
   lme4::lmer(price ~ stars + room_type + (1 + room_type | neighborhood), data = _) |&gt; 
   broom.mixed::tidy()</code></pre>
-<pre><code>## boundary (singular) fit: see help(&#39;isSingular&#39;)</code></pre>
 <pre><code>## # A tibble: 11 × 6
 ##    effect   group        term                       estimate std.error statistic
 ##    &lt;chr&gt;    &lt;chr&gt;        &lt;chr&gt;                         &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
@@ -1011,7 +1002,7 @@ wrangles the data for analysis.</p>
     victim_race = fct_relevel(victim_race, &quot;White&quot;)) |&gt; 
   select(resolved, victim_age, victim_race, victim_sex)</code></pre>
 <pre><code>## Rows: 52179 Columns: 12
-## ── Column specification ────────────────────────────────────────────────────────
+## ── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────
 ## Delimiter: &quot;,&quot;
 ## chr (9): uid, victim_last, victim_first, victim_race, victim_age, victim_sex...
 ## dbl (3): reported_date, lat, lon
@@ -1102,19 +1093,15 @@ produce probabilities for each subject.</p>
   modelr::add_predictions(fit_logistic) |&gt; 
   mutate(fitted_prob = boot::inv.logit(pred))</code></pre>
 <pre><code>## # A tibble: 2,827 × 6
-##    resolved victim_age victim_race victim_sex    pred fitted_prob
-##       &lt;dbl&gt;      &lt;dbl&gt; &lt;fct&gt;       &lt;chr&gt;        &lt;dbl&gt;       &lt;dbl&gt;
-##  1        0         17 Black       Male       -0.654        0.342
-##  2        0         26 Black       Male       -0.720        0.327
-##  3        0         21 Black       Male       -0.683        0.335
-##  4        1         61 White       Male       -0.131        0.467
-##  5        1         46 Black       Male       -0.864        0.296
-##  6        1         27 Black       Male       -0.727        0.326
-##  7        1         21 Black       Male       -0.683        0.335
-##  8        1         16 Black       Male       -0.647        0.344
-##  9        1         21 Black       Male       -0.683        0.335
-## 10        1         44 Black       Female      0.0297       0.507
-## # ℹ 2,817 more rows</code></pre>
+##   resolved victim_age victim_race victim_sex   pred fitted_prob
+##      &lt;dbl&gt;      &lt;dbl&gt; &lt;fct&gt;       &lt;chr&gt;       &lt;dbl&gt;       &lt;dbl&gt;
+## 1        0         17 Black       Male       -0.654       0.342
+## 2        0         26 Black       Male       -0.720       0.327
+## 3        0         21 Black       Male       -0.683       0.335
+## 4        1         61 White       Male       -0.131       0.467
+## 5        1         46 Black       Male       -0.864       0.296
+## 6        1         27 Black       Male       -0.727       0.326
+## # ℹ 2,821 more rows</code></pre>
 </div>
 </div>
 <div id="other-materials" class="section level2">

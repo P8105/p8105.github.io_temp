@@ -25,9 +25,10 @@ install.packages(
   c("tidyverse", "knitr", "rmarkdown", "janitor", "broom", "here", "readxl", 
     "haven", "rnoaa", "ggridges", "ggthemes", "leaflet", "viridis", "skimr", 
     "rvest", "httr", "flexdashboard", "devtools", "usethis", "modelr", "mgcv", 
-    "tidytext", "shiny", "patchwork", "glmnet"))
+    "tidytext", "shiny", "patchwork", "glmnet", "plotly"))
 
-devtools::install_github("p8105/p8105.datasets")
+remotes::install_github("p8105/p8105.datasets")
+remotes::install_github("ropensci/rnoaa")
 ```
 
 (Note: on a Mac running OSX, you may need to install the [command line tools](http://osxdaily.com/2014/02/12/install-command-line-tools-mac-os-x/) for these packages to install.)

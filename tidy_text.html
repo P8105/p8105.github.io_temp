@@ -13,7 +13,7 @@
 
 <title>Tidy text</title>
 
-<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.28/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
@@ -29,14 +29,14 @@
        h6 {font-size: 12px;}
        code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
        pre:not([class]) { background-color: white }</style>
-<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
-<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
-<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet" />
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" />
 <script defer src="https://use.fontawesome.com/releases/v5.0.3/js/all.js"></script>
 <script defer src="https://use.fontawesome.com/releases/v5.0.0/js/v4-shims.js"></script>
@@ -75,6 +75,7 @@ if (window.hljs) {
 
 
 
+
 <link rel="stylesheet" href="styles.css" type="text/css" />
 
 
@@ -99,6 +100,9 @@ button.code-folding-btn:focus {
 }
 summary {
   display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
 }
 pre code {
   padding: 0;
@@ -156,11 +160,15 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark it active
-  menuAnchor.tab('show');
-
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
 
   // Navbar adjustments
   var navHeight = $(".navbar").first().height() + 15;
@@ -189,8 +197,8 @@ $(document).ready(function () {
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before {
-  content: "";
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -198,16 +206,9 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "&#xe258;";
-  border: none;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "";
+  content: "\e258";
   font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
+  border: none;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -324,7 +325,7 @@ div.tocify {
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -340,7 +341,7 @@ div.tocify {
   <a href="schedule.html">Schedule</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Topics
      
     <span class="caret"></span>
@@ -376,7 +377,7 @@ div.tocify {
   </ul>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Datasets
      
     <span class="caret"></span>
@@ -431,12 +432,17 @@ div.tocify {
 </div>
 
 
-<p>This is a bit of a diversion for a public-health-focused course in data science, but it’s fun, related to web data, strings, and factors, and emphasizes tools in data wrangling. It’s most closely related to content in the <a href="topic_data_wrangling_ii.html">Data Wrangling II</a> topic.</p>
+<p>This is a bit of a diversion for a public-health-focused course in
+data science, but it’s fun, related to web data, strings, and factors,
+and emphasizes tools in data wrangling. It’s most closely related to
+content in the <a href="topic_data_wrangling_ii.html">Data Wrangling
+II</a> topic.</p>
 <div id="overview" class="section level2 tabset tabset-pills">
 <h2 class="tabset tabset-pills">Overview</h2>
 <div id="learning-objectives" class="section level3">
 <h3>Learning Objectives</h3>
-<p>Use <code>tidytext</code> to organize text data, and to conduct frequency and sentiment analyses.</p>
+<p>Use <code>tidytext</code> to organize text data, and to conduct
+frequency and sentiment analyses.</p>
 </div>
 <div id="slide-deck" class="section level3">
 <h3>Slide Deck</h3>
@@ -448,7 +454,11 @@ div.tocify {
     class="video"> </iframe></p>
 </div>
 <div style="margin-bottom:5px">
-<strong> <a href="https://speakerdeck.com/jeffgoldsmith/p8105-tidy-text" title="Tidy Text" target="_blank">Tidy Text</a> </strong> from <strong><a href="https://speakerdeck.com/jeffgoldsmith" target="_blank">Jeff Goldsmith</a></strong>.
+<strong>
+<a href="https://speakerdeck.com/jeffgoldsmith/p8105-tidy-text" title="Tidy Text" target="_blank">Tidy
+Text</a> </strong> from
+<strong><a href="https://speakerdeck.com/jeffgoldsmith" target="_blank">Jeff
+Goldsmith</a></strong>.
 </div>
 <p><br></p>
 <hr />
@@ -465,35 +475,43 @@ div.tocify {
 </div>
 <div id="example" class="section level2">
 <h2>Example</h2>
-<p>I’ll write code for today’s content in a new R Markdown document called <code>tidy_text.Rmd</code>, and put it in the extra topics directory / GitHub repo. I’m going to load the <code>tidyverse</code> as usual, as well as <code>tidytext</code> and <code>rvest</code>.</p>
+<p>I’ll write code for today’s content in a new R Markdown document
+called <code>tidy_text.Rmd</code>, and put it in the extra topics
+directory / GitHub repo. I’m going to load the <code>tidyverse</code> as
+usual, as well as <code>tidytext</code> and <code>rvest</code>.</p>
 <pre class="r"><code>library(tidyverse)
 library(tidytext)
 
 library(rvest)</code></pre>
 <div id="data" class="section level3">
 <h3>Data</h3>
-<p>We’re sticking with “Napoleon Dynamite reviews”! First, I’ll re-use code from <a href="iteration_and_listcols.html">iteration and listcols</a> to scrape the 1000 most recent reviews on Amazon (and cache the result).</p>
+<p>We’re sticking with “Napoleon Dynamite reviews”! I’m showing code
+similar to that in <a href="iteration_and_listcols.html">iteration and
+listcols</a> to scrape the 1000 most recent reviews on Amazon. Believe
+it or not, this code used to work – but then Amazon got real tired of
+everyone scraping their data all the time and set up stricter
+protections and an API for approved (paying) users.</p>
 <pre class="r"><code>read_page_reviews &lt;- function(url) {
   
   html = read_html(url)
   
   review_titles = 
-    html %&gt;%
-    html_nodes(&quot;.a-text-bold span&quot;) %&gt;%
+    html |&gt;
+    html_nodes(&quot;.a-text-bold span&quot;) |&gt;
     html_text()
   
   review_stars = 
-    html %&gt;%
-    html_nodes(&quot;#cm_cr-review_list .review-rating&quot;) %&gt;%
-    html_text() %&gt;%
-    str_extract(&quot;^\\d&quot;) %&gt;%
+    html |&gt;
+    html_nodes(&quot;#cm_cr-review_list .review-rating&quot;) |&gt;
+    html_text() |&gt;
+    str_extract(&quot;^\\d&quot;) |&gt;
     as.numeric()
   
   review_text = 
-    html %&gt;%
-    html_nodes(&quot;.review-text-content span&quot;) %&gt;%
-    html_text() %&gt;% 
-    str_replace_all(&quot;\n&quot;, &quot;&quot;) %&gt;% 
+    html |&gt;
+    html_nodes(&quot;.review-text-content span&quot;) |&gt;
+    html_text() |&gt; 
+    str_replace_all(&quot;\n&quot;, &quot;&quot;) |&gt; 
     str_trim()
   
   tibble(
@@ -507,45 +525,70 @@ url_base = &quot;https://www.amazon.com/product-reviews/B00005JNBQ/ref=cm_cr_arp
 
 dynamite_reviews = 
   tibble(
-    page = 3:100,
-    urls = str_c(url_base, page)) %&gt;% 
-  mutate(reviews = map(urls, read_page_reviews)) %&gt;% 
-  unnest(reviews) %&gt;%
-  mutate(review_num = row_number()) %&gt;% 
+    page = 1:100,
+    urls = str_c(url_base, page)) |&gt; 
+  mutate(reviews = map(urls, read_page_reviews)) |&gt; 
+  unnest(reviews) |&gt;
+  mutate(review_num = row_number()) |&gt; 
   relocate(page, review_num)</code></pre>
-<p>The output of the code above is a successfully scraped dataset with 6 and 980 rows – one row for each review. For each review we get the title of that review, the number of stars it received, and text that describers the users feelings about the movie.</p>
+<p>The output of the code above was a successfully scraped dataset with
+one row for each review. For each review we get the title of that
+review, the number of stars it received, and text that describers the
+users feelings about the movie.</p>
+<p>In place of actually scraping the data, we can import <a
+href="data/dynamite_reviews.csv">this spreadsheet</a> using the code
+below. It’s not perfectly current but can illustrate the main ideas in
+<code>tidytext</code>.</p>
+<pre class="r"><code>dynamite_reviews = 
+  read_csv(&quot;data/dynamite_reviews.csv&quot;)</code></pre>
+<pre><code>## Rows: 1000 Columns: 4
+## ── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## chr (2): title, text
+## dbl (2): review_num, stars
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
 </div>
 <div id="words-and-wordcounts" class="section level3">
 <h3>Words and wordcounts</h3>
-<p>To illustrate tidy text and text analysis, we’ll focus on the reviews directly, which are stored as strings in <code>text</code>. To begin our analysis, we’ll un-nest the tokens (i.e. words) in each row; the result is a tidy dataset in which each word is contained within a separate row.</p>
+<p>To illustrate tidy text and text analysis, we’ll focus on the reviews
+directly, which are stored as strings in <code>text</code>. To begin our
+analysis, we’ll un-nest the tokens (i.e. words) in each row; the result
+is a tidy dataset in which each word is contained within a separate
+row.</p>
 <pre class="r"><code>dynamite_words = 
-  dynamite_reviews %&gt;% 
+  dynamite_reviews |&gt; 
   unnest_tokens(word, text)</code></pre>
-<p>There are lots of words here that are uninformative. We’ll remove “stop words” using <code>anti_join</code>; in other settings the words you want to remove might be different.</p>
+<p>There are lots of words here that are uninformative. We’ll remove
+“stop words” using <code>anti_join</code>; in other settings the words
+you want to remove might be different.</p>
 <pre class="r"><code>data(stop_words)
 
 dynamite_words = 
   anti_join(dynamite_words, stop_words)</code></pre>
-<pre><code>## Joining, by = &quot;word&quot;</code></pre>
-<p>Great! Let’s take a look at the most commonly used (informative) words in this dataset.</p>
-<pre class="r"><code>dynamite_words %&gt;% 
-  count(word, sort = TRUE) %&gt;% 
-  top_n(10) %&gt;% 
-  mutate(word = fct_reorder(word, n)) %&gt;% 
+<pre><code>## Joining with `by = join_by(word)`</code></pre>
+<p>Great! Let’s take a look at the most commonly used (informative)
+words in this dataset.</p>
+<pre class="r"><code>dynamite_words |&gt; 
+  count(word, sort = TRUE) |&gt; 
+  top_n(10) |&gt; 
+  mutate(word = fct_reorder(word, n)) |&gt; 
   ggplot(aes(x = word, y = n)) + 
   geom_bar(stat = &quot;identity&quot;, fill = &quot;blue&quot;, alpha = .6) + 
   coord_flip()</code></pre>
 <pre><code>## Selecting by n</code></pre>
-<p><img src="tidy_text_files/figure-html/unnamed-chunk-5-1.png" width="90%" /></p>
+<p><img src="tidy_text_files/figure-html/unnamed-chunk-6-1.png" width="90%" /></p>
 </div>
 <div id="comparing-words-across-groups" class="section level3">
 <h3>Comparing words across groups</h3>
-<p>The next code chunk below produces a table of the most frequently used in one- and five-star reviews.</p>
-<pre class="r"><code>dynamite_words %&gt;%
-  filter(stars %in% c(1, 5)) %&gt;%
-  group_by(stars) %&gt;%
-  count(word) %&gt;% 
-  top_n(5) %&gt;%
+<p>The next code chunk below produces a table of the most frequently
+used in one- and five-star reviews.</p>
+<pre class="r"><code>dynamite_words |&gt;
+  filter(stars %in% c(1, 5)) |&gt;
+  group_by(stars) |&gt;
+  count(word) |&gt; 
+  top_n(5) |&gt;
   knitr::kable()</code></pre>
 <pre><code>## Selecting by n</code></pre>
 <table>
@@ -559,23 +602,23 @@ dynamite_words =
 <tbody>
 <tr class="odd">
 <td align="right">1</td>
-<td align="left">boring</td>
-<td align="right">9</td>
+<td align="left">bad</td>
+<td align="right">8</td>
 </tr>
 <tr class="even">
 <td align="right">1</td>
-<td align="left">film</td>
-<td align="right">10</td>
+<td align="left">dumb</td>
+<td align="right">8</td>
 </tr>
 <tr class="odd">
 <td align="right">1</td>
-<td align="left">funny</td>
-<td align="right">10</td>
+<td align="left">dvd</td>
+<td align="right">12</td>
 </tr>
 <tr class="even">
 <td align="right">1</td>
 <td align="left">movie</td>
-<td align="right">53</td>
+<td align="right">51</td>
 </tr>
 <tr class="odd">
 <td align="right">1</td>
@@ -585,98 +628,125 @@ dynamite_words =
 <tr class="even">
 <td align="right">1</td>
 <td align="left">watch</td>
-<td align="right">9</td>
+<td align="right">11</td>
 </tr>
 <tr class="odd">
 <td align="right">5</td>
 <td align="left">classic</td>
-<td align="right">98</td>
+<td align="right">114</td>
 </tr>
 <tr class="even">
 <td align="right">5</td>
 <td align="left">funny</td>
-<td align="right">117</td>
+<td align="right">135</td>
 </tr>
 <tr class="odd">
 <td align="right">5</td>
 <td align="left">love</td>
-<td align="right">120</td>
+<td align="right">138</td>
 </tr>
 <tr class="even">
 <td align="right">5</td>
 <td align="left">movie</td>
-<td align="right">439</td>
+<td align="right">437</td>
 </tr>
 <tr class="odd">
 <td align="right">5</td>
-<td align="left">time</td>
-<td align="right">99</td>
+<td align="left">watch</td>
+<td align="right">100</td>
 </tr>
 </tbody>
 </table>
-<p>The table above gives the top 5 most frequently used words in 1-star and 5-star reviews. <em>Movie</em> is the most used word for both 1 and 5-star reviews, though other words, like <em>dumb</em> differentiate 1-star reviews from 5-star reviews, which have words like <em>love</em>.</p>
-<p>Word frequency might be misleading because there are 795 5-star reviews and only 76 1-star reviews.</p>
-<p>Let’s compare which words are more likely to come from a 1 versus 5 star ratings. We limit to words that appear at least 5 times and compute the approximate log odds ratio for each word.</p>
+<p>The table above gives the top 5 most frequently used words in 1-star
+and 5-star reviews. <em>Movie</em> is the most used word for both 1 and
+5-star reviews, though other words, like <em>dumb</em> differentiate
+1-star reviews from 5-star reviews, which have words like
+<em>love</em>.</p>
+<p>Word frequency might be misleading because there are 762 5-star
+reviews and only 64 1-star reviews.</p>
+<p>Let’s compare which words are more likely to come from a 1 versus 5
+star ratings. We limit to words that appear at least 5 times and compute
+the approximate log odds ratio for each word.</p>
 <pre class="r"><code>word_ratios = 
-  dynamite_words %&gt;%
-  filter(stars %in% c(1, 5)) %&gt;% 
-  count(word, stars) %&gt;%
-  group_by(word) %&gt;% 
-  filter(sum(n) &gt;= 5) %&gt;%
-  ungroup() %&gt;%
+  dynamite_words |&gt;
+  filter(stars %in% c(1, 5)) |&gt; 
+  count(word, stars) |&gt;
+  group_by(word) |&gt; 
+  filter(sum(n) &gt;= 5) |&gt;
+  ungroup() |&gt;
   pivot_wider(
     names_from = stars, 
     values_from = n,
     names_prefix = &quot;stars_&quot;,
-    values_fill = 0) %&gt;%
+    values_fill = 0) |&gt;
   mutate(
     stars_1_odds = (stars_1 + 1) / (sum(stars_1) + 1),
     stars_5_odds = (stars_5 + 1) / (sum(stars_5) + 1),
     log_OR = log(stars_5_odds / stars_1_odds)
-  ) %&gt;%
+  ) |&gt;
   arrange(desc(log_OR)) </code></pre>
-<p>Next, let’s plot the top 10 most distinctive words (that is, words that appear much more frequently in one group than the other) below.</p>
-<pre class="r"><code>word_ratios %&gt;% 
-  mutate(pos_log_OR = ifelse(log_OR &gt; 0, &quot;5 star &gt; 1 star&quot;, &quot;1 star &gt; 5 star&quot;)) %&gt;%
-  group_by(pos_log_OR) %&gt;%
-  top_n(10, abs(log_OR)) %&gt;%
-  ungroup() %&gt;%
-  mutate(word = fct_reorder(word, log_OR)) %&gt;%
+<p>Next, let’s plot the top 10 most distinctive words (that is, words
+that appear much more frequently in one group than the other) below.</p>
+<pre class="r"><code>word_ratios |&gt; 
+  mutate(pos_log_OR = ifelse(log_OR &gt; 0, &quot;5 star &gt; 1 star&quot;, &quot;1 star &gt; 5 star&quot;)) |&gt;
+  group_by(pos_log_OR) |&gt;
+  top_n(10, abs(log_OR)) |&gt;
+  ungroup() |&gt;
+  mutate(word = fct_reorder(word, log_OR)) |&gt;
   ggplot(aes(word, log_OR, fill = pos_log_OR)) +
   geom_col() +
   coord_flip() +
   ylab(&quot;log odds ratio (5/1)&quot;) +
   scale_fill_discrete(name = &quot;&quot;)</code></pre>
-<p><img src="tidy_text_files/figure-html/unnamed-chunk-7-1.png" width="90%" /></p>
-<p>Words like “classic”, “awesome”, and “love” have high relative frequency in the 5-star reviews and “boring”, “dumb”, and “bad” have high relative frequency in the 1-star reviews. This seems to be a polarizing film.</p>
+<p><img src="tidy_text_files/figure-html/unnamed-chunk-8-1.png" width="90%" /></p>
+<p>Words like “classic”, “awesome”, and “love” have high relative
+frequency in the 5-star reviews and “boring”, “dumb”, and “bad” have
+high relative frequency in the 1-star reviews. This seems to be a
+polarizing film.</p>
 </div>
 <div id="sentiment-analysis" class="section level3">
 <h3>Sentiment analysis</h3>
-<p>Finally, let’s score the sentiment in each word. We’ll use the “bing” (like <a href="https://www.cs.uic.edu/~liub/FBS/sentiment-analysis.html">Bing Liu</a>, not like <a href="https://www.bing.com">bing.com</a>) sentiment lexicon, which simply categorizes each word as having a positive or negative sentiment.</p>
+<p>Finally, let’s score the sentiment in each word. We’ll use the “bing”
+(like <a
+href="https://www.cs.uic.edu/~liub/FBS/sentiment-analysis.html">Bing
+Liu</a>, not like <a href="https://www.bing.com">bing.com</a>) sentiment
+lexicon, which simply categorizes each word as having a positive or
+negative sentiment.</p>
 <pre class="r"><code>bing_sentiments = get_sentiments(&quot;bing&quot;)</code></pre>
-<p>Note this is might not always be appropriate – this scores <code>cold</code> as <code>negative</code> which might not be accurate for e.g. food inspections – but we’ll use it anyway.</p>
-<p>We need to combine this lexicon with our tidy dataset containing words from each inspection. Note that only words that are in the sentiment lexicon will be retained, as the rest of the words are not considered meaningful. We’ll also count the number of positive and negative words in each review, and create a score that is the difference between the number of positive words and negative words.</p>
+<p>Note this is might not always be appropriate – this scores
+<code>cold</code> as <code>negative</code> which might not be accurate
+for e.g. food inspections – but we’ll use it anyway.</p>
+<p>We need to combine this lexicon with our tidy dataset containing
+words from each inspection. Note that only words that are in the
+sentiment lexicon will be retained, as the rest of the words are not
+considered meaningful. We’ll also count the number of positive and
+negative words in each review, and create a score that is the difference
+between the number of positive words and negative words.</p>
 <pre class="r"><code>dynamite_sentiments = 
-  dynamite_words %&gt;% 
-  inner_join(., bing_sentiments) %&gt;% 
-  count(review_num, sentiment) %&gt;% 
+  dynamite_words |&gt; 
+  inner_join(x = _, bing_sentiments) |&gt; 
+  count(review_num, sentiment) |&gt; 
   pivot_wider(
     names_from = sentiment, 
     values_from = n, 
-    values_fill = 0) %&gt;% 
-  mutate(review_sentiment = positive - negative) %&gt;% 
+    values_fill = 0) |&gt; 
+  mutate(review_sentiment = positive - negative) |&gt; 
   select(review_num, review_sentiment)</code></pre>
-<pre><code>## Joining, by = &quot;word&quot;</code></pre>
-<p>We now have sentiment scores for each inspection. We’ll combine these with our original dataset, which had inspections in each row rather than words in each row – the data tidied for text analysis aren’t really suitable for our current needs.</p>
+<pre><code>## Joining with `by = join_by(word)`</code></pre>
+<p>We now have sentiment scores for each inspection. We’ll combine these
+with our original dataset, which had inspections in each row rather than
+words in each row – the data tidied for text analysis aren’t really
+suitable for our current needs.</p>
 <pre class="r"><code>dynamite_sentiments = 
   right_join(
     dynamite_reviews, dynamite_sentiments, 
     by = &quot;review_num&quot;)</code></pre>
-<p>Finally, let’s make a plot showing inspection sentiments and stars.</p>
-<pre class="r"><code>dynamite_sentiments %&gt;% 
+<p>Finally, let’s make a plot showing inspection sentiments and
+stars.</p>
+<pre class="r"><code>dynamite_sentiments |&gt; 
   mutate(
     review_num = factor(review_num),
-    review_num = fct_reorder(review_num, review_sentiment, .desc = TRUE)) %&gt;% 
+    review_num = fct_reorder(review_num, review_sentiment, .desc = TRUE)) |&gt; 
   ggplot(aes(x = review_num, y = review_sentiment, fill = stars, color = stars)) + 
   geom_bar(stat = &quot;identity&quot;) + 
   theme(
@@ -684,29 +754,37 @@ dynamite_words =
     axis.text.x=element_blank(),
     axis.ticks.x=element_blank())</code></pre>
 <p><img src="tidy_text_files/figure-html/sentiment_plot-1.png" width="90%" /></p>
-<p>Sentiment seems to be at least somewhat associated with star rating in that more positive sentiments are more yellow-green (4-5 stars) and more negative sentiments are more blue-purple.</p>
+<p>Sentiment seems to be at least somewhat associated with star rating
+in that more positive sentiments are more yellow-green (4-5 stars) and
+more negative sentiments are more blue-purple.</p>
 <p>Here is the text from the most positive review:</p>
-<pre class="r"><code>dynamite_sentiments %&gt;%
-  filter(review_sentiment == max(review_sentiment)) %&gt;% 
+<pre class="r"><code>dynamite_sentiments |&gt;
+  filter(review_sentiment == max(review_sentiment)) |&gt; 
   pull(text)</code></pre>
-<pre><code>## [1] &quot;love love love love love. We watch this twice a week and even had a Napoleon Dynamite party complete with corn dogs and tater tots. FUN!!&quot;</code></pre>
+<pre><code>## [1] &quot;Love, love and love! My children ages 13, 10 and 8 enjoy family movie nights and my husband and I were looking for something that we all could enjoy. This movie was perfect! So much fun and beyond quotable comments. A fun family film!&quot;</code></pre>
 <p><img src="images/napoleon_1.gif" style="width:50%; border:5px solid"></p>
 <p>And here is the text from the most negative (1-star) review:</p>
-<pre class="r"><code>dynamite_sentiments %&gt;%
-  filter(review_sentiment == min(review_sentiment), stars == 1) %&gt;% 
+<pre class="r"><code>dynamite_sentiments |&gt;
+  filter(review_sentiment == min(review_sentiment), stars == 1) |&gt; 
   pull(text)</code></pre>
-<pre><code>## character(0)</code></pre>
+<pre><code>## [1] &quot;Let me start by openly admitting that I am an 80&#39;s throwback and proud of it. I understand that my era did not produce horribly intelligent, deeply touching movies. That being said, this movie puts the Du-h! in Dumb!!  My teenage daughter had seen it a sleepover, so we rented it so she could show me how silly it is for our girly night.  She actually got tickled at a few spots on her second run through it. I sat open mouthed, amazed at the sheer senselessness of the whole thing...waiting desperately for a plot or growth of a character. None came. Since we had it rented for the weekend, she showed it to her older brother the next night. She giggled again, and he snickered with a confused look on his face once in a while. Then we couldn&#39;t let my Hubby miss out on the sheer stupidity of it all, so we watched it with him on Sunday afternoon.  Our daughter and son both snickered here and there, mostly at the looks on their parents&#39; faces.  My husband was, as was I, gobsmackered. We kept looking at each other as if to assure each other that it was indeed that painfully dumb.  The only real emotion I felt was a horribly heartbroken, sick to my stomach feeling for Napoleon and his friends for being so awkward and socially inept...I remember kids who struggled in school that way, and I always almost cried every time I saw them in a tough situation.  If anything it brought back bad memories of school....who needs that?  Anyway, all this to say it is a story about an awkward boy who uses bluster and dumb responses to deal with not fitting in.  It follows (if you can exaggerate and say there is a plot) him as he finds friends (just as goofy as he) and finds romance...sort of.&quot;</code></pre>
 <p><img src="images/napoleon_2.gif" style="width:50%; border:5px solid"></p>
 </div>
 </div>
 <div id="other-materials" class="section level2">
 <h2>Other materials</h2>
 <ul>
-<li>The framework we used is explained in detail in the <a href="http://tidytextmining.com">Tidy Text book</a></li>
-<li>One of the book’s authors, Julia Silge, has a <a href="https://www.youtube.com/watch?v=0poJP8WQxew">nice video</a> talking about the work</li>
-<li>The other of the book’s authors, Dave Robinson, used the approach to examine Donald Trump’s tweets in this this <a href="http://varianceexplained.org/r/trump-tweets/">blog post</a></li>
+<li>The framework we used is explained in detail in the <a
+href="http://tidytextmining.com">Tidy Text book</a></li>
+<li>One of the book’s authors, Julia Silge, has a <a
+href="https://www.youtube.com/watch?v=0poJP8WQxew">nice video</a>
+talking about the work</li>
+<li>The other of the book’s authors, Dave Robinson, used the approach to
+examine Donald Trump’s tweets in this this <a
+href="http://varianceexplained.org/r/trump-tweets/">blog post</a></li>
 </ul>
-<p>The code that I produced working examples in lecture is <a href="https://github.com/p8105/tidytext">here</a>.</p>
+<p>The code that I produced working examples in lecture is <a
+href="https://github.com/p8105/tidytext">here</a>.</p>
 </div>
 
 <br><br>

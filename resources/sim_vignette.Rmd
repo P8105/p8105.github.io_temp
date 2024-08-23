@@ -1,0 +1,65 @@
+---
+title: "Simulation examples"
+author: "Jeff Goldsmith"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Simulation examples}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+This package was written as an example in the course [P8105](https://p8105/). It includes functions for simulating data from Normal and Binomial distributions and reporting sample statistics. In this vignette we look at both simulation functions and how they are used to illustrate properties of relevant estimators under repeated sampling. 
+
+The chunk below loads `example.package` and other packages needed to run the code in this vignette.
+
+```{r}
+library(example.package)
+library(ggplot2)
+```
+
+## `sim_regression`
+
+The `sim_regression` function simulates data from a simple linear regression model, fits a model using OLS, and returns a dataframe containing the sample size and coefficient estimates. The function has three arguments: the sample size, the true intercept, and the true slope. 
+
+The code chunk below demonstrates the usage of this function using two examples.
+
+```{r}
+sim_mean_sd(n = 30, mu = 2, sd = 3)
+sim_mean_sd(n = 3000, mu = 2, sd = 3)
+```
+
+## `sim_bern_mean`
+
+The `sim_bern_mean` function simulates data from a Bernoulli distribution and returns a dataframe containing the sample size and sample mean. The function has two arguments: the sample size and the probability of taking the value 1 in each experiment. 
+
+The code chunk below demonstrates the usage of this function using two examples.
+
+```{r}
+sim_bern_mean(n = 30, prob = .95)
+sim_bern_mean(n = 3000, prob = .95)
+```
+
+## Repeated simulations
+
+The purpose of these function (and of this package) is to illustrate the properties of estimators under repeated sampling. For example, we can obtain an empirical distribution of the sample mean when the data are Normally distributed using the code below.
+
+```{r}
+library(tidyverse)
+
+sim_results = 
+  tibble(sample_size = c(30, 60, 120, 240)) %>% 
+  mutate(
+    output_lists = map(.x = sample_size, ~rerun(1000, sim_mean_sd(n = .x))),
+    estimate_dfs = map(output_lists, bind_rows)) %>% 
+  select(-output_lists) %>% 
+  unnest(estimate_dfs)
+
+sim_results %>% 
+  mutate(
+    sample_size = str_c("n = ", sample_size),
+    sample_size = fct_inorder(sample_size)) %>% 
+  ggplot(aes(x = sample_size, y = mu_hat, fill = sample_size)) + 
+  geom_violin()
+```
+
