@@ -68,7 +68,7 @@ Create a new R script using File > New File > R Script. Write a short comment se
 
 ```{r}
 ##################################################################
-# Sept 5, 2023
+# Sept 5, 2024
 # Jeff Goldsmith
 #
 # Script for exploring R!
@@ -161,7 +161,7 @@ First, data frames and variable classes.
 
 ```{r, eval = FALSE}
 ##################################################################
-# Sept 5, 2023
+# Sept 5, 2024
 # Jeff Goldsmith
 #
 # Script exploring variable assignment
@@ -189,7 +189,7 @@ Second, simple plots.
 
 ```{r, eval = FALSE}
 ##################################################################
-# Sept 5, 2023
+# Sept 5, 2024
 # Jeff Goldsmith
 #
 # Script producing basic plots
@@ -234,7 +234,7 @@ A final word about scripts -- not every line of code you write will (or should) 
 
 Your projects will generally consist of several related files -- input data, scripts, results. It's important to keep these organized, so you can find everything you need quickly and easily. R Projects, through RStudio, give you an easy way to do this. 
 
-Create a directory and save the previous two scripts into that directory. Script names, like variable names, should be descriptive (e.g. `20230905_var_assign.R` and `20230905_simple_plots.R`). The directory name should be descriptive as well, and it should be in a reasonable place on your computer (e.g. `~/Documents/first_project/`). Create an R Project using File > New Project > Existing Directory and specifying the directory you just created.
+Create a directory and save the previous two scripts into that directory. Script names, like variable names, should be descriptive (e.g. `20240905_var_assign.R` and `20240905_simple_plots.R`). The directory name should be descriptive as well, and it should be in a reasonable place on your computer (e.g. `~/Documents/first_project/`). Create an R Project using File > New Project > Existing Directory and specifying the directory you just created.
 
 For now, the best part about R Projects is that they force you to think about and organize the elements you need for your analysis or project. Double-clicking the new `.Rproj` file will launch the R Project; you'll see a Files tab in the usual Plots / Packages / Help / Viewer pane. Later, we'll find R Projects useful in other ways. 
 

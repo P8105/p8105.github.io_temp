@@ -68,25 +68,25 @@ The next chunk of code loads and tidies an example dataset, which includes daily
 ```{r weather_data_create, cache = TRUE, message=FALSE}
 weather_df = 
   rnoaa::meteo_pull_monitors(
-    c("USW00094728", "USC00519397", "USS0023B17S"),
+    c("USW00094728", "USW00022534", "USS0023B17S"),
     var = c("PRCP", "TMIN", "TMAX"), 
-    date_min = "2017-01-01",
-    date_max = "2017-12-31") %>%
+    date_min = "2021-01-01",
+    date_max = "2022-12-31") |>
   mutate(
     name = recode(
       id, 
       USW00094728 = "CentralPark_NY", 
-      USC00519397 = "Waikiki_HA",
+      USW00022534 = "Molokai_HI",
       USS0023B17S = "Waterhole_WA"),
     tmin = tmin / 10,
-    tmax = tmax / 10) %>%
+    tmax = tmax / 10) |>
   relocate(name)
 ```
 
 As we'll discuss, a major element of working with data is producing visualizations. The plot below shows the maximum temperature at each of the three stations, as well as smooth trends over time to illustrate seasonal effects. This is produced using `ggplot`, a package in the `tidyverse` that we'll talk more about soon. 
 
 ```{r, warning=FALSE}
-weather_df %>% 
+weather_df |> 
   ggplot(aes(x = date, y = tmax, color = name)) + 
   geom_point(alpha = .5) +
   geom_smooth(se = FALSE) + 
@@ -102,23 +102,23 @@ library(p8105.datasets)
 data("nyc_airbnb")
 
 nyc_airbnb = 
-  nyc_airbnb %>% 
-  mutate(stars = review_scores_location / 2) %>% 
+  nyc_airbnb |> 
+  mutate(stars = review_scores_location / 2) |> 
   rename(boro = neighbourhood_group)
 
 pal <- colorNumeric(
   palette = "viridis",
   domain = nyc_airbnb$stars)
 
-nyc_airbnb %>% 
-  filter(boro %in% c("Manhattan", "Brooklyn", "Queens")) %>% 
-  na.omit(stars) %>% 
-  sample_n(5000) %>% 
+nyc_airbnb |> 
+  filter(boro %in% c("Manhattan", "Brooklyn", "Queens")) |> 
+  na.omit(stars) |> 
+  sample_n(5000) |> 
   mutate(
     click_label = 
-      str_c("<b>$", price, "</b><br>", stars, " stars<br>", number_of_reviews, " reviews")) %>% 
-  leaflet() %>% 
-  addProviderTiles(providers$CartoDB.Positron) %>% 
+      str_c("<b>$", price, "</b><br>", stars, " stars<br>", number_of_reviews, " reviews")) |> 
+  leaflet() |> 
+  addProviderTiles(providers$CartoDB.Positron) |> 
   addCircleMarkers(~lat, ~long, radius = .1, color = ~pal(stars), popup = ~click_label)
 ```
 
