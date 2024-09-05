@@ -22,12 +22,12 @@ If you can't find a team, or wish to form a team of a different size, please rea
 
 Date                    | Description                         | Deliverable
 ----------------------- | ----------------------------------- | -----------------------------------
-November 11 by 1:00 pm  | Form a team and submit a proposal   | Written proposal document
-November 13-17          | Project review meeting              | Zoom meeting -- no "deliverable"
-December 9 by 11:59 pm  | Report                              | Written report giving detailed project description 
-December 9 by 11:59 pm  | Webpage and screencast              | Webpage overview of project, with short explanatory video (published online)
-December 9 by 11:59 pm  | Peer assessment                     | Brief assessment of your teammates contributions (as a short document)
-December 14             | "In class" discussion of projects   | Enjoy hearing about projects! (Also get hex stickers...)
+November 8 by 1:00 pm   | Form a team and submit a proposal   | Written proposal document
+November 11-15          | Project review meeting              | Zoom meeting -- no "deliverable"
+December 7 by 11:59 pm  | Report                              | Written report giving detailed project description 
+December 7 by 11:59 pm  | Webpage and screencast              | Webpage overview of project, with short explanatory video (published online)
+December 7 by 11:59 pm  | Peer assessment                     | Brief assessment of your teammates contributions (as a short document)
+December 12             | "In class" discussion of projects   | Enjoy hearing about projects! (Also get hex stickers...)
 
 
 
