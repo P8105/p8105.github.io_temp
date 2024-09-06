@@ -277,7 +277,7 @@ R can take a while to learn. Luckily, tons of people have put together resources
 * [A (very) short intro to R](https://cran.r-project.org/doc/contrib/Torfs+Brauer-Short-R-Intro.pdf)
 * The [swirl](http://swirlstats.com) package will help you learn R in R
 * The [Base R cheatsheet](https://www.rstudio.com/wp-content/uploads/2016/05/base-r.pdf) is very handy
-* Not about R specifically, but the [RStudio cheatsheet](https://www.rstudio.com/wp-content/uploads/2016/01/rstudio-IDE-cheatsheet.pdf) might be handy!
+* Not about R specifically, but the [RStudio cheatsheet](https://rstudio.github.io/cheatsheets/base-r.pdf) might be handy!
 
 This content draws on the work of others; there are also useful references for a lot of this online.
 
