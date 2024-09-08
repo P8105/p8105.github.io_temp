@@ -146,7 +146,7 @@ cat(readr::read_file("resources/writing_with_data_la2.Rmd"))
 The YAML header controls global features of the document. I generally will include both the `author` and `date` in each document I produce.
 ```yaml
 author: "Jeff Goldsmith"
-date: 2023-09-12
+date: 2024-09-12
 ```
 
 We're mostly concerned with the output format, which is controlled through the `output:` field. 
@@ -214,11 +214,11 @@ cat(htmltools::includeText("resources/rmd_basic_plots.Rmd"))
 
 Constructing useful documents that combine text and code is the subject of several online guides. See below for a sampling:
 
-* The R Markdown [cheatsheet](https://www.rstudio.com/wp-content/uploads/2016/03/rmarkdown-cheatsheet-2.0.pdf) and this more [recent version](https://github.com/rstudio/cheatsheets/raw/master/rmarkdown-2.0.pdf) are useful resources once you have the basics down
+* The R Markdown [cheatsheet](https://rstudio.github.io/cheatsheets/rmarkdown.pdf) is a useful resource once you have the basics down
 * R For Data Science devotes chapters to [R Markdown](http://r4ds.had.co.nz/r-markdown.html), [additional output formats](http://r4ds.had.co.nz/r-markdown-formats.html), and a useful [workflow](http://r4ds.had.co.nz/r-markdown-workflow.html).
 * The [Intro to R Markdown](http://rmarkdown.rstudio.com/articles_intro.html) from RStudio overlaps a lot with the previous bullet, but is also handy to review
 * This [chapter](https://ismayc.github.io/rbasics-book/4-rmarkdown.html) from [R Basics](https://ismayc.github.io/rbasics-book/) is a good intro to R Markdown
-* If Webinars are more to your liking, this [intro](https://www.rstudio.com/resources/webinars/getting-started-with-r-markdown/) and this [follow-up](https://www.rstudio.com/resources/webinars/the-ecosystem-of-r-markdown/) are good
+* If Webinars are more to your liking, this [intro](https://www.rstudio.com/resources/webinars/getting-started-with-r-markdown/) is good
 
 You'll also find a lot of stuff online that has been written using R Markdown and, with a little digging, can often find the .RMD file as well. This is a great way to spot new tools and figure out how to incorporate them in your own documents!!
 
