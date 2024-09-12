@@ -1,0 +1,109 @@
+---
+title: "Homework 1"
+output:
+  html_document: 
+    toc: true
+    toc_float: true
+---
+
+### Context
+
+This assignment reinforces ideas in the [building blocks](topic_building_blocks.html) topic. 
+
+### Due date and submission
+
+Due: September 21 at 11:59pm
+
+Please submit (via courseworks) the web address of the GitHub repo containing your work for this assignment; git commits after the due date will cause the assignment to be considered late.
+
+R Markdown documents included as part of your solutions **must not** install packages, and should only load the packages necessary for your submission to knit. 
+
+### Points
+
+| Problem         | Points    |
+|:--------------- |:--------- |
+| Problem 0.1     | 25        |
+| Problem 0.2     | 25        |
+| Problem 1       | 25        |
+| Problem 2       | 25        |
+| Optional survey | No points |
+
+
+### Problem 0.1
+
+This "problem" focuses on the use of R Markdown to write reproducible reports, GitHub for version control, and R Projects to organize your work.
+
+To that end: 
+
+* create a public GitHub repo + local R Project; we suggest naming this repo / directory `p8105_hw1_YOURUNI` (e.g. `p8105_hw1_ajg2202` for Jeff), but that's not required
+* create a single .Rmd file named `p8105_hw1_YOURUNI.Rmd` that renders to `github_document`
+* submit a link to your repo via Courseworks
+
+Your solutions to Problems 1 and 2 should be implemented in your .Rmd file, and your git commit history should reflect the process you used to solve these Problems. 
+
+For this Problem, we will assess adherence to the instructions above regarding repo structure, git commit history, and whether we are able to knit your .Rmd to ensure that your work is reproducible. 
+
+
+### Problem 0.2
+
+This "problem" focuses on correct styling for your solutions to Problems 1 and 2. We will look for:
+
+* meaningful variable / object names
+* readable code (one command per line; adequate whitespace and indentation; etc)
+* clearly-written text to explain code and results 
+* a lack of superfluous code (no unused variables are defined; no extra `library` calls; etc.)
+
+
+### Problem 1
+
+This problem focuses the use of inline R code, plotting, and the behavior of `ggplot` for variables of different types.
+
+Use the code below to download the a package containing the `penguins` dataset:
+
+```{r, eval = FALSE}
+install.packages("palmerpenguins")
+```
+
+You only need to run this command once to install the package, and you can do so directly in the console. This code shouldn't be executed by your RMarkdown file.
+
+Next, use the following code (in your RMarkdown file) to load the `penguins` dataset:
+
+```{r, eval = FALSE}
+data("penguins", package = "palmerpenguins")
+```
+
+Write a short description of the `penguins` dataset (not the `penguins_raw` dataset) using inline R code. In your discussion, please include:
+
+* the data in this dataset, including names / values of important variables
+* the size of the dataset (using `nrow` and `ncol`)
+* the mean flipper length
+
+Make a scatterplot of `flipper_length_mm` (y) vs `bill_length_mm` (x); color points using the `species` variable (adding `color = ...` inside of `aes` in your `ggplot` code should help). 
+
+Export your first scatterplot to your project directory using `ggsave`. 
+
+
+
+
+### Problem 2
+
+This problem is intended to emphasize variable types and introduce coercion; some awareness of how R treats numeric, character, and factor variables is necessary for working with these data types in practice. 
+
+Create a data frame comprised of:
+
+* a random sample of size 10 from a standard Normal distribution
+* a logical vector indicating whether elements of the sample are greater than 0
+* a character vector of length 10
+* a factor vector of length 10, with 3 different factor "levels"
+  
+Try to take the mean of each variable in your dataframe. What works and what doesn't?
+
+_Hint: to take the mean of a variable in a dataframe, you need to pull the variable out of the dataframe. Try loading the tidyverse and using the `pull` function._
+
+In some cases, you can explicitly convert variables from one type to another. Write a code chunk that applies the `as.numeric` function to the logical, character, and factor variables (please show this chunk but not the output). What happens, and why? Does this help explain what happens when you try to take the mean? 
+
+
+
+### Optional post-assignment survey
+
+If you'd like, you can complete [this short survey](https://docs.google.com/forms/d/e/1FAIpQLSd-Gbt30RuKq3-FzzXSRKLaYqU3kqS1KVnfO7lH_6EkhcVB-A/viewform?usp=sf_link) after you've finished the assignment.
