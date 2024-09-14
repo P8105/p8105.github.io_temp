@@ -191,14 +191,14 @@ The bold stuff is new; This should become your default behavior when starting an
 
 A last note about reproducibility: each time you knit an R Markdown file, `knitr` uses a new R session to run the included code. As a result, knitting is a great way to make sure your analysis is self-contained and you should knit frequently!
 
-**_Learning assessment:_** Convert the scripts for exploring vector classes and producing basic plots (from [best practices](best_practices.html)) to self-contained R Markdown files that produce HTML documents. 
+**_Learning assessment:_** Convert the scripts for creating a data frame and producing basic plots (from [best practices](best_practices.html)) to self-contained R Markdown files that produce HTML documents. 
 
 <details>
 <summary> Solution </summary>
 
 Here is a R Markdown file for vector classes:
 ```{r, echo = FALSE, comment = ""}
-cat(htmltools::includeText("resources/rmd_vec_classes.Rmd"))
+cat(htmltools::includeText("resources/rmd_create_df.Rmd"))
 ```
 
 And here's one for basic plots:

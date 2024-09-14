@@ -13,7 +13,8 @@ la_df = tibble(
   abs_norm_samp = abs(norm_samp)
 )
 
-ggplot(la_df, aes(x = abs_norm_samp)) + geom_histogram()
+ggplot(la_df, aes(x = abs_norm_samp)) + 
+	geom_histogram()
 
 median_samp = median(pull(la_df, norm_samp))
 ```

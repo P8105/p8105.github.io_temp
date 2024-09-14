@@ -1,7 +1,7 @@
 ---
 title: "Exploring Vector Classes"
 author: "Jeff Goldsmith"
-date: 2019-09-10
+date: 2024-09-10
 output: html_document
 ---
 

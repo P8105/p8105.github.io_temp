@@ -3,7 +3,7 @@
 ---
 title: "Basic Plots"
 author: "Jeff Goldsmith"
-date: 2019-09-10
+date: 2024-09-10
 output: html_document
 ---
 
@@ -27,11 +27,13 @@ plot_df = tibble(
 First we show a histogram of the `x` variable.
 
 ```{r x_hist}
-ggplot(plot_df, aes(x = x)) + geom_histogram()
+ggplot(plot_df, aes(x = x)) + 
+	geom_histogram()
 ```
 
 Next we show a scatterplot of `y` vs `x`. 
 
 ```{r yx_scatter}
-ggplot(plot_df, aes(x = x, y = y)) + geom_point()
+ggplot(plot_df, aes(x = x, y = y)) + 
+	geom_point()
 ```
