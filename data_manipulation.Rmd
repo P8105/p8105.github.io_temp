@@ -346,5 +346,6 @@ There's lots of stuff out there on how to clean your data using `dplyr`.
 * R Programming for Research also discusses [data cleaning](https://geanders.github.io/RProgrammingForResearch/entering-and-cleaning-data-1.html#data-cleaning).
 * Even R Programming for Data Science, which tends towards base R, has a chapter on [`dplyr`](https://bookdown.org/rdpeng/rprogdatascience/managing-data-frames-with-the-dplyr-package.html).
 * The [data transformation cheatsheet](https://github.com/rstudio/cheatsheets/raw/master/data-transformation.pdf) is handy once you have a good handle on things.
+* Especially when you're getting started with `dplyr`, the [tidylog](https://github.com/elbersb/tidylog) package can be helpful. 
 
 The code that I produced working examples in lecture is [here](https://github.com/P8105/data_wrangling_i).
