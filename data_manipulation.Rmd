@@ -8,7 +8,7 @@ output:
 
 Once you've imported data, you're going to need to do some cleaning up.
 
-This is the secode module in the [Data Wrangling I](topic_data_wrangling_i.html) topic.
+This is the secode module in the [Data Wrangling I](topic_df_wrangling_i.html) topic.
 
 ```{r, echo = FALSE}
 knitr::opts_chunk$set(
@@ -53,7 +53,7 @@ Clean and organize data using `dplyr` verbs and piping.
 
 ## Example
 
-For this example, I'll start a new R Markdown file to the repo / project I started for the [Data Wrangling I](topic_data_wrangling_i.html) topic; this will make it easy to load example data sets using the code I wrote in [Data Import](data_import.html).
+For this example, I'll start a new R Markdown file to the repo / project I started for the [Data Wrangling I](topic_df_wrangling_i.html) topic; this will make it easy to load example data sets using the code I wrote in [Data Import](data_import.html).
 
 Once again we're going to be using the `tidyverse`, so we'll load that at the outset. We're going to be looking at a lot of output, so I'll print only three lines of each tibble by default. Lastly, we'll focus on the data in `FAS_litters.csv` and `FAS_pups.csv`, so we'll load those data and clean up the column names using what we learned in [Data Import](data_import.html).
 
@@ -62,13 +62,15 @@ library(tidyverse)
 
 options(tibble.print_min = 3)
 
-litters_data = read_csv("./data/FAS_litters.csv",
-  col_types = "ccddiiii")
-litters_data = janitor::clean_names(litters_data)
+litters_df = 
+	read_csv("./data/FAS_litters.csv", na = c("NA", ".", ""))
+litters_df = 
+	janitor::clean_names(litters_df)
 
-pups_data = read_csv("./data/FAS_pups.csv",
-  col_types = "ciiiii")
-pups_data = janitor::clean_names(pups_data)
+pups_df = 
+	read_csv("./data/FAS_pups.csv", na = c("NA", "."))
+pups_df = 
+	janitor::clean_names(pups_df)
 ```
 
 ### `select`
@@ -78,48 +80,48 @@ For a given analysis, you may only need a subset of the columns in a data table;
 You can specify the columns you want to keep by naming all of them:
 
 ```{r}
-select(litters_data, group, litter_number, gd0_weight, pups_born_alive)
+select(litters_df, group, litter_number, gd0_weight, pups_born_alive)
 ```
 
 You can specify the specify a range of columns to keep:
 
 ```{r}
-select(litters_data, group:gd_of_birth)
+select(litters_df, group:gd_of_birth)
 ```
 
 You can also specify columns you'd like to remove:
 ```{r}
-select(litters_data, -pups_survive)
+select(litters_df, -pups_survive)
 ```
 
 You can rename variables as part of this process:
 
 ```{r}
-select(litters_data, GROUP = group, LiTtEr_NuMbEr = litter_number)
+select(litters_df, GROUP = group, LiTtEr_NuMbEr = litter_number)
 ```
 
 If all you want to do is rename something, you can use `rename` instead of `select`. This will rename the variables you care about, and keep everything else:
 
 ```{r}
-rename(litters_data, GROUP = group, LiTtEr_NuMbEr = litter_number)
+rename(litters_df, GROUP = group, LiTtEr_NuMbEr = litter_number)
 ```
 
 There are some handy helper functions for `select`; read about all of them using `?select_helpers`. I use `starts_with()`, `ends_with()`, and `contains()` often, especially when there variables are named with suffixes or other standard patterns:
 
 ```{r}
-select(litters_data, starts_with("gd"))
+select(litters_df, starts_with("gd"))
 ```
 
 I also frequently use is `everything()`, which is handy for reorganizing columns without discarding anything:
 
 ```{r}
-select(litters_data, litter_number, pups_survive, everything())
+select(litters_df, litter_number, pups_survive, everything())
 ```
 
 `relocate` does a similar thing (and is sort of like `rename` in that it's handy but not critical):
 
 ```{r}
-relocate(litters_data, litter_number, pups_survive)
+relocate(litters_df, litter_number, pups_survive)
 ```
 
 In larger datasets, 
@@ -134,7 +136,7 @@ Lastly, like other functions in `dplyr`, `select` will export a dataframe even i
 The chunk below performs this action:
 
 ```{r}
-select(pups_data, litter_number, sex, pd_ears)
+select(pups_df, litter_number, sex, pd_ears)
 ```
 
 </details>
@@ -156,8 +158,8 @@ Some ways you might filter the litters data are:
 
 A very common filtering step requires you to omit missing observations. You *can* do this with `filter`, but I recommend using `drop_na` from the `tidyr` package:
 
-* `drop_na(litters_data)` will remove any row with a missing value
-* `drop_na(litters_data, wt_increase)` will remove rows for which `wt_increase` is missing. 
+* `drop_na(litters_df)` will remove any row with a missing value
+* `drop_na(litters_df, wt_increase)` will remove rows for which `wt_increase` is missing. 
 
 Filtering can be helpful for limiting a dataset to only those observations needed for an analysis. However, I recommend against the creation of many data subsets (e.g. one for each group). This can clutter up your workspace, and we'll see good tools for the analysis of subsets before long.
 
@@ -172,8 +174,8 @@ Filtering can be helpful for limiting a dataset to only those observations neede
 The chunk below performs these actions:
 
 ```{r}
-filter(pups_data, sex == 1)
-filter(pups_data, sex == 2, pd_walk < 11)
+filter(pups_df, sex == 1)
+filter(pups_df, sex == 2, pd_walk < 11)
 ```
 
 </details>
@@ -185,7 +187,7 @@ Sometimes you need to select columns; sometimes you need to change them or creat
 The example below creates a new variable measuring the difference between `gd18_weight` and `gd0_weight` and modifies the existing `group` variable.
 
 ```{r}
-mutate(litters_data,
+mutate(litters_df,
   wt_gain = gd18_weight - gd0_weight,
   group = str_to_lower(group)
 )
@@ -211,8 +213,8 @@ Creating a new variable that does exactly what you need can be a challenge; the 
 The chunk below performs these actions:
 
 ```{r}
-mutate(pups_data, pivot_minus7 = pd_pivot - 7)
-mutate(pups_data, pd_sum = pd_ears + pd_eyes + pd_pivot + pd_walk)
+mutate(pups_df, pivot_minus7 = pd_pivot - 7)
+mutate(pups_df, pd_sum = pd_ears + pd_eyes + pd_pivot + pd_walk)
 ```
 
 </details>
@@ -222,7 +224,7 @@ mutate(pups_data, pd_sum = pd_ears + pd_eyes + pd_pivot + pd_walk)
 In comparison to the preceding, arranging is pretty straightforward. You can arrange the rows in your data according to the values in one or more columns:
 
 ```{r}
-head(arrange(litters_data, group, pups_born_alive), 10)
+head(arrange(litters_df, group, pups_born_alive), 10)
 ```
 
 ### `|>`
@@ -235,29 +237,29 @@ We've seen several commands you will use regularly for data manipulation and cle
 The following is an example of the first option:
 
 ```{r}
-litters_data_raw = read_csv("./data/FAS_litters.csv",
-  col_types = "ccddiiii")
-litters_data_clean_names = janitor::clean_names(litters_data_raw)
-litters_data_selected_cols = select(litters_data_clean_names, -pups_survive)
-litters_data_with_vars = 
+litters_df_raw = 
+	read_csv("./data/FAS_litters.csv", na = c("NA", ".", ""))
+litters_df_clean_names = janitor::clean_names(litters_df_raw)
+litters_df_selected_cols = select(litters_df_clean_names, -pups_survive)
+litters_df_with_vars = 
   mutate(
-    litters_data_selected_cols, 
+    litters_df_selected_cols, 
     wt_gain = gd18_weight - gd0_weight,
     group = str_to_lower(group))
-litters_data_with_vars_without_missing = 
-  drop_na(litters_data_with_vars, wt_gain)
-litters_data_with_vars_without_missing
+litters_df_with_vars_without_missing = 
+  drop_na(litters_df_with_vars, wt_gain)
+litters_df_with_vars_without_missing
 ```
 
 Below, we try the second option:
 
 ```{r}
-litters_data_clean = 
+litters_df_clean = 
   drop_na(
     mutate(
       select(
         janitor::clean_names(
-          read_csv("./data/FAS_litters.csv", col_types = "ccddiiii")
+          read_csv("./data/FAS_litters.csv", na = c("NA", ".", ""))
           ), 
       -pups_survive
       ),
@@ -267,7 +269,7 @@ litters_data_clean =
   wt_gain
   )
 
-litters_data_clean
+litters_df_clean
 ```
 
 These are both confusing and bad: the first gets confusing and clutters our workspace, and the second has to be read inside out.
@@ -275,8 +277,8 @@ These are both confusing and bad: the first gets confusing and clutters our work
 Piping solves this problem. It allows you to turn the nested approach into a sequential chain by passing the result of one function call as an argument to the next function call:
 
 ```{r}
-litters_data = 
-  read_csv("./data/FAS_litters.csv", col_types = "ccddiiii") |> 
+litters_df = 
+  read_csv("./data/FAS_litters.csv", na = c("NA", ".", "")) |> 
   janitor::clean_names() |> 
   select(-pups_survive) |> 
   mutate(
@@ -284,7 +286,7 @@ litters_data =
     group = str_to_lower(group)) |> 
   drop_na(wt_gain)
 
-litters_data
+litters_df
 ```
 
 All three approaches result in the same dataset, but the piped commands are by far the most straightforward. The easiest way to read `|>` is "then"; the keyboard shortcuts are Ctrl + Shift + M (Windows) and Cmd + Shift + M (Mac). Note that by default RStudio will insert the "traditional" pipe `%>%`, and you can update to the native in pipe through Global Preferences > Code > Use Native Pipe Operator. More on the difference between `|>` and `%>%` below. 
@@ -294,7 +296,7 @@ The functions in `dplyr` (and much of the `tidyverse`) are designed to work smoo
 In the majority of cases (and everywhere in the tidyverse) you can trust that the first argument is the right one and be happy with life, but there are some cases where what you're piping isn't going into the first argument. Here, using the placeholder `_` is necessary to indicate where the object being piped should go. For example, to regress `wt_gain` on `pups_born_alive`, you might use:
 
 ```{r}
-litters_data |>
+litters_df |>
   lm(wt_gain ~ pups_born_alive, data = _) |>
   broom::tidy()
 ```
@@ -316,11 +318,14 @@ There are limitations to the pipe. You shouldn't have sequences that are too lon
 The chunk below performs these actions:
 
 ```{r}
-read_csv("./data/FAS_pups.csv", col_types = "ciiiii") |>
+pups_df = 
+	read_csv("./data/FAS_pups.csv", na = c("NA", ".")) |>
   janitor::clean_names() |> 
   filter(sex == 1) |> 
   select(-pd_ears) |> 
   mutate(pd_pivot_gt7 = pd_pivot > 7)
+
+pups_df
 ```
 
 </details>

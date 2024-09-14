@@ -8,7 +8,7 @@ output:
 
 Importing is the first step in wrangling.
 
-This is the first module in the [Data Wrangling I](topic_data_wrangling_i.html) topic.
+This is the first module in the [Data Wrangling I](topic_df_wrangling_i.html) topic.
 
 ```{r, echo = FALSE}
 knitr::opts_chunk$set(
@@ -73,7 +73,7 @@ Absolute paths are often conceptually easier, because you don't really have to _
 An absolute path example is below:
 
 ```
-"/Users/jeffgoldsmith/Dropbox/Work/Teaching/P8105/fall_2023/p8105.github.io/data/FAS_litters.csv"
+"/Users/jeffgoldsmith/Dropbox/Work/Teaching/P8105/fall_2024/p8105.github.io/data/FAS_litters.csv"
 ```
 
 Relative paths, meanwhile, navigate from your current working directory. Relative paths are portable, in that if you move your directory or share it with someone else, the **relative** path to files in the directory will stay the same and your code will work. For both of these reasons, relative paths are preferred in almost every setting. 
@@ -95,11 +95,15 @@ A relative path to the same file as the absolute path above is
 The table below, copied from [R Programming for Research](https://geanders.github.io/RProgrammingForResearch/entering-and-cleaning-data-1.html#file-and-directory-pathnames), gives useful shorthand notation for relative pathnames.
 
 ```{r echo = FALSE}
-dirpath_shortcuts <- data.frame(abbr = c("`~`", "`.`", "`..`", "`../..`"),
-                                meaning = c("Home directory",
-                                            "Current working directory",
-                                            "One directory up from current working directory",
-                                            "Two directories up from current working directory"))
+dirpath_shortcuts = 
+	data.frame(
+		abbr = c("`~`", "`.`", "`..`", "`../..`"),
+		meaning = 
+			c("Home directory", "Current working directory",
+				"One directory up from current working directory",
+				"Two directories up from current working directory")
+		)
+
 knitr::kable(dirpath_shortcuts, col.names = c("Shorthand", "Meaning"))
 ```
 
@@ -114,17 +118,17 @@ One caveat: if you're going to both share code and use confidential data, you ha
 Now that we have paths handled, we can start loading data. We're going to start with rectangular data tables (data in rows and columns, with data separated by a delimiter) saved in a plain text format. Of these, CSV (comma separated value) files are most common, and others are handled in basically the same way. To import a CSV, we'll use a function from `readr` (included in the tidyverse):
 
 ```{r}
-litters_data = read_csv(file = "./data/FAS_litters.csv")
+litters_df = read_csv(file = "./data/FAS_litters.csv")
 ```
 
-Great -- we've imported data! The first argument to `read_csv` is the path to the data, and the line above assigns the result of `read_csv` to `litters_data`. This function call also prints information about the column parsing. We'll talk more about both of these shortly.
+Great -- we've imported data! The first argument to `read_csv` is the path to the data, and the line above assigns the result of `read_csv` to `litters_df`. This function call also prints information about the column parsing. We'll talk more about both of these shortly.
 
 I (almost always) use `janitor::clean_names()` to clean up variable names after importing data. Doing so will take whatever the column names are and convert them to lower snake case.
 
 ```{r}
-names(litters_data)
-litters_data = janitor::clean_names(litters_data)
-names(litters_data)
+names(litters_df)
+litters_df = janitor::clean_names(litters_df)
+names(litters_df)
 ```
 
 The `package::function` syntax lets you use a function from a package without loading the whole library. That's really helpful, because some packages have functions with the same name (e.g. `dplyr::filter` and `stats::filter`), and R has to choose which one you mean. In general, only load the packages you need to prevent this kind of confusion. You can even use the [`conflicted`](https://github.com/r-lib/conflicted) package if you want to force yourself into using good habits!
@@ -137,11 +141,11 @@ The `package::function` syntax lets you use a function from a package without lo
 For me, loading the data with absolute and relative paths might look like the following:
 
 ```{r, eval = FALSE}
-pups_data = read_csv(file = "./data/FAS_pups.csv")
-pups_data = read_csv(file = "~/Desktop/data_wranging_i/data/FAS_litters.csv")
+pups_df = read_csv(file = "./data/FAS_pups.csv")
+pups_df = read_csv(file = "~/Desktop/data_wranging_i/data/FAS_litters.csv")
 ```
 
-If I move the directory holding this example, the relatitve path works and the absolute path is broken.
+If I move the directory holding this example, the relative path works and the absolute path is broken.
 
 </details>
 
@@ -150,20 +154,20 @@ If I move the directory holding this example, the relatitve path works and the a
 The first thing to do after importing the data (unless `read_csv` gives warnings) is to look at it. If there are unexpected results during data import, you'll catch a lot of them here. In addition to printing the data (which is my first step), I often use `View` / `view`, `str`, `head`, and `tail`:
 
 ```{r}
-litters_data
-tail(litters_data, 5)
+litters_df
+tail(litters_df, 5)
 ```
 
 Another tool that I use sometimes is `skimr::skim`, although for me it's more "neat" than useful.
 
 ```{r}
-skimr::skim(litters_data)
+skimr::skim(litters_df)
 ```
 
 I'm not going to show the output of the line below, because `View` / `view` don't work well inside of .Rmd files. Instead, call these functions from the console, and be sure to remove them from any code chunks in your .Rmd.
 
 ```{r, eval = FALSE}
-view(litters_data)
+view(litters_df)
 ```
 
 
@@ -178,42 +182,66 @@ In the best case, the data are stored in the csv without any weirdness -- there 
 For example, the call below will skip the first 50 lines of data and not assume the first row are variable names:
 
 ```{r}
-litters_data = read_csv(file = "./data/FAS_litters.csv",
-  skip = 10, col_names = FALSE)
-head(litters_data)
+litters_df = 
+	read_csv(file = "./data/FAS_litters.csv",
+    skip = 10, col_names = FALSE)
+
+head(litters_df)
 ```
 
 These arguments generally work for other members of the `read_*` family of functions. 
 
-### Parsing columns
+A careful look at `litters_df` suggests we might also need to use the `na` argument in `read_csv()` -- in `GD0 weight` and `GD18 weight` there are "values" of `.`. In general (and in this case) the `.` value is used to indicate missingness. And if we open `FAS_litters.csv`, we'll see that `NA` and blank entries are also used to indicate a missing value. 
 
-I skipped the `col_types` argument because it's worth talking about in some detail. The `read_*` functions will attempt to guess the data type stored in each column; by default, these guesses are based on the first 1000 rows. The guesses are also usually pretty good. In some cases, though, you'll want to give explicit column specifications. This is done using the `cols` function, where you can give each column a type:
+The line below will treat `.`, `NA`, and blank cells as missing. 
 
 ```{r}
-litters_data = read_csv(file = "./data/FAS_litters.csv",
-  col_types = cols(
-    Group = col_character(),
-    `Litter Number` = col_character(),
-    `GD0 weight` = col_double(),
-    `GD18 weight` = col_double(),
-    `GD of Birth` = col_integer(),
-    `Pups born alive` = col_integer(),
-    `Pups dead @ birth` = col_integer(),
-    `Pups survive` = col_integer()
+litters_df = 
+	read_csv(
+		file = "./data/FAS_litters.csv",
+		na = c(".", "NA", ""))
+
+head(litters_df)
+```
+
+
+### Parsing columns
+
+I skipped the `col_types` argument because it's worth talking about in some detail. The `read_*` functions will attempt to guess the data type stored in each column; by default, these guesses are based on the first 1000 rows. The guesses are also usually pretty good, and "bad" guesses often indicate that there's something in the data you should pay more attention to -- before treating `.` as missing `GD0 weight` was a character, but after indicating this is missing it's a numeric variable. 
+
+In some cases, you'll want to give explicit column specifications. This is done using the `cols` function, where you can give each column a type:
+
+```{r}
+litters_df = 
+	read_csv(file = "./data/FAS_litters.csv",
+		na = c(".", "NA", ""),
+    col_types = cols(
+      Group = col_character(),
+      `Litter Number` = col_character(),
+      `GD0 weight` = col_double(),
+      `GD18 weight` = col_double(),
+      `GD of Birth` = col_integer(),
+      `Pups born alive` = col_integer(),
+      `Pups dead @ birth` = col_integer(),
+      `Pups survive` = col_integer()
+    )
   )
-)
-tail(litters_data)
+
+tail(litters_df)
 ```
 
 Note that you don't have to specify the variable type for every column, and can only focus on ones that are difficult:
 
 ```{r}
-litters_data = read_csv(file = "./data/FAS_litters.csv",
-  col_types = cols(
-    Group = col_factor()
-  )
+litters_df = 
+	read_csv(file = "./data/FAS_litters.csv",
+		na = c(".", "NA", ""),
+    col_types = cols(
+      Group = col_factor()
+    )
 )
-head(litters_data)
+
+head(litters_df)
 ```
 
 
@@ -225,11 +253,14 @@ head(litters_data)
 After some tinkering, the code I'd use to import and view the pups dataset is below.
 
 ```{r, eval = FALSE}
-pups_data = read_csv("./data/FAS_pups.csv", col_types = "ciiiii")
-skimr::skim(pups_data)
+pups_df = 
+	read_csv("./data/FAS_pups.csv",
+		na = c(".", "NA"), col_types = "fddddd")
+
+skimr::skim(pups_df)
 ```
 
-If I move the directory holding this example, the relatitve path works and the absolute path is broken.
+If I move the directory holding this example, the relative path works and the absolute path is broken.
 
 </details>
 
@@ -241,16 +272,20 @@ CSV format is great, but you'll encounter a lot of Excel files too. Although you
 
 ```{r}
 library(readxl)
-mlb11_data = read_excel("data/mlb11.xlsx", n_max = 20)
-head(mlb11_data, 5)
+
+mlb11_df = read_excel("data/mlb11.xlsx", n_max = 20)
+
+head(mlb11_df, 5)
 ```
 
 The last tidyverse package for data import we'll note is `haven`, which is used to import into R data files from SAS, Stata, and SPSS. An example for reading data from SAS follows.
 
 ```{r}
 library(haven)
-pulse_data = read_sas("./data/public_pulse_data.sas7bdat")
-head(pulse_data, 5)
+
+pulse_df = read_sas("./data/public_pulse_data.sas7bdat")
+
+head(pulse_df, 5)
 ```
 
 You can read in data that isn't coming as a flat file (think data rectangle), but it's beyond our current scope. 
@@ -260,7 +295,7 @@ You can read in data that isn't coming as a flat file (think data rectangle), bu
 
 The functions in `readr` are relatively new, and can be used in place of base R's `read.csv`, `read.table`, and so on. The base R versions tend to be slower (very noticeably for large datasets), and the default options can make less sense for modern datasets. Meanwhile, the `readr` functions export tibbles, and keep characters as characters (instead of converting to factors ...).
 
-**_Learning Assessment:_** Import the `FAS_pups.csv` dataset using `read.csv`. Compare the class of this dataset to the one produced by `read_csv`. Try printing both in the console -- what happens? After cleaning up the names, try accessing the `Sex` variable using `S` (e.g., `pups_data$S`). What happens?
+**_Learning Assessment:_** Import the `FAS_pups.csv` dataset using `read.csv`. Compare the class of this dataset to the one produced by `read_csv`. Try printing both in the console -- what happens? After cleaning up the names, try accessing the `Sex` variable using `S` (e.g., `pups_df$S`). What happens?
 
 <details>
 <summary> Solution </summary>
@@ -304,7 +339,6 @@ The content in this page draws heavily from several sources; each of the things 
 * R for Data Science has a chapter on [data import](http://r4ds.had.co.nz/data-import.html)
 * R Programming for Data Science gives more detail on data import in [base R](https://bookdown.org/rdpeng/rprogdatascience/getting-data-in-and-out-of-r.html) with some information about [readr](https://bookdown.org/rdpeng/rprogdatascience/using-the-readr-package.html)
 * R Programming for Research also discusses [entering data](https://geanders.github.io/RProgrammingForResearch/entering-and-cleaning-data-1.html); the section on pathnames and directories is nicely detailed
-* RStudio has recordings of webinars on [Getting data into R](https://www.rstudio.com/resources/webinars/getting-your-data-into-r/) and [What's new with readxl](https://www.rstudio.com/resources/webinars/whats-new-with-readxl/)
 * There are pages on the tidyverse website for [readr](https://readr.tidyverse.org), [readxl](https://readxl.tidyverse.org), and [haven](https://haven.tidyverse.org)
 * The [data import cheatsheet](https://rstudio.github.io/cheatsheets/data-import.pdf) is handy once you have a good handle on things
 

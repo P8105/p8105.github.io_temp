@@ -436,7 +436,7 @@ div.tocify {
 <p>Once you’ve imported data, you’re going to need to do some cleaning
 up.</p>
 <p>This is the secode module in the <a
-href="topic_data_wrangling_i.html">Data Wrangling I</a> topic.</p>
+href="topic_df_wrangling_i.html">Data Wrangling I</a> topic.</p>
 <div id="overview" class="section level2 tabset tabset-pills">
 <h2 class="tabset tabset-pills">Overview</h2>
 <div id="learning-objectives" class="section level3">
@@ -476,7 +476,7 @@ Goldsmith</a></strong>.
 <div id="example" class="section level2">
 <h2>Example</h2>
 <p>For this example, I’ll start a new R Markdown file to the repo /
-project I started for the <a href="topic_data_wrangling_i.html">Data
+project I started for the <a href="topic_df_wrangling_i.html">Data
 Wrangling I</a> topic; this will make it easy to load example data sets
 using the code I wrote in <a href="data_import.html">Data
 Import</a>.</p>
@@ -488,16 +488,44 @@ Lastly, we’ll focus on the data in <code>FAS_litters.csv</code> and
 column names using what we learned in <a href="data_import.html">Data
 Import</a>.</p>
 <pre class="r"><code>library(tidyverse)
+## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+## ✔ dplyr     1.1.4     ✔ readr     2.1.5
+## ✔ forcats   1.0.0     ✔ stringr   1.5.1
+## ✔ ggplot2   3.5.1     ✔ tibble    3.2.1
+## ✔ lubridate 1.9.3     ✔ tidyr     1.3.1
+## ✔ purrr     1.0.2     
+## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+## ✖ dplyr::filter() masks stats::filter()
+## ✖ dplyr::lag()    masks stats::lag()
+## ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors
 
 options(tibble.print_min = 3)
 
-litters_data = read_csv(&quot;./data/FAS_litters.csv&quot;,
-  col_types = &quot;ccddiiii&quot;)
-litters_data = janitor::clean_names(litters_data)
+litters_df = 
+    read_csv(&quot;./data/FAS_litters.csv&quot;, na = c(&quot;NA&quot;, &quot;.&quot;, &quot;&quot;))
+## Rows: 49 Columns: 8
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## chr (2): Group, Litter Number
+## dbl (6): GD0 weight, GD18 weight, GD of Birth, Pups born alive, Pups dead @ ...
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+litters_df = 
+    janitor::clean_names(litters_df)
 
-pups_data = read_csv(&quot;./data/FAS_pups.csv&quot;,
-  col_types = &quot;ciiiii&quot;)
-pups_data = janitor::clean_names(pups_data)</code></pre>
+pups_df = 
+    read_csv(&quot;./data/FAS_pups.csv&quot;, na = c(&quot;NA&quot;, &quot;.&quot;))
+## Rows: 313 Columns: 6
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## chr (1): Litter Number
+## dbl (5): Sex, PD ears, PD eyes, PD pivot, PD walk
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+pups_df = 
+    janitor::clean_names(pups_df)</code></pre>
 <div id="select" class="section level3">
 <h3><code>select</code></h3>
 <p>For a given analysis, you may only need a subset of the columns in a
@@ -506,35 +534,35 @@ especially when you have large datasets. Select columns using
 <code>select</code>.</p>
 <p>You can specify the columns you want to keep by naming all of
 them:</p>
-<pre class="r"><code>select(litters_data, group, litter_number, gd0_weight, pups_born_alive)
+<pre class="r"><code>select(litters_df, group, litter_number, gd0_weight, pups_born_alive)
 ## # A tibble: 49 × 4
 ##   group litter_number gd0_weight pups_born_alive
-##   &lt;chr&gt; &lt;chr&gt;              &lt;dbl&gt;           &lt;int&gt;
+##   &lt;chr&gt; &lt;chr&gt;              &lt;dbl&gt;           &lt;dbl&gt;
 ## 1 Con7  #85                 19.7               3
 ## 2 Con7  #1/2/95/2           27                 8
 ## 3 Con7  #5/5/3/83/3-3       26                 6
 ## # ℹ 46 more rows</code></pre>
 <p>You can specify the specify a range of columns to keep:</p>
-<pre class="r"><code>select(litters_data, group:gd_of_birth)
+<pre class="r"><code>select(litters_df, group:gd_of_birth)
 ## # A tibble: 49 × 5
 ##   group litter_number gd0_weight gd18_weight gd_of_birth
-##   &lt;chr&gt; &lt;chr&gt;              &lt;dbl&gt;       &lt;dbl&gt;       &lt;int&gt;
+##   &lt;chr&gt; &lt;chr&gt;              &lt;dbl&gt;       &lt;dbl&gt;       &lt;dbl&gt;
 ## 1 Con7  #85                 19.7        34.7          20
 ## 2 Con7  #1/2/95/2           27          42            19
 ## 3 Con7  #5/5/3/83/3-3       26          41.4          19
 ## # ℹ 46 more rows</code></pre>
 <p>You can also specify columns you’d like to remove:</p>
-<pre class="r"><code>select(litters_data, -pups_survive)
+<pre class="r"><code>select(litters_df, -pups_survive)
 ## # A tibble: 49 × 7
 ##   group litter_number gd0_weight gd18_weight gd_of_birth pups_born_alive
-##   &lt;chr&gt; &lt;chr&gt;              &lt;dbl&gt;       &lt;dbl&gt;       &lt;int&gt;           &lt;int&gt;
+##   &lt;chr&gt; &lt;chr&gt;              &lt;dbl&gt;       &lt;dbl&gt;       &lt;dbl&gt;           &lt;dbl&gt;
 ## 1 Con7  #85                 19.7        34.7          20               3
 ## 2 Con7  #1/2/95/2           27          42            19               8
 ## 3 Con7  #5/5/3/83/3-3       26          41.4          19               6
 ## # ℹ 46 more rows
-## # ℹ 1 more variable: pups_dead_birth &lt;int&gt;</code></pre>
+## # ℹ 1 more variable: pups_dead_birth &lt;dbl&gt;</code></pre>
 <p>You can rename variables as part of this process:</p>
-<pre class="r"><code>select(litters_data, GROUP = group, LiTtEr_NuMbEr = litter_number)
+<pre class="r"><code>select(litters_df, GROUP = group, LiTtEr_NuMbEr = litter_number)
 ## # A tibble: 49 × 2
 ##   GROUP LiTtEr_NuMbEr
 ##   &lt;chr&gt; &lt;chr&gt;        
@@ -545,50 +573,50 @@ them:</p>
 <p>If all you want to do is rename something, you can use
 <code>rename</code> instead of <code>select</code>. This will rename the
 variables you care about, and keep everything else:</p>
-<pre class="r"><code>rename(litters_data, GROUP = group, LiTtEr_NuMbEr = litter_number)
+<pre class="r"><code>rename(litters_df, GROUP = group, LiTtEr_NuMbEr = litter_number)
 ## # A tibble: 49 × 8
 ##   GROUP LiTtEr_NuMbEr gd0_weight gd18_weight gd_of_birth pups_born_alive
-##   &lt;chr&gt; &lt;chr&gt;              &lt;dbl&gt;       &lt;dbl&gt;       &lt;int&gt;           &lt;int&gt;
+##   &lt;chr&gt; &lt;chr&gt;              &lt;dbl&gt;       &lt;dbl&gt;       &lt;dbl&gt;           &lt;dbl&gt;
 ## 1 Con7  #85                 19.7        34.7          20               3
 ## 2 Con7  #1/2/95/2           27          42            19               8
 ## 3 Con7  #5/5/3/83/3-3       26          41.4          19               6
 ## # ℹ 46 more rows
-## # ℹ 2 more variables: pups_dead_birth &lt;int&gt;, pups_survive &lt;int&gt;</code></pre>
+## # ℹ 2 more variables: pups_dead_birth &lt;dbl&gt;, pups_survive &lt;dbl&gt;</code></pre>
 <p>There are some handy helper functions for <code>select</code>; read
 about all of them using <code>?select_helpers</code>. I use
 <code>starts_with()</code>, <code>ends_with()</code>, and
 <code>contains()</code> often, especially when there variables are named
 with suffixes or other standard patterns:</p>
-<pre class="r"><code>select(litters_data, starts_with(&quot;gd&quot;))
+<pre class="r"><code>select(litters_df, starts_with(&quot;gd&quot;))
 ## # A tibble: 49 × 3
 ##   gd0_weight gd18_weight gd_of_birth
-##        &lt;dbl&gt;       &lt;dbl&gt;       &lt;int&gt;
+##        &lt;dbl&gt;       &lt;dbl&gt;       &lt;dbl&gt;
 ## 1       19.7        34.7          20
 ## 2       27          42            19
 ## 3       26          41.4          19
 ## # ℹ 46 more rows</code></pre>
 <p>I also frequently use is <code>everything()</code>, which is handy
 for reorganizing columns without discarding anything:</p>
-<pre class="r"><code>select(litters_data, litter_number, pups_survive, everything())
+<pre class="r"><code>select(litters_df, litter_number, pups_survive, everything())
 ## # A tibble: 49 × 8
 ##   litter_number pups_survive group gd0_weight gd18_weight gd_of_birth
-##   &lt;chr&gt;                &lt;int&gt; &lt;chr&gt;      &lt;dbl&gt;       &lt;dbl&gt;       &lt;int&gt;
+##   &lt;chr&gt;                &lt;dbl&gt; &lt;chr&gt;      &lt;dbl&gt;       &lt;dbl&gt;       &lt;dbl&gt;
 ## 1 #85                      3 Con7        19.7        34.7          20
 ## 2 #1/2/95/2                7 Con7        27          42            19
 ## 3 #5/5/3/83/3-3            5 Con7        26          41.4          19
 ## # ℹ 46 more rows
-## # ℹ 2 more variables: pups_born_alive &lt;int&gt;, pups_dead_birth &lt;int&gt;</code></pre>
+## # ℹ 2 more variables: pups_born_alive &lt;dbl&gt;, pups_dead_birth &lt;dbl&gt;</code></pre>
 <p><code>relocate</code> does a similar thing (and is sort of like
 <code>rename</code> in that it’s handy but not critical):</p>
-<pre class="r"><code>relocate(litters_data, litter_number, pups_survive)
+<pre class="r"><code>relocate(litters_df, litter_number, pups_survive)
 ## # A tibble: 49 × 8
 ##   litter_number pups_survive group gd0_weight gd18_weight gd_of_birth
-##   &lt;chr&gt;                &lt;int&gt; &lt;chr&gt;      &lt;dbl&gt;       &lt;dbl&gt;       &lt;int&gt;
+##   &lt;chr&gt;                &lt;dbl&gt; &lt;chr&gt;      &lt;dbl&gt;       &lt;dbl&gt;       &lt;dbl&gt;
 ## 1 #85                      3 Con7        19.7        34.7          20
 ## 2 #1/2/95/2                7 Con7        27          42            19
 ## 3 #5/5/3/83/3-3            5 Con7        26          41.4          19
 ## # ℹ 46 more rows
-## # ℹ 2 more variables: pups_born_alive &lt;int&gt;, pups_dead_birth &lt;int&gt;</code></pre>
+## # ℹ 2 more variables: pups_born_alive &lt;dbl&gt;, pups_dead_birth &lt;dbl&gt;</code></pre>
 <p>In larger datasets,</p>
 <p>Lastly, like other functions in <code>dplyr</code>,
 <code>select</code> will export a dataframe even if you only select one
@@ -601,10 +629,10 @@ select the columns containing litter number, sex, and PD ears.</p>
 Solution
 </summary>
 <p>The chunk below performs this action:</p>
-<pre class="r"><code>select(pups_data, litter_number, sex, pd_ears)
+<pre class="r"><code>select(pups_df, litter_number, sex, pd_ears)
 ## # A tibble: 313 × 3
 ##   litter_number   sex pd_ears
-##   &lt;chr&gt;         &lt;int&gt;   &lt;int&gt;
+##   &lt;chr&gt;         &lt;dbl&gt;   &lt;dbl&gt;
 ## 1 #85               1       4
 ## 2 #85               1       4
 ## 3 #1/2/95/2         1       5
@@ -644,9 +672,9 @@ observations. You <em>can</em> do this with <code>filter</code>, but I
 recommend using <code>drop_na</code> from the <code>tidyr</code>
 package:</p>
 <ul>
-<li><code>drop_na(litters_data)</code> will remove any row with a
-missing value</li>
-<li><code>drop_na(litters_data, wt_increase)</code> will remove rows for
+<li><code>drop_na(litters_df)</code> will remove any row with a missing
+value</li>
+<li><code>drop_na(litters_df, wt_increase)</code> will remove rows for
 which <code>wt_increase</code> is missing.</li>
 </ul>
 <p>Filtering can be helpful for limiting a dataset to only those
@@ -664,18 +692,18 @@ subsets before long.</p>
 Solution
 </summary>
 <p>The chunk below performs these actions:</p>
-<pre class="r"><code>filter(pups_data, sex == 1)
+<pre class="r"><code>filter(pups_df, sex == 1)
 ## # A tibble: 155 × 6
 ##   litter_number   sex pd_ears pd_eyes pd_pivot pd_walk
-##   &lt;chr&gt;         &lt;int&gt;   &lt;int&gt;   &lt;int&gt;    &lt;int&gt;   &lt;int&gt;
+##   &lt;chr&gt;         &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;
 ## 1 #85               1       4      13        7      11
 ## 2 #85               1       4      13        7      12
 ## 3 #1/2/95/2         1       5      13        7       9
 ## # ℹ 152 more rows
-filter(pups_data, sex == 2, pd_walk &lt; 11)
+filter(pups_df, sex == 2, pd_walk &lt; 11)
 ## # A tibble: 127 × 6
 ##   litter_number   sex pd_ears pd_eyes pd_pivot pd_walk
-##   &lt;chr&gt;         &lt;int&gt;   &lt;int&gt;   &lt;int&gt;    &lt;int&gt;   &lt;int&gt;
+##   &lt;chr&gt;         &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;
 ## 1 #1/2/95/2         2       4      13        7       9
 ## 2 #1/2/95/2         2       4      13        7      10
 ## 3 #1/2/95/2         2       5      13        8      10
@@ -689,18 +717,18 @@ them or create new ones. You can do this using <code>mutate</code>.</p>
 <p>The example below creates a new variable measuring the difference
 between <code>gd18_weight</code> and <code>gd0_weight</code> and
 modifies the existing <code>group</code> variable.</p>
-<pre class="r"><code>mutate(litters_data,
+<pre class="r"><code>mutate(litters_df,
   wt_gain = gd18_weight - gd0_weight,
   group = str_to_lower(group)
 )
 ## # A tibble: 49 × 9
 ##   group litter_number gd0_weight gd18_weight gd_of_birth pups_born_alive
-##   &lt;chr&gt; &lt;chr&gt;              &lt;dbl&gt;       &lt;dbl&gt;       &lt;int&gt;           &lt;int&gt;
+##   &lt;chr&gt; &lt;chr&gt;              &lt;dbl&gt;       &lt;dbl&gt;       &lt;dbl&gt;           &lt;dbl&gt;
 ## 1 con7  #85                 19.7        34.7          20               3
 ## 2 con7  #1/2/95/2           27          42            19               8
 ## 3 con7  #5/5/3/83/3-3       26          41.4          19               6
 ## # ℹ 46 more rows
-## # ℹ 3 more variables: pups_dead_birth &lt;int&gt;, pups_survive &lt;int&gt;, wt_gain &lt;dbl&gt;</code></pre>
+## # ℹ 3 more variables: pups_dead_birth &lt;dbl&gt;, pups_survive &lt;dbl&gt;, wt_gain &lt;dbl&gt;</code></pre>
 <p>A few things in this example are worth noting:</p>
 <ul>
 <li>Your new variables can be functions of old variables</li>
@@ -722,18 +750,18 @@ challenge; the more functions you know about, the easier this gets.</p>
 Solution
 </summary>
 <p>The chunk below performs these actions:</p>
-<pre class="r"><code>mutate(pups_data, pivot_minus7 = pd_pivot - 7)
+<pre class="r"><code>mutate(pups_df, pivot_minus7 = pd_pivot - 7)
 ## # A tibble: 313 × 7
 ##   litter_number   sex pd_ears pd_eyes pd_pivot pd_walk pivot_minus7
-##   &lt;chr&gt;         &lt;int&gt;   &lt;int&gt;   &lt;int&gt;    &lt;int&gt;   &lt;int&gt;        &lt;dbl&gt;
+##   &lt;chr&gt;         &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;        &lt;dbl&gt;
 ## 1 #85               1       4      13        7      11            0
 ## 2 #85               1       4      13        7      12            0
 ## 3 #1/2/95/2         1       5      13        7       9            0
 ## # ℹ 310 more rows
-mutate(pups_data, pd_sum = pd_ears + pd_eyes + pd_pivot + pd_walk)
+mutate(pups_df, pd_sum = pd_ears + pd_eyes + pd_pivot + pd_walk)
 ## # A tibble: 313 × 7
 ##   litter_number   sex pd_ears pd_eyes pd_pivot pd_walk pd_sum
-##   &lt;chr&gt;         &lt;int&gt;   &lt;int&gt;   &lt;int&gt;    &lt;int&gt;   &lt;int&gt;  &lt;int&gt;
+##   &lt;chr&gt;         &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;
 ## 1 #85               1       4      13        7      11     35
 ## 2 #85               1       4      13        7      12     36
 ## 3 #1/2/95/2         1       5      13        7       9     34
@@ -745,10 +773,10 @@ mutate(pups_data, pd_sum = pd_ears + pd_eyes + pd_pivot + pd_walk)
 <p>In comparison to the preceding, arranging is pretty straightforward.
 You can arrange the rows in your data according to the values in one or
 more columns:</p>
-<pre class="r"><code>head(arrange(litters_data, group, pups_born_alive), 10)
+<pre class="r"><code>head(arrange(litters_df, group, pups_born_alive), 10)
 ## # A tibble: 10 × 8
 ##    group litter_number   gd0_weight gd18_weight gd_of_birth pups_born_alive
-##    &lt;chr&gt; &lt;chr&gt;                &lt;dbl&gt;       &lt;dbl&gt;       &lt;int&gt;           &lt;int&gt;
+##    &lt;chr&gt; &lt;chr&gt;                &lt;dbl&gt;       &lt;dbl&gt;       &lt;dbl&gt;           &lt;dbl&gt;
 ##  1 Con7  #85                   19.7        34.7          20               3
 ##  2 Con7  #5/4/2/95/2           28.5        44.1          19               5
 ##  3 Con7  #5/5/3/83/3-3         26          41.4          19               6
@@ -759,7 +787,7 @@ more columns:</p>
 ##  8 Con8  #2/2/95/2             NA          NA            19               5
 ##  9 Con8  #1/6/2/2/95-2         NA          NA            20               7
 ## 10 Con8  #3/6/2/2/95-3         NA          NA            20               7
-## # ℹ 2 more variables: pups_dead_birth &lt;int&gt;, pups_survive &lt;int&gt;</code></pre>
+## # ℹ 2 more variables: pups_dead_birth &lt;dbl&gt;, pups_survive &lt;dbl&gt;</code></pre>
 </div>
 <div id="section" class="section level3">
 <h3><code>|&gt;</code></h3>
@@ -774,33 +802,41 @@ manipulation:</p>
 <li>nest function calls</li>
 </ul>
 <p>The following is an example of the first option:</p>
-<pre class="r"><code>litters_data_raw = read_csv(&quot;./data/FAS_litters.csv&quot;,
-  col_types = &quot;ccddiiii&quot;)
-litters_data_clean_names = janitor::clean_names(litters_data_raw)
-litters_data_selected_cols = select(litters_data_clean_names, -pups_survive)
-litters_data_with_vars = 
+<pre class="r"><code>litters_df_raw = 
+    read_csv(&quot;./data/FAS_litters.csv&quot;, na = c(&quot;NA&quot;, &quot;.&quot;, &quot;&quot;))
+## Rows: 49 Columns: 8
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## chr (2): Group, Litter Number
+## dbl (6): GD0 weight, GD18 weight, GD of Birth, Pups born alive, Pups dead @ ...
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+litters_df_clean_names = janitor::clean_names(litters_df_raw)
+litters_df_selected_cols = select(litters_df_clean_names, -pups_survive)
+litters_df_with_vars = 
   mutate(
-    litters_data_selected_cols, 
+    litters_df_selected_cols, 
     wt_gain = gd18_weight - gd0_weight,
     group = str_to_lower(group))
-litters_data_with_vars_without_missing = 
-  drop_na(litters_data_with_vars, wt_gain)
-litters_data_with_vars_without_missing
+litters_df_with_vars_without_missing = 
+  drop_na(litters_df_with_vars, wt_gain)
+litters_df_with_vars_without_missing
 ## # A tibble: 31 × 8
 ##   group litter_number gd0_weight gd18_weight gd_of_birth pups_born_alive
-##   &lt;chr&gt; &lt;chr&gt;              &lt;dbl&gt;       &lt;dbl&gt;       &lt;int&gt;           &lt;int&gt;
+##   &lt;chr&gt; &lt;chr&gt;              &lt;dbl&gt;       &lt;dbl&gt;       &lt;dbl&gt;           &lt;dbl&gt;
 ## 1 con7  #85                 19.7        34.7          20               3
 ## 2 con7  #1/2/95/2           27          42            19               8
 ## 3 con7  #5/5/3/83/3-3       26          41.4          19               6
 ## # ℹ 28 more rows
-## # ℹ 2 more variables: pups_dead_birth &lt;int&gt;, wt_gain &lt;dbl&gt;</code></pre>
+## # ℹ 2 more variables: pups_dead_birth &lt;dbl&gt;, wt_gain &lt;dbl&gt;</code></pre>
 <p>Below, we try the second option:</p>
-<pre class="r"><code>litters_data_clean = 
+<pre class="r"><code>litters_df_clean = 
   drop_na(
     mutate(
       select(
         janitor::clean_names(
-          read_csv(&quot;./data/FAS_litters.csv&quot;, col_types = &quot;ccddiiii&quot;)
+          read_csv(&quot;./data/FAS_litters.csv&quot;, na = c(&quot;NA&quot;, &quot;.&quot;, &quot;&quot;))
           ), 
       -pups_survive
       ),
@@ -809,39 +845,55 @@ litters_data_with_vars_without_missing
     ),
   wt_gain
   )
+## Rows: 49 Columns: 8
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## chr (2): Group, Litter Number
+## dbl (6): GD0 weight, GD18 weight, GD of Birth, Pups born alive, Pups dead @ ...
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
 
-litters_data_clean
+litters_df_clean
 ## # A tibble: 31 × 8
 ##   group litter_number gd0_weight gd18_weight gd_of_birth pups_born_alive
-##   &lt;chr&gt; &lt;chr&gt;              &lt;dbl&gt;       &lt;dbl&gt;       &lt;int&gt;           &lt;int&gt;
+##   &lt;chr&gt; &lt;chr&gt;              &lt;dbl&gt;       &lt;dbl&gt;       &lt;dbl&gt;           &lt;dbl&gt;
 ## 1 con7  #85                 19.7        34.7          20               3
 ## 2 con7  #1/2/95/2           27          42            19               8
 ## 3 con7  #5/5/3/83/3-3       26          41.4          19               6
 ## # ℹ 28 more rows
-## # ℹ 2 more variables: pups_dead_birth &lt;int&gt;, wt_gain &lt;dbl&gt;</code></pre>
+## # ℹ 2 more variables: pups_dead_birth &lt;dbl&gt;, wt_gain &lt;dbl&gt;</code></pre>
 <p>These are both confusing and bad: the first gets confusing and
 clutters our workspace, and the second has to be read inside out.</p>
 <p>Piping solves this problem. It allows you to turn the nested approach
 into a sequential chain by passing the result of one function call as an
 argument to the next function call:</p>
-<pre class="r"><code>litters_data = 
-  read_csv(&quot;./data/FAS_litters.csv&quot;, col_types = &quot;ccddiiii&quot;) |&gt; 
+<pre class="r"><code>litters_df = 
+  read_csv(&quot;./data/FAS_litters.csv&quot;, na = c(&quot;NA&quot;, &quot;.&quot;, &quot;&quot;)) |&gt; 
   janitor::clean_names() |&gt; 
   select(-pups_survive) |&gt; 
   mutate(
     wt_gain = gd18_weight - gd0_weight,
     group = str_to_lower(group)) |&gt; 
   drop_na(wt_gain)
+## Rows: 49 Columns: 8
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## chr (2): Group, Litter Number
+## dbl (6): GD0 weight, GD18 weight, GD of Birth, Pups born alive, Pups dead @ ...
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
 
-litters_data
+litters_df
 ## # A tibble: 31 × 8
 ##   group litter_number gd0_weight gd18_weight gd_of_birth pups_born_alive
-##   &lt;chr&gt; &lt;chr&gt;              &lt;dbl&gt;       &lt;dbl&gt;       &lt;int&gt;           &lt;int&gt;
+##   &lt;chr&gt; &lt;chr&gt;              &lt;dbl&gt;       &lt;dbl&gt;       &lt;dbl&gt;           &lt;dbl&gt;
 ## 1 con7  #85                 19.7        34.7          20               3
 ## 2 con7  #1/2/95/2           27          42            19               8
 ## 3 con7  #5/5/3/83/3-3       26          41.4          19               6
 ## # ℹ 28 more rows
-## # ℹ 2 more variables: pups_dead_birth &lt;int&gt;, wt_gain &lt;dbl&gt;</code></pre>
+## # ℹ 2 more variables: pups_dead_birth &lt;dbl&gt;, wt_gain &lt;dbl&gt;</code></pre>
 <p>All three approaches result in the same dataset, but the piped
 commands are by far the most straightforward. The easiest way to read
 <code>|&gt;</code> is “then”; the keyboard shortcuts are Ctrl + Shift +
@@ -864,7 +916,7 @@ first argument. Here, using the placeholder <code>_</code> is necessary
 to indicate where the object being piped should go. For example, to
 regress <code>wt_gain</code> on <code>pups_born_alive</code>, you might
 use:</p>
-<pre class="r"><code>litters_data |&gt;
+<pre class="r"><code>litters_df |&gt;
   lm(wt_gain ~ pups_born_alive, data = _) |&gt;
   broom::tidy()
 ## # A tibble: 2 × 5
@@ -892,14 +944,25 @@ days</li>
 Solution
 </summary>
 <p>The chunk below performs these actions:</p>
-<pre class="r"><code>read_csv(&quot;./data/FAS_pups.csv&quot;, col_types = &quot;ciiiii&quot;) |&gt;
+<pre class="r"><code>pups_df = 
+    read_csv(&quot;./data/FAS_pups.csv&quot;, na = c(&quot;NA&quot;, &quot;.&quot;)) |&gt;
   janitor::clean_names() |&gt; 
   filter(sex == 1) |&gt; 
   select(-pd_ears) |&gt; 
   mutate(pd_pivot_gt7 = pd_pivot &gt; 7)
+## Rows: 313 Columns: 6
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## chr (1): Litter Number
+## dbl (5): Sex, PD ears, PD eyes, PD pivot, PD walk
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+pups_df
 ## # A tibble: 155 × 6
 ##   litter_number   sex pd_eyes pd_pivot pd_walk pd_pivot_gt7
-##   &lt;chr&gt;         &lt;int&gt;   &lt;int&gt;    &lt;int&gt;   &lt;int&gt; &lt;lgl&gt;       
+##   &lt;chr&gt;         &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt; &lt;lgl&gt;       
 ## 1 #85               1      13        7      11 FALSE       
 ## 2 #85               1      13        7      12 FALSE       
 ## 3 #1/2/95/2         1      13        7       9 FALSE       

@@ -434,7 +434,7 @@ div.tocify {
 
 <p>Importing is the first step in wrangling.</p>
 <p>This is the first module in the <a
-href="topic_data_wrangling_i.html">Data Wrangling I</a> topic.</p>
+href="topic_df_wrangling_i.html">Data Wrangling I</a> topic.</p>
 <div id="overview" class="section level2 tabset tabset-pills">
 <h2 class="tabset tabset-pills">Overview</h2>
 <div id="learning-objectives" class="section level3">
@@ -482,7 +482,17 @@ start an R Markdown; I’m reusing this <a
 href="resources/template.Rmd">template</a>. We’re also going to be
 making extensive use of the <code>tidyverse</code> package, so go ahead
 and load that in a “setup” code chunk.</p>
-<pre class="r"><code>library(tidyverse)</code></pre>
+<pre class="r"><code>library(tidyverse)
+## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+## ✔ dplyr     1.1.4     ✔ readr     2.1.5
+## ✔ forcats   1.0.0     ✔ stringr   1.5.1
+## ✔ ggplot2   3.5.1     ✔ tibble    3.2.1
+## ✔ lubridate 1.9.3     ✔ tidyr     1.3.1
+## ✔ purrr     1.0.2     
+## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+## ✖ dplyr::filter() masks stats::filter()
+## ✖ dplyr::lag()    masks stats::lag()
+## ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
 <div id="paths" class="section level3">
 <h3>Paths</h3>
 <p>We’ve mentioned paths and your working directory in passing (when
@@ -503,7 +513,7 @@ your code extremely fragile: if you move your directory, or share your
 project with someone else, the <strong>absolute</strong> path to files
 will change and your code won’t work.</p>
 <p>An absolute path example is below:</p>
-<pre><code>&quot;/Users/jeffgoldsmith/Dropbox/Work/Teaching/P8105/fall_2023/p8105.github.io/data/FAS_litters.csv&quot;</code></pre>
+<pre><code>&quot;/Users/jeffgoldsmith/Dropbox/Work/Teaching/P8105/fall_2024/p8105.github.io/data/FAS_litters.csv&quot;</code></pre>
 <p>Relative paths, meanwhile, navigate from your current working
 directory. Relative paths are portable, in that if you move your
 directory or share it with someone else, the <strong>relative</strong>
@@ -516,7 +526,7 @@ href="https://twitter.com/hadleywickham/status/940021008764846080">taking
 big risks</a>…)</p>
 <p>The code below finds my current working directory:</p>
 <pre class="r"><code>getwd()
-## [1] &quot;/Users/jeff/Library/CloudStorage/Dropbox/Work/Teaching/P8105/fall_2024/p8105.github.io&quot;</code></pre>
+## [1] &quot;/Users/jeffgoldsmith/Dropbox/Work/Teaching/P8105/fall_2024/p8105.github.io&quot;</code></pre>
 <p>A relative path to the same file as the absolute path above is</p>
 <pre><code>&quot;./data/FAS_litters.csv&quot;</code></pre>
 <p>The table below, copied from <a
@@ -581,30 +591,29 @@ with data separated by a delimiter) saved in a plain text format. Of
 these, CSV (comma separated value) files are most common, and others are
 handled in basically the same way. To import a CSV, we’ll use a function
 from <code>readr</code> (included in the tidyverse):</p>
-<pre class="r"><code>litters_data = read_csv(file = &quot;./data/FAS_litters.csv&quot;)
+<pre class="r"><code>litters_df = read_csv(file = &quot;./data/FAS_litters.csv&quot;)
 ## Rows: 49 Columns: 8
-## ── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────
+## ── Column specification ────────────────────────────────────────────────────────
 ## Delimiter: &quot;,&quot;
-## chr (2): Group, Litter Number
-## dbl (6): GD0 weight, GD18 weight, GD of Birth, Pups born alive, Pups dead @ ...
+## chr (4): Group, Litter Number, GD0 weight, GD18 weight
+## dbl (4): GD of Birth, Pups born alive, Pups dead @ birth, Pups survive
 ## 
 ## ℹ Use `spec()` to retrieve the full column specification for this data.
 ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
 <p>Great – we’ve imported data! The first argument to
 <code>read_csv</code> is the path to the data, and the line above
-assigns the result of <code>read_csv</code> to
-<code>litters_data</code>. This function call also prints information
-about the column parsing. We’ll talk more about both of these
-shortly.</p>
+assigns the result of <code>read_csv</code> to <code>litters_df</code>.
+This function call also prints information about the column parsing.
+We’ll talk more about both of these shortly.</p>
 <p>I (almost always) use <code>janitor::clean_names()</code> to clean up
 variable names after importing data. Doing so will take whatever the
 column names are and convert them to lower snake case.</p>
-<pre class="r"><code>names(litters_data)
+<pre class="r"><code>names(litters_df)
 ## [1] &quot;Group&quot;             &quot;Litter Number&quot;     &quot;GD0 weight&quot;       
 ## [4] &quot;GD18 weight&quot;       &quot;GD of Birth&quot;       &quot;Pups born alive&quot;  
 ## [7] &quot;Pups dead @ birth&quot; &quot;Pups survive&quot;
-litters_data = janitor::clean_names(litters_data)
-names(litters_data)
+litters_df = janitor::clean_names(litters_df)
+names(litters_df)
 ## [1] &quot;group&quot;           &quot;litter_number&quot;   &quot;gd0_weight&quot;      &quot;gd18_weight&quot;    
 ## [5] &quot;gd_of_birth&quot;     &quot;pups_born_alive&quot; &quot;pups_dead_birth&quot; &quot;pups_survive&quot;</code></pre>
 <p>The <code>package::function</code> syntax lets you use a function
@@ -626,10 +635,10 @@ Solution
 </summary>
 <p>For me, loading the data with absolute and relative paths might look
 like the following:</p>
-<pre class="r"><code>pups_data = read_csv(file = &quot;./data/FAS_pups.csv&quot;)
-pups_data = read_csv(file = &quot;~/Desktop/data_wranging_i/data/FAS_litters.csv&quot;)</code></pre>
-<p>If I move the directory holding this example, the relatitve path
-works and the absolute path is broken.</p>
+<pre class="r"><code>pups_df = read_csv(file = &quot;./data/FAS_pups.csv&quot;)
+pups_df = read_csv(file = &quot;~/Desktop/data_wranging_i/data/FAS_litters.csv&quot;)</code></pre>
+<p>If I move the directory holding this example, the relative path works
+and the absolute path is broken.</p>
 </details>
 </div>
 <div id="looking-at-data" class="section level3">
@@ -640,41 +649,41 @@ unexpected results during data import, you’ll catch a lot of them here.
 In addition to printing the data (which is my first step), I often use
 <code>View</code> / <code>view</code>, <code>str</code>,
 <code>head</code>, and <code>tail</code>:</p>
-<pre class="r"><code>litters_data
+<pre class="r"><code>litters_df
 ## # A tibble: 49 × 8
 ##    group litter_number   gd0_weight gd18_weight gd_of_birth pups_born_alive
-##    &lt;chr&gt; &lt;chr&gt;                &lt;dbl&gt;       &lt;dbl&gt;       &lt;dbl&gt;           &lt;dbl&gt;
-##  1 Con7  #85                   19.7        34.7          20               3
-##  2 Con7  #1/2/95/2             27          42            19               8
-##  3 Con7  #5/5/3/83/3-3         26          41.4          19               6
-##  4 Con7  #5/4/2/95/2           28.5        44.1          19               5
-##  5 Con7  #4/2/95/3-3           NA          NA            20               6
-##  6 Con7  #2/2/95/3-2           NA          NA            20               6
-##  7 Con7  #1/5/3/83/3-3/2       NA          NA            20               9
-##  8 Con8  #3/83/3-3             NA          NA            20               9
-##  9 Con8  #2/95/3               NA          NA            20               8
-## 10 Con8  #3/5/2/2/95           28.5        NA            20               8
+##    &lt;chr&gt; &lt;chr&gt;           &lt;chr&gt;      &lt;chr&gt;             &lt;dbl&gt;           &lt;dbl&gt;
+##  1 Con7  #85             19.7       34.7                 20               3
+##  2 Con7  #1/2/95/2       27         42                   19               8
+##  3 Con7  #5/5/3/83/3-3   26         41.4                 19               6
+##  4 Con7  #5/4/2/95/2     28.5       44.1                 19               5
+##  5 Con7  #4/2/95/3-3     &lt;NA&gt;       &lt;NA&gt;                 20               6
+##  6 Con7  #2/2/95/3-2     &lt;NA&gt;       &lt;NA&gt;                 20               6
+##  7 Con7  #1/5/3/83/3-3/2 &lt;NA&gt;       &lt;NA&gt;                 20               9
+##  8 Con8  #3/83/3-3       &lt;NA&gt;       &lt;NA&gt;                 20               9
+##  9 Con8  #2/95/3         &lt;NA&gt;       &lt;NA&gt;                 20               8
+## 10 Con8  #3/5/2/2/95     28.5       &lt;NA&gt;                 20               8
 ## # ℹ 39 more rows
 ## # ℹ 2 more variables: pups_dead_birth &lt;dbl&gt;, pups_survive &lt;dbl&gt;
-tail(litters_data, 5)
+tail(litters_df, 5)
 ## # A tibble: 5 × 8
 ##   group litter_number gd0_weight gd18_weight gd_of_birth pups_born_alive
-##   &lt;chr&gt; &lt;chr&gt;              &lt;dbl&gt;       &lt;dbl&gt;       &lt;dbl&gt;           &lt;dbl&gt;
-## 1 Low8  #100                20          39.2          20               8
-## 2 Low8  #4/84               21.8        35.2          20               4
-## 3 Low8  #108                25.6        47.5          20               8
-## 4 Low8  #99                 23.5        39            20               6
-## 5 Low8  #110                25.5        42.7          20               7
+##   &lt;chr&gt; &lt;chr&gt;         &lt;chr&gt;      &lt;chr&gt;             &lt;dbl&gt;           &lt;dbl&gt;
+## 1 Low8  #100          20         39.2                 20               8
+## 2 Low8  #4/84         21.8       35.2                 20               4
+## 3 Low8  #108          25.6       47.5                 20               8
+## 4 Low8  #99           23.5       39                   20               6
+## 5 Low8  #110          25.5       42.7                 20               7
 ## # ℹ 2 more variables: pups_dead_birth &lt;dbl&gt;, pups_survive &lt;dbl&gt;</code></pre>
 <p>Another tool that I use sometimes is <code>skimr::skim</code>,
 although for me it’s more “neat” than useful.</p>
-<pre class="r"><code>skimr::skim(litters_data)</code></pre>
+<pre class="r"><code>skimr::skim(litters_df)</code></pre>
 <table>
 <caption>Data summary</caption>
 <tbody>
 <tr class="odd">
 <td align="left">Name</td>
-<td align="left">litters_data</td>
+<td align="left">litters_df</td>
 </tr>
 <tr class="even">
 <td align="left">Number of rows</td>
@@ -694,11 +703,11 @@ although for me it’s more “neat” than useful.</p>
 </tr>
 <tr class="even">
 <td align="left">character</td>
-<td align="left">2</td>
+<td align="left">4</td>
 </tr>
 <tr class="odd">
 <td align="left">numeric</td>
-<td align="left">6</td>
+<td align="left">4</td>
 </tr>
 <tr class="even">
 <td align="left">________________________</td>
@@ -738,7 +747,7 @@ although for me it’s more “neat” than useful.</p>
 <tr class="odd">
 <td align="left">group</td>
 <td align="right">0</td>
-<td align="right">1</td>
+<td align="right">1.00</td>
 <td align="right">4</td>
 <td align="right">4</td>
 <td align="right">0</td>
@@ -748,28 +757,48 @@ although for me it’s more “neat” than useful.</p>
 <tr class="even">
 <td align="left">litter_number</td>
 <td align="right">0</td>
-<td align="right">1</td>
+<td align="right">1.00</td>
 <td align="right">3</td>
 <td align="right">15</td>
 <td align="right">0</td>
 <td align="right">49</td>
 <td align="right">0</td>
 </tr>
+<tr class="odd">
+<td align="left">gd0_weight</td>
+<td align="right">13</td>
+<td align="right">0.73</td>
+<td align="right">1</td>
+<td align="right">4</td>
+<td align="right">0</td>
+<td align="right">26</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">gd18_weight</td>
+<td align="right">15</td>
+<td align="right">0.69</td>
+<td align="right">1</td>
+<td align="right">4</td>
+<td align="right">0</td>
+<td align="right">31</td>
+<td align="right">0</td>
+</tr>
 </tbody>
 </table>
 <p><strong>Variable type: numeric</strong></p>
-<table style="width:100%;">
+<table>
 <colgroup>
+<col width="20%" />
+<col width="12%" />
 <col width="18%" />
-<col width="11%" />
-<col width="16%" />
 <col width="7%" />
+<col width="6%" />
+<col width="3%" />
 <col width="5%" />
 <col width="5%" />
-<col width="7%" />
-<col width="7%" />
-<col width="7%" />
 <col width="5%" />
+<col width="6%" />
 <col width="7%" />
 </colgroup>
 <thead>
@@ -789,81 +818,55 @@ although for me it’s more “neat” than useful.</p>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">gd0_weight</td>
-<td align="right">15</td>
-<td align="right">0.69</td>
-<td align="right">24.38</td>
-<td align="right">3.28</td>
-<td align="right">17.0</td>
-<td align="right">22.30</td>
-<td align="right">24.10</td>
-<td align="right">26.67</td>
-<td align="right">33.4</td>
-<td align="left">▃▇▇▆▁</td>
-</tr>
-<tr class="even">
-<td align="left">gd18_weight</td>
-<td align="right">17</td>
-<td align="right">0.65</td>
-<td align="right">41.52</td>
-<td align="right">4.05</td>
-<td align="right">33.4</td>
-<td align="right">38.88</td>
-<td align="right">42.25</td>
-<td align="right">43.80</td>
-<td align="right">52.7</td>
-<td align="left">▃▃▇▂▁</td>
-</tr>
-<tr class="odd">
 <td align="left">gd_of_birth</td>
 <td align="right">0</td>
-<td align="right">1.00</td>
+<td align="right">1</td>
 <td align="right">19.65</td>
 <td align="right">0.48</td>
-<td align="right">19.0</td>
-<td align="right">19.00</td>
-<td align="right">20.00</td>
-<td align="right">20.00</td>
-<td align="right">20.0</td>
+<td align="right">19</td>
+<td align="right">19</td>
+<td align="right">20</td>
+<td align="right">20</td>
+<td align="right">20</td>
 <td align="left">▅▁▁▁▇</td>
 </tr>
 <tr class="even">
 <td align="left">pups_born_alive</td>
 <td align="right">0</td>
-<td align="right">1.00</td>
+<td align="right">1</td>
 <td align="right">7.35</td>
 <td align="right">1.76</td>
-<td align="right">3.0</td>
-<td align="right">6.00</td>
-<td align="right">8.00</td>
-<td align="right">8.00</td>
-<td align="right">11.0</td>
+<td align="right">3</td>
+<td align="right">6</td>
+<td align="right">8</td>
+<td align="right">8</td>
+<td align="right">11</td>
 <td align="left">▁▃▂▇▁</td>
 </tr>
 <tr class="odd">
 <td align="left">pups_dead_birth</td>
 <td align="right">0</td>
-<td align="right">1.00</td>
+<td align="right">1</td>
 <td align="right">0.33</td>
 <td align="right">0.75</td>
-<td align="right">0.0</td>
-<td align="right">0.00</td>
-<td align="right">0.00</td>
-<td align="right">0.00</td>
-<td align="right">4.0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">4</td>
 <td align="left">▇▂▁▁▁</td>
 </tr>
 <tr class="even">
 <td align="left">pups_survive</td>
 <td align="right">0</td>
-<td align="right">1.00</td>
+<td align="right">1</td>
 <td align="right">6.41</td>
 <td align="right">2.05</td>
-<td align="right">1.0</td>
-<td align="right">5.00</td>
-<td align="right">7.00</td>
-<td align="right">8.00</td>
-<td align="right">9.0</td>
+<td align="right">1</td>
+<td align="right">5</td>
+<td align="right">7</td>
+<td align="right">8</td>
+<td align="right">9</td>
 <td align="left">▁▃▂▇▇</td>
 </tr>
 </tbody>
@@ -872,7 +875,7 @@ although for me it’s more “neat” than useful.</p>
 <code>View</code> / <code>view</code> don’t work well inside of .Rmd
 files. Instead, call these functions from the console, and be sure to
 remove them from any code chunks in your .Rmd.</p>
-<pre class="r"><code>view(litters_data)</code></pre>
+<pre class="r"><code>view(litters_df)</code></pre>
 </div>
 <div id="arguments-to-read_" class="section level3">
 <h3>Arguments to <code>read_*</code></h3>
@@ -891,28 +894,64 @@ missing values.</li>
 </ul>
 <p>For example, the call below will skip the first 50 lines of data and
 not assume the first row are variable names:</p>
-<pre class="r"><code>litters_data = read_csv(file = &quot;./data/FAS_litters.csv&quot;,
-  skip = 10, col_names = FALSE)
+<pre class="r"><code>litters_df = 
+    read_csv(file = &quot;./data/FAS_litters.csv&quot;,
+    skip = 10, col_names = FALSE)
 ## Rows: 40 Columns: 8
-## ── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────
+## ── Column specification ────────────────────────────────────────────────────────
 ## Delimiter: &quot;,&quot;
-## chr (2): X1, X2
-## dbl (6): X3, X4, X5, X6, X7, X8
+## chr (4): X1, X2, X3, X4
+## dbl (4): X5, X6, X7, X8
 ## 
 ## ℹ Use `spec()` to retrieve the full column specification for this data.
 ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-head(litters_data)
+
+head(litters_df)
 ## # A tibble: 6 × 8
-##   X1    X2                 X3    X4    X5    X6    X7    X8
-##   &lt;chr&gt; &lt;chr&gt;           &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
-## 1 Con8  #3/5/2/2/95      28.5    NA    20     8     0     8
-## 2 Con8  #5/4/3/83/3      28      NA    19     9     0     8
-## 3 Con8  #1/6/2/2/95-2    NA      NA    20     7     0     6
-## 4 Con8  #3/5/3/83/3-3-2  NA      NA    20     8     0     8
-## 5 Con8  #2/2/95/2        NA      NA    19     5     0     4
-## 6 Con8  #3/6/2/2/95-3    NA      NA    20     7     0     7</code></pre>
+##   X1    X2              X3    X4       X5    X6    X7    X8
+##   &lt;chr&gt; &lt;chr&gt;           &lt;chr&gt; &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1 Con8  #3/5/2/2/95     28.5  &lt;NA&gt;     20     8     0     8
+## 2 Con8  #5/4/3/83/3     28    &lt;NA&gt;     19     9     0     8
+## 3 Con8  #1/6/2/2/95-2   &lt;NA&gt;  &lt;NA&gt;     20     7     0     6
+## 4 Con8  #3/5/3/83/3-3-2 &lt;NA&gt;  &lt;NA&gt;     20     8     0     8
+## 5 Con8  #2/2/95/2       &lt;NA&gt;  &lt;NA&gt;     19     5     0     4
+## 6 Con8  #3/6/2/2/95-3   &lt;NA&gt;  &lt;NA&gt;     20     7     0     7</code></pre>
 <p>These arguments generally work for other members of the
 <code>read_*</code> family of functions.</p>
+<p>A careful look at <code>litters_df</code> suggests we might also need
+to use the <code>na</code> argument in <code>read_csv()</code> – in
+<code>GD0 weight</code> and <code>GD18 weight</code> there are “values”
+of <code>.</code>. In general (and in this case) the <code>.</code>
+value is used to indicate missingness. And if we open
+<code>FAS_litters.csv</code>, we’ll see that <code>NA</code> and blank
+entries are also used to indicate a missing value.</p>
+<p>The line below will treat <code>.</code>, <code>NA</code>, and blank
+cells as missing.</p>
+<pre class="r"><code>litters_df = 
+    read_csv(
+        file = &quot;./data/FAS_litters.csv&quot;,
+        na = c(&quot;.&quot;, &quot;NA&quot;, &quot;&quot;))
+## Rows: 49 Columns: 8
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## chr (2): Group, Litter Number
+## dbl (6): GD0 weight, GD18 weight, GD of Birth, Pups born alive, Pups dead @ ...
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+head(litters_df)
+## # A tibble: 6 × 8
+##   Group `Litter Number` `GD0 weight` `GD18 weight` `GD of Birth`
+##   &lt;chr&gt; &lt;chr&gt;                  &lt;dbl&gt;         &lt;dbl&gt;         &lt;dbl&gt;
+## 1 Con7  #85                     19.7          34.7            20
+## 2 Con7  #1/2/95/2               27            42              19
+## 3 Con7  #5/5/3/83/3-3           26            41.4            19
+## 4 Con7  #5/4/2/95/2             28.5          44.1            19
+## 5 Con7  #4/2/95/3-3             NA            NA              20
+## 6 Con7  #2/2/95/3-2             NA            NA              20
+## # ℹ 3 more variables: `Pups born alive` &lt;dbl&gt;, `Pups dead @ birth` &lt;dbl&gt;,
+## #   `Pups survive` &lt;dbl&gt;</code></pre>
 </div>
 <div id="parsing-columns" class="section level3">
 <h3>Parsing columns</h3>
@@ -920,22 +959,29 @@ head(litters_data)
 talking about in some detail. The <code>read_*</code> functions will
 attempt to guess the data type stored in each column; by default, these
 guesses are based on the first 1000 rows. The guesses are also usually
-pretty good. In some cases, though, you’ll want to give explicit column
-specifications. This is done using the <code>cols</code> function, where
-you can give each column a type:</p>
-<pre class="r"><code>litters_data = read_csv(file = &quot;./data/FAS_litters.csv&quot;,
-  col_types = cols(
-    Group = col_character(),
-    `Litter Number` = col_character(),
-    `GD0 weight` = col_double(),
-    `GD18 weight` = col_double(),
-    `GD of Birth` = col_integer(),
-    `Pups born alive` = col_integer(),
-    `Pups dead @ birth` = col_integer(),
-    `Pups survive` = col_integer()
+pretty good, and “bad” guesses often indicate that there’s something in
+the data you should pay more attention to – before treating
+<code>.</code> as missing <code>GD0 weight</code> was a character, but
+after indicating this is missing it’s a numeric variable.</p>
+<p>In some cases, you’ll want to give explicit column specifications.
+This is done using the <code>cols</code> function, where you can give
+each column a type:</p>
+<pre class="r"><code>litters_df = 
+    read_csv(file = &quot;./data/FAS_litters.csv&quot;,
+        na = c(&quot;.&quot;, &quot;NA&quot;, &quot;&quot;),
+    col_types = cols(
+      Group = col_character(),
+      `Litter Number` = col_character(),
+      `GD0 weight` = col_double(),
+      `GD18 weight` = col_double(),
+      `GD of Birth` = col_integer(),
+      `Pups born alive` = col_integer(),
+      `Pups dead @ birth` = col_integer(),
+      `Pups survive` = col_integer()
+    )
   )
-)
-tail(litters_data)
+
+tail(litters_df)
 ## # A tibble: 6 × 8
 ##   Group `Litter Number` `GD0 weight` `GD18 weight` `GD of Birth`
 ##   &lt;chr&gt; &lt;chr&gt;                  &lt;dbl&gt;         &lt;dbl&gt;         &lt;int&gt;
@@ -949,12 +995,15 @@ tail(litters_data)
 ## #   `Pups survive` &lt;int&gt;</code></pre>
 <p>Note that you don’t have to specify the variable type for every
 column, and can only focus on ones that are difficult:</p>
-<pre class="r"><code>litters_data = read_csv(file = &quot;./data/FAS_litters.csv&quot;,
-  col_types = cols(
-    Group = col_factor()
-  )
+<pre class="r"><code>litters_df = 
+    read_csv(file = &quot;./data/FAS_litters.csv&quot;,
+        na = c(&quot;.&quot;, &quot;NA&quot;, &quot;&quot;),
+    col_types = cols(
+      Group = col_factor()
+    )
 )
-head(litters_data)
+
+head(litters_df)
 ## # A tibble: 6 × 8
 ##   Group `Litter Number` `GD0 weight` `GD18 weight` `GD of Birth`
 ##   &lt;fct&gt; &lt;chr&gt;                  &lt;dbl&gt;         &lt;dbl&gt;         &lt;dbl&gt;
@@ -977,10 +1026,13 @@ Solution
 </summary>
 <p>After some tinkering, the code I’d use to import and view the pups
 dataset is below.</p>
-<pre class="r"><code>pups_data = read_csv(&quot;./data/FAS_pups.csv&quot;, col_types = &quot;ciiiii&quot;)
-skimr::skim(pups_data)</code></pre>
-<p>If I move the directory holding this example, the relatitve path
-works and the absolute path is broken.</p>
+<pre class="r"><code>pups_df = 
+    read_csv(&quot;./data/FAS_pups.csv&quot;,
+        na = c(&quot;.&quot;, &quot;NA&quot;), col_types = &quot;fddddd&quot;)
+
+skimr::skim(pups_df)</code></pre>
+<p>If I move the directory holding this example, the relative path works
+and the absolute path is broken.</p>
 </details>
 </div>
 <div id="other-file-formats" class="section level3">
@@ -1002,8 +1054,10 @@ rectangle). Lastly, in RStudio you can use File &gt; Import Dataset &gt;
 From Excel for a GUI interface. The code below illustrates
 <code>read_excel</code>.</p>
 <pre class="r"><code>library(readxl)
-mlb11_data = read_excel(&quot;data/mlb11.xlsx&quot;, n_max = 20)
-head(mlb11_data, 5)
+
+mlb11_df = read_excel(&quot;data/mlb11.xlsx&quot;, n_max = 20)
+
+head(mlb11_df, 5)
 ## # A tibble: 5 × 12
 ##   team         runs at_bats  hits homeruns bat_avg strikeouts stolen_bases  wins
 ##   &lt;chr&gt;       &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;      &lt;dbl&gt;        &lt;dbl&gt; &lt;dbl&gt;
@@ -1017,8 +1071,10 @@ head(mlb11_data, 5)
 <code>haven</code>, which is used to import into R data files from SAS,
 Stata, and SPSS. An example for reading data from SAS follows.</p>
 <pre class="r"><code>library(haven)
-pulse_data = read_sas(&quot;./data/public_pulse_data.sas7bdat&quot;)
-head(pulse_data, 5)
+
+pulse_df = read_sas(&quot;./data/public_pulse_data.sas7bdat&quot;)
+
+head(pulse_df, 5)
 ## # A tibble: 5 × 7
 ##      ID   age Sex   BDIScore_BL BDIScore_01m BDIScore_06m BDIScore_12m
 ##   &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;       &lt;dbl&gt;        &lt;dbl&gt;        &lt;dbl&gt;        &lt;dbl&gt;
@@ -1044,7 +1100,7 @@ converting to factors …).</p>
 the class of this dataset to the one produced by <code>read_csv</code>.
 Try printing both in the console – what happens? After cleaning up the
 names, try accessing the <code>Sex</code> variable using <code>S</code>
-(e.g., <code>pups_data$S</code>). What happens?</p>
+(e.g., <code>pups_df$S</code>). What happens?</p>
 <details>
 <summary>
 Solution
@@ -1110,11 +1166,6 @@ href="https://bookdown.org/rdpeng/rprogdatascience/using-the-readr-package.html"
 href="https://geanders.github.io/RProgrammingForResearch/entering-and-cleaning-data-1.html">entering
 data</a>; the section on pathnames and directories is nicely
 detailed</li>
-<li>RStudio has recordings of webinars on <a
-href="https://www.rstudio.com/resources/webinars/getting-your-data-into-r/">Getting
-data into R</a> and <a
-href="https://www.rstudio.com/resources/webinars/whats-new-with-readxl/">What’s
-new with readxl</a></li>
 <li>There are pages on the tidyverse website for <a
 href="https://readr.tidyverse.org">readr</a>, <a
 href="https://readxl.tidyverse.org">readxl</a>, and <a
