@@ -179,7 +179,7 @@ In the best case, the data are stored in the csv without any weirdness -- there 
 * `na`: string vector containing character expressions for missing values. 
 * `skip`: number of rows to skip before reading data.
 
-For example, the call below will skip the first 50 lines of data and not assume the first row are variable names:
+For example, the call below will skip the first 10 lines of data and not assume the first row are variable names:
 
 ```{r}
 litters_df = 
@@ -260,7 +260,7 @@ pups_df =
 skimr::skim(pups_df)
 ```
 
-If I move the directory holding this example, the relative path works and the absolute path is broken.
+Some kinds of poor column specification still "work" -- you can code a number as a character, for example, even if you shouldn't. Others won't work -- coding a character or factor as a number is nonsense, and you'll end up with a column full of `NA` values. 
 
 </details>
 

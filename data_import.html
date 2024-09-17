@@ -13,7 +13,7 @@
 
 <title>Data Import</title>
 
-<script src="site_libs/header-attrs-2.28/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.24/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
@@ -483,11 +483,13 @@ href="resources/template.Rmd">template</a>. We’re also going to be
 making extensive use of the <code>tidyverse</code> package, so go ahead
 and load that in a “setup” code chunk.</p>
 <pre class="r"><code>library(tidyverse)
+## Warning: package &#39;ggplot2&#39; was built under R version 4.3.2
+## Warning: package &#39;tidyr&#39; was built under R version 4.3.2
 ## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
 ## ✔ dplyr     1.1.4     ✔ readr     2.1.5
 ## ✔ forcats   1.0.0     ✔ stringr   1.5.1
-## ✔ ggplot2   3.5.1     ✔ tibble    3.2.1
-## ✔ lubridate 1.9.3     ✔ tidyr     1.3.1
+## ✔ ggplot2   3.5.0     ✔ tibble    3.2.1
+## ✔ lubridate 1.9.2     ✔ tidyr     1.3.1
 ## ✔ purrr     1.0.2     
 ## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
 ## ✖ dplyr::filter() masks stats::filter()
@@ -892,7 +894,7 @@ I use most frequently are:</p>
 missing values.</li>
 <li><code>skip</code>: number of rows to skip before reading data.</li>
 </ul>
-<p>For example, the call below will skip the first 50 lines of data and
+<p>For example, the call below will skip the first 10 lines of data and
 not assume the first row are variable names:</p>
 <pre class="r"><code>litters_df = 
     read_csv(file = &quot;./data/FAS_litters.csv&quot;,
@@ -1031,8 +1033,10 @@ dataset is below.</p>
         na = c(&quot;.&quot;, &quot;NA&quot;), col_types = &quot;fddddd&quot;)
 
 skimr::skim(pups_df)</code></pre>
-<p>If I move the directory holding this example, the relative path works
-and the absolute path is broken.</p>
+<p>Some kinds of poor column specification still “work” – you can code a
+number as a character, for example, even if you shouldn’t. Others won’t
+work – coding a character or factor as a number is nonsense, and you’ll
+end up with a column full of <code>NA</code> values.</p>
 </details>
 </div>
 <div id="other-file-formats" class="section level3">
