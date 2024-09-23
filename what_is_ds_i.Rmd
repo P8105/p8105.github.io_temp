@@ -73,11 +73,11 @@ weather_df =
     date_min = "2021-01-01",
     date_max = "2022-12-31") |>
   mutate(
-    name = recode(
+    name = case_match(
       id, 
-      USW00094728 = "CentralPark_NY", 
-      USW00022534 = "Molokai_HI",
-      USS0023B17S = "Waterhole_WA"),
+      "USW00094728" ~ "CentralPark_NY", 
+      "USW00022534" ~ "Molokai_HI",
+      "USS0023B17S" ~ "Waterhole_WA"),
     tmin = tmin / 10,
     tmax = tmax / 10) |>
   relocate(name)

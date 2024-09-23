@@ -13,7 +13,7 @@
 
 <title>Tidy data and relational datasets</title>
 
-<script src="site_libs/header-attrs-2.28/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.24/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
@@ -480,6 +480,18 @@ href="data_manipulation.html">data manipulation</a>, but create a new
 .Rmd for tidying. I’m also going to load some relevant packages, and
 limit the number of lines printed in a tibble.</p>
 <pre class="r"><code>library(tidyverse)
+## Warning: package &#39;ggplot2&#39; was built under R version 4.3.2
+## Warning: package &#39;tidyr&#39; was built under R version 4.3.2
+## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+## ✔ dplyr     1.1.4     ✔ readr     2.1.5
+## ✔ forcats   1.0.0     ✔ stringr   1.5.1
+## ✔ ggplot2   3.5.0     ✔ tibble    3.2.1
+## ✔ lubridate 1.9.2     ✔ tidyr     1.3.1
+## ✔ purrr     1.0.2     
+## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+## ✖ dplyr::filter() masks stats::filter()
+## ✖ dplyr::lag()    masks stats::lag()
+## ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors
 
 options(tibble.print_min = 5)</code></pre>
 <div id="pivot_longer" class="section level3">
@@ -505,14 +517,14 @@ pulse_df
 problem: the BDI score is spread across four columns, which correspond
 to four observation times. We can fix this problem using
 <code>pivot_longer</code>:</p>
-<pre class="r"><code>pulse_tidy_data = 
+<pre class="r"><code>pulse_tidy_df = 
   pivot_longer(
     pulse_df, 
     bdi_score_bl:bdi_score_12m,
     names_to = &quot;visit&quot;, 
     values_to = &quot;bdi&quot;)
 
-pulse_tidy_data
+pulse_tidy_df
 ## # A tibble: 4,348 × 5
 ##      id   age sex   visit           bdi
 ##   &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;         &lt;dbl&gt;
@@ -526,7 +538,7 @@ pulse_tidy_data
 The original column names were informative but we probably don’t need to
 keep the <code>bdi_score_</code> prefix in each case. I’ll use an
 additional option in <code>pivot_longer</code> to address this:</p>
-<pre class="r"><code>pulse_tidy_data = 
+<pre class="r"><code>pulse_tidy_df = 
   pivot_longer(
     pulse_df, 
     bdi_score_bl:bdi_score_12m,
@@ -534,7 +546,7 @@ additional option in <code>pivot_longer</code> to address this:</p>
     names_prefix = &quot;bdi_score_&quot;,
     values_to = &quot;bdi&quot;)
 
-pulse_tidy_data
+pulse_tidy_df
 ## # A tibble: 4,348 × 5
 ##      id   age sex   visit   bdi
 ##   &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt; &lt;dbl&gt;
@@ -599,7 +611,9 @@ Solution
 </summary>
 <p>The code below shows one approach to this data cleaning process:</p>
 <pre class="r"><code>litters_wide = 
-  read_csv(&quot;./data/FAS_litters.csv&quot;) |&gt;
+  read_csv(
+    &quot;./data/FAS_litters.csv&quot;,
+    na = c(&quot;NA&quot;, &quot;.&quot;, &quot;&quot;)) |&gt;
   janitor::clean_names() |&gt;
   select(litter_number, ends_with(&quot;weight&quot;)) |&gt; 
   pivot_longer(
@@ -613,7 +627,7 @@ Solution
       &quot;gd18_weight&quot; ~ 18
     ))
 ## Rows: 49 Columns: 8
-## ── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────
+## ── Column specification ────────────────────────────────────────────────────────
 ## Delimiter: &quot;,&quot;
 ## chr (2): Group, Litter Number
 ## dbl (6): GD0 weight, GD18 weight, GD of Birth, Pups born alive, Pups dead @ ...
@@ -768,8 +782,10 @@ variable in the litters dataset: this encodes both dose and day of
 treatment! We’ll fix that bit of untidiness as part of the processing
 pipeline. I’m also going to address a pet peeve of mine, which is coding
 sex as an ambiguous numeric variable.)</p>
-<pre class="r"><code>pup_data = 
-  read_csv(&quot;./data/FAS_pups.csv&quot;) |&gt;
+<pre class="r"><code>pup_df = 
+  read_csv(
+    &quot;./data/FAS_pups.csv&quot;,
+    na = c(&quot;NA&quot;, &quot;&quot;, &quot;.&quot;)) |&gt;
   janitor::clean_names() |&gt;
   mutate(
     sex = 
@@ -779,7 +795,7 @@ sex as an ambiguous numeric variable.)</p>
         2 ~ &quot;female&quot;),
     sex = as.factor(sex)) 
 ## Rows: 313 Columns: 6
-## ── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────
+## ── Column specification ────────────────────────────────────────────────────────
 ## Delimiter: &quot;,&quot;
 ## chr (1): Litter Number
 ## dbl (5): Sex, PD ears, PD eyes, PD pivot, PD walk
@@ -787,8 +803,10 @@ sex as an ambiguous numeric variable.)</p>
 ## ℹ Use `spec()` to retrieve the full column specification for this data.
 ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
 
-litter_data = 
-  read_csv(&quot;./data/FAS_litters.csv&quot;) |&gt;
+litter_df = 
+  read_csv(
+    &quot;./data/FAS_litters.csv&quot;,
+    na = c(&quot;NA&quot;, &quot;.&quot;, &quot;&quot;)) |&gt;
   janitor::clean_names() |&gt;
   separate(group, into = c(&quot;dose&quot;, &quot;day_of_tx&quot;), sep = 3) |&gt;
   relocate(litter_number) |&gt;
@@ -796,7 +814,7 @@ litter_data =
     wt_gain = gd18_weight - gd0_weight,
     dose = str_to_lower(dose))
 ## Rows: 49 Columns: 8
-## ── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────
+## ── Column specification ────────────────────────────────────────────────────────
 ## Delimiter: &quot;,&quot;
 ## chr (2): Group, Litter Number
 ## dbl (6): GD0 weight, GD18 weight, GD of Birth, Pups born alive, Pups dead @ ...
@@ -804,10 +822,10 @@ litter_data =
 ## ℹ Use `spec()` to retrieve the full column specification for this data.
 ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
 
-fas_data = 
-  left_join(pup_data, litter_data, by = &quot;litter_number&quot;)
+fas_df = 
+  left_join(pup_df, litter_df, by = &quot;litter_number&quot;)
 
-fas_data
+fas_df
 ## # A tibble: 313 × 15
 ##   litter_number sex   pd_ears pd_eyes pd_pivot pd_walk dose  day_of_tx
 ##   &lt;chr&gt;         &lt;fct&gt;   &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;    
@@ -847,11 +865,13 @@ Solution
 project. The code below imports both datasets, cleans up variable names,
 and joins the datasets using <code>left_join</code>,
 <code>inner_join</code>, and <code>anti_join</code>.</p>
-<pre class="r"><code>surv_os = read_csv(&quot;data/surv_os.csv&quot;) |&gt; 
+<pre class="r"><code>surv_os = 
+  read_csv(&quot;data/surv_os.csv&quot;) |&gt; 
   janitor::clean_names() |&gt; 
   rename(id = what_is_your_uni, os = what_operating_system_do_you_use)
 
-surv_pr_git = read_csv(&quot;data/surv_program_git.csv&quot;) |&gt; 
+surv_pr_git = 
+  read_csv(&quot;data/surv_program_git.csv&quot;) |&gt; 
   janitor::clean_names() |&gt; 
   rename(
     id = what_is_your_uni, 
@@ -862,6 +882,17 @@ left_join(surv_os, surv_pr_git)
 inner_join(surv_os, surv_pr_git)
 anti_join(surv_os, surv_pr_git)
 anti_join(surv_pr_git, surv_os)</code></pre>
+<p>Both <code>left_join</code> and <code>inner_join</code> give warnings
+about “many-to-many” relationships. These indicate that the matching
+variable is not unique, and the warnings should be investigated. In the
+code below we look into the warning that “Row 7 of <code>x</code>
+matches multiple rows in <code>y</code>.”</p>
+<pre class="r"><code>surv_os |&gt; slice(7)
+surv_pr_git |&gt; filter(id == &quot;student_15&quot;)</code></pre>
+Sure enough, two rows in <code>surv_pr_git</code> gave the
+<code>id</code> value <code>student_15</code> – probably someone filled
+in the survey more than once. Adjudicating and correcting these issues
+can be an important step in data cleaning!
 </details>
 </div>
 <div id="a-quick-note-on-names" class="section level3">

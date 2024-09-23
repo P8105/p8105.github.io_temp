@@ -66,7 +66,7 @@ library(ggridges)
 
 We'll be working with NOAA weather data, which is downloaded using `rnoaa::meteo_pull_monitors` function in the code chunk below; similar code underlies the weather dataset used elsewhere in the course. Because this process can take some time, I'll cache the code chunk. 
 
-```{r weather_data_create, cache = TRUE}
+```{r weather_data_create, cache = TRUE, message = FALSE}
 weather_df = 
   rnoaa::meteo_pull_monitors(
     c("USW00094728", "USW00022534", "USS0023B17S"),
@@ -74,17 +74,22 @@ weather_df =
     date_min = "2021-01-01",
     date_max = "2022-12-31") |>
   mutate(
-    name = recode(
+    name = case_match(
       id, 
-      USW00094728 = "CentralPark_NY", 
-      USW00022534 = "Molokai_HI",
-      USS0023B17S = "Waterhole_WA"),
+      "USW00094728" ~ "CentralPark_NY", 
+      "USW00022534" ~ "Molokai_HI",
+      "USS0023B17S" ~ "Waterhole_WA"),
     tmin = tmin / 10,
     tmax = tmax / 10) |>
   select(name, id, everything())
+```
 
+As always, I start by looking at the data; below I'm showing the result of printing the dataframe in the console, but would also use `view(weather_df)` to look around a bit.
+
+```{r}
 weather_df
 ```
+
 
 We'll start with a basic scatterplot to develop our understanding of `ggplot`'s data + mappings + geoms approach, and build quickly from there. 
 
@@ -247,7 +252,8 @@ The `adjust` parameter in density plots is similar to the `binwidth` parameter i
 Histograms and densities are one way of investigating univariate distributions; boxplots are another.
 
 ```{r}
-ggplot(weather_df, aes(x = name, y = tmax)) + geom_boxplot()
+ggplot(weather_df, aes(x = name, y = tmax)) + 
+  geom_boxplot()
 ```
 
 Violin plots are sometimes nice, but folks complain that they don't [look like violins](https://simplystatistics.org/2017/07/13/the-joy-of-no-more-violin-plots/). 
@@ -258,7 +264,7 @@ ggplot(weather_df, aes(x = name, y = tmax)) +
   stat_summary(fun = "median", color = "blue")
 ```
 
-Ridge plots were the trendiest plot of 2017, and were a replacement for both boxplots and violin plots. They're implemented in the [`ggridges`](https://github.com/clauswilke/ggridges) package, and are nice if you have lots of categories in which the shape of the distribution matters.
+Ridge plots were the trendiest plot of 2017, and were a replacement for both boxplots and violin plots. They're implemented in the [`ggridges`](https://github.com/clauswilke/ggridges) package, and are nice if you have lots of categories in which the shape of the distribution matters. There are both [good](https://twitter.com/mtkonczal/status/1701948872648454644) and [bad](https://twitter.com/chiproytx/status/1293924831029800961) examples of ridge plots out there ... 
 
 ```{r}
 ggplot(weather_df, aes(x = tmax, y = name)) + 
@@ -348,14 +354,14 @@ Oh goodness is there a lot of stuff about visualization ...
     * ... and Karl's talk on [creating effective figures and table](https://www.biostat.wisc.edu/~kbroman/presentations/graphs2017.pdf)
     * Also Hadley Wickham's [paper](http://vita.had.co.nz/papers/layered-grammar.pdf) on the philosophy underlying `ggplot`
 * There are tutorials on making graphics using `ggplot`
-    * From R for Data Science: [basics](http://r4ds.had.co.nz/data-visualisation.html) and [advanced stuff](and http://r4ds.had.co.nz/graphics-for-communication.html)
-    * Jenny Bryan's [intro to ggplot](http://stat545.com/cm006_tibbles-dplyr-ggplot2.html) and her [ggplot tutorial](https://github.com/jennybc/ggplot2-tutorial) (with a [video presentation](https://www.youtube.com/watch?v=4MfUCX_KpdE) of the ggplot2 tutorial slides) 
+    * From R for Data Science: [basics](http://r4ds.had.co.nz/data-visualisation.html) and [advanced stuff](http://r4ds.had.co.nz/graphics-for-communication.html)
+    * Jenny Bryan's [ggplot tutorial](https://github.com/jennybc/ggplot2-tutorial) (with a [video presentation](https://www.youtube.com/watch?v=4MfUCX_KpdE) of the ggplot2 tutorial slides) 
     * From [R Programming for Research](https://geanders.github.io/RProgrammingForResearch/exploring-data-1.html#plots-to-explore-data)
     * The [Graphs](http://www.cookbook-r.com/Graphs/) chapter in the R Cookbook by Winston Chang
     * ... and his [R Graphics Cookbook](http://shop.oreilly.com/product/0636920023135.do)
-    * And, of course, a [cheatsheet](https://www.rstudio.com/wp-content/uploads/2016/11/ggplot2-cheatsheet-2.1.pdf)
+    * And, of course, a [cheatsheet](https://rstudio.github.io/cheatsheets/data-visualization.pdf)
 * There are arguments about ggplot vs base R graphics
-    * [Why I don't use ggplot2](https://simplystatistics.org/2016/02/11/why-i-dont-use-ggplot2/)
+    * [Why I don't use ggplot2](https://simplystatistics.org/posts/2016-02-11-why-i-dont-use-ggplot2/)
     * [Comparing ggplot2 and R Base Graphics](https://flowingdata.com/2016/03/22/comparing-ggplot2-and-r-base-graphics/)
     * [Why I use ggplot2](http://varianceexplained.org/r/why-I-use-ggplot2/)
 

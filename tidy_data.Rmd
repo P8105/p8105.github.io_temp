@@ -76,20 +76,20 @@ pulse_df
 With our new understanding of tidy data, we quickly recognize a problem: the BDI score is spread across four columns, which correspond to four observation times. We can fix this problem using `pivot_longer`:
 
 ```{r}
-pulse_tidy_data = 
+pulse_tidy_df = 
   pivot_longer(
     pulse_df, 
     bdi_score_bl:bdi_score_12m,
     names_to = "visit", 
     values_to = "bdi")
 
-pulse_tidy_data
+pulse_tidy_df
 ```
 
 This looks much better! However, now `visit` is an issue. The original column names were informative but we probably don't need to keep the `bdi_score_` prefix in each case. I'll use an additional option in `pivot_longer` to address this:
 
 ```{r}
-pulse_tidy_data = 
+pulse_tidy_df = 
   pivot_longer(
     pulse_df, 
     bdi_score_bl:bdi_score_12m,
@@ -97,7 +97,7 @@ pulse_tidy_data =
     names_prefix = "bdi_score_",
     values_to = "bdi")
 
-pulse_tidy_data
+pulse_tidy_df
 ```
 
 In the preceding I've saved intermediate datasets to make each step clear. While this can be a helpful crutch as you're trying out code, it is generally bad practice. There are also some additional transformations needed to wrap up the data wrangling process, like changing `bl` to `00m` for consistency across visits and converting `visit` to a factor variable. (It's possible that you would want `visit` to be a numeric variable instead, which could be done with a different call to `mutate`.)
@@ -131,7 +131,9 @@ The code below shows one approach to this data cleaning process:
 
 ```{r}
 litters_wide = 
-  read_csv("./data/FAS_litters.csv") |>
+  read_csv(
+    "./data/FAS_litters.csv",
+    na = c("NA", ".", "")) |>
   janitor::clean_names() |>
   select(litter_number, ends_with("weight")) |> 
   pivot_longer(
@@ -239,8 +241,10 @@ As an example, consider the data tables in `FAS_pups.csv` and `FAS_litters.csv`,
 (While revisiting this example, take a look at the `group` variable in the litters dataset: this encodes both dose and day of treatment! We'll fix that bit of untidiness as part of the processing pipeline. I'm also going to address a pet peeve of mine, which is coding sex as an ambiguous numeric variable.)
 
 ```{r}
-pup_data = 
-  read_csv("./data/FAS_pups.csv") |>
+pup_df = 
+  read_csv(
+    "./data/FAS_pups.csv",
+    na = c("NA", "", ".")) |>
   janitor::clean_names() |>
   mutate(
     sex = 
@@ -250,8 +254,10 @@ pup_data =
         2 ~ "female"),
     sex = as.factor(sex)) 
 
-litter_data = 
-  read_csv("./data/FAS_litters.csv") |>
+litter_df = 
+  read_csv(
+    "./data/FAS_litters.csv",
+    na = c("NA", ".", "")) |>
   janitor::clean_names() |>
   separate(group, into = c("dose", "day_of_tx"), sep = 3) |>
   relocate(litter_number) |>
@@ -259,10 +265,10 @@ litter_data =
     wt_gain = gd18_weight - gd0_weight,
     dose = str_to_lower(dose))
 
-fas_data = 
-  left_join(pup_data, litter_data, by = "litter_number")
+fas_df = 
+  left_join(pup_df, litter_df, by = "litter_number")
 
-fas_data
+fas_df
 ```
 
 We made the key explicit in the join. By default, the `*_join` functions in `dplyr` will try to determine the key(s) based on variable names in the datasets you want to join. This is often but not always sufficient, and an extra step to make the key clear will help you and others reading your code.
@@ -279,11 +285,13 @@ As a final point, the `*_join` functions are very much related to SQL syntax, bu
 I put both datasets in the `data` directory in my repo / project. The code below imports both datasets, cleans up variable names, and joins the datasets using `left_join`, `inner_join`, and `anti_join`.
 
 ```{r, eval = FALSE}
-surv_os = read_csv("data/surv_os.csv") |> 
+surv_os = 
+  read_csv("data/surv_os.csv") |> 
   janitor::clean_names() |> 
   rename(id = what_is_your_uni, os = what_operating_system_do_you_use)
 
-surv_pr_git = read_csv("data/surv_program_git.csv") |> 
+surv_pr_git = 
+  read_csv("data/surv_program_git.csv") |> 
   janitor::clean_names() |> 
   rename(
     id = what_is_your_uni, 
@@ -296,6 +304,14 @@ anti_join(surv_os, surv_pr_git)
 anti_join(surv_pr_git, surv_os)
 ```
 
+Both `left_join` and `inner_join` give warnings about "many-to-many" relationships. These indicate that the matching variable is not unique, and the warnings should be investigated. In the code below we look into the warning that "Row 7 of `x` matches multiple rows in `y`."
+
+```{r, eval = FALSE}
+surv_os |> slice(7)
+surv_pr_git |> filter(id == "student_15")
+```
+
+Sure enough, two rows in `surv_pr_git` gave the `id` value `student_15` -- probably someone filled in the survey more than once. Adjudicating and correcting these issues can be an important step in data cleaning!
 </details>
 
 
