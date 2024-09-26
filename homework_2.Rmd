@@ -88,7 +88,7 @@ Describe your data cleaning process, including any questions you have or choices
 
 Create a reader-friendly table showing the star baker or winner of each episode in Seasons 5 through 10. Comment on this table -- were there any predictable overall winners? Any surprises? 
 
-Import, clean, tidy, and organize the viewership data in `viewership.csv`. Show the first 10 rows of this dataset. What was the average viewership in Season 1? In Season 5? 
+Import, clean, tidy, and organize the viewership data in `viewers.csv`. Show the first 10 rows of this dataset. What was the average viewership in Season 1? In Season 5? 
 
 
 ### Optional post-assignment survey
