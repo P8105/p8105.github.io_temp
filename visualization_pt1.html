@@ -13,7 +13,7 @@
 
 <title>Visualization with ggplot2</title>
 
-<script src="site_libs/header-attrs-2.28/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.24/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
@@ -670,10 +670,7 @@ handy:</p>
 <pre class="r"><code>ggplot(weather_df, aes(x = tmax, y = tmin)) + 
   geom_hex()
 ## Warning: Removed 17 rows containing non-finite outside the scale range
-## (`stat_binhex()`).
-## Warning: Computation failed in `stat_binhex()`.
-## Caused by error in `compute_group()`:
-## ! The package &quot;hexbin&quot; is required for `stat_bin_hex()`.</code></pre>
+## (`stat_binhex()`).</code></pre>
 <p><img src="visualization_pt1_files/figure-html/unnamed-chunk-14-1.png" width="90%" /></p>
 <p>There are lots of aesthetics, and these depend to some extent on the
 geom – <code>color</code> worked for both <code>geom_point()</code> and
@@ -744,7 +741,7 @@ distributions; boxplots are another.</p>
 <p><img src="visualization_pt1_files/figure-html/unnamed-chunk-19-1.png" width="90%" /></p>
 <p>Violin plots are sometimes nice, but folks complain that they don’t
 <a
-href="https://simplystatistics.org/2017/07/13/the-joy-of-no-more-violin-plots/">look
+href="https://simplystatistics.org/posts/2017-07-13-the-joy-of-no-more-violin-plots/">look
 like violins</a>.</p>
 <pre class="r"><code>ggplot(weather_df, aes(x = name, y = tmax)) + 
   geom_violin(aes(fill = name), alpha = .5) + 
