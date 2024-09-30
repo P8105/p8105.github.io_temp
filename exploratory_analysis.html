@@ -490,11 +490,11 @@ variable, created using <code>lubridate::floor_date()</code>.</p>
     date_min = &quot;2021-01-01&quot;,
     date_max = &quot;2022-12-31&quot;) |&gt;
   mutate(
-    name = recode(
+    name = case_match(
       id, 
-      USW00094728 = &quot;CentralPark_NY&quot;, 
-      USW00022534 = &quot;Molokai_HI&quot;,
-      USS0023B17S = &quot;Waterhole_WA&quot;),
+      &quot;USW00094728&quot; ~ &quot;CentralPark_NY&quot;, 
+      &quot;USW00022534&quot; ~ &quot;Molokai_HI&quot;,
+      &quot;USS0023B17S&quot; ~ &quot;Waterhole_WA&quot;),
     tmin = tmin / 10,
     tmax = tmax / 10,
     month = lubridate::floor_date(date, unit = &quot;month&quot;)) |&gt;
@@ -633,7 +633,7 @@ directly. For an example, run the code below and try to do something
 useful with the result…</p>
 <pre class="r"><code>weather_df |&gt;
   pull(month) |&gt; 
-  table</code></pre>
+  table()</code></pre>
 <p>You can use <code>summarize()</code> to compute multiple summaries
 within each group. As an example, we count the number of observations in
 each month and the number of distinct values of <code>date</code> in
@@ -978,8 +978,8 @@ result. You could do so using:</p>
     centered_tmax = tmax - mean_tmax) |&gt; 
   ggplot(aes(x = date, y = centered_tmax, color = name)) + 
     geom_point() 
-## Warning: Removed 17 rows containing missing values or values outside the scale
-## range (`geom_point()`).</code></pre>
+## Warning: Removed 17 rows containing missing values or values outside the scale range
+## (`geom_point()`).</code></pre>
 <p><img src="exploratory_analysis_files/figure-html/unnamed-chunk-18-1.png" width="90%" /></p>
 </div>
 <div id="window-functions" class="section level3">

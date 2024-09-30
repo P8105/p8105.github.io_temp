@@ -56,6 +56,8 @@ Create effective graphics using ggplot and implement best practices for effectiv
 
 I'll create a new .Rmd for this example, and include it in the Git repo / directory for the [Visualization and EDA](topic_visualization_and_eda.html) topic. I'm also going to take advantage of features in the `tidyverse` and `patchwork` packages, so I'll load those next.
 
+Since we'll use the same datasets we saw in [Data Wrangling I](topic_data_wrangling_i.html), if I haven't already I'll add sub-directory called `data` and put [these datasets](./resources/data_import_examples.zip) in there.
+
 ```{r}
 library(tidyverse)
 library(patchwork)
@@ -69,13 +71,13 @@ weather_df =
     c("USW00094728", "USW00022534", "USS0023B17S"),
     var = c("PRCP", "TMIN", "TMAX"), 
     date_min = "2021-01-01",
-    date_max = "2023-12-31") |>
+    date_max = "2022-12-31") |>
   mutate(
-    name = recode(
+    name = case_match(
       id, 
-      USW00094728 = "CentralPark_NY", 
-      USW00022534 = "Molokai_HI",
-      USS0023B17S = "Waterhole_WA"),
+      "USW00094728" ~ "CentralPark_NY", 
+      "USW00022534" ~ "Molokai_HI",
+      "USS0023B17S" ~ "Waterhole_WA"),
     tmin = tmin / 10,
     tmax = tmax / 10) |>
   select(name, id, everything())
@@ -410,7 +412,7 @@ As a final example, we'll revisit the FAS data. We've seen code for data import 
 
 ```{r}
 pup_data = 
-  read_csv("./data/FAS_pups.csv") |>
+  read_csv("./data/FAS_pups.csv", na = c("NA", ".", "")) |>
   janitor::clean_names() |>
   mutate(
     sex = 
@@ -420,7 +422,7 @@ pup_data =
         2 ~ "female"))
 
 litter_data = 
-  read_csv("./data/FAS_litters.csv") |>
+  read_csv("./data/FAS_litters.csv", na = c("NA", ".", "")) |>
   janitor::clean_names() |>
   separate(group, into = c("dose", "day_of_tx"), sep = 3)
 
@@ -449,18 +451,17 @@ Oh man is there a lot of stuff about visualization ...
 * There are overviews on good and bad graphics
     * Including an early paper on ["How to display data badly"](http://www.jstor.org/stable/2683253?seq=1#page_scan_tab_contents)
     * Karl Broman's [top ten worst graphs](https://www.biostat.wisc.edu/~kbroman/topten_worstgraphs/)
-    * ... and Karl's talk on [creating effective figures and table](https://www.biostat.wisc.edu/~kbroman/presentations/graphs2018.pdf)
+    * ... and Karl's talk on [creating effective figures and table](https://www.biostat.wisc.edu/~kbroman/presentations/graphs2017.pdf)
     * Also Hadley Wickham's [paper](http://vita.had.co.nz/papers/layered-grammar.pdf) on the philosophy underlying `ggplot`
 * There are tutorials on making graphics using `ggplot`
-    * The [ggplot2](https://ggplot2-book.org) book
-    * From R for Data Science: [basics](http://r4ds.had.co.nz/data-visualisation.html) and [advanced stuff](and http://r4ds.had.co.nz/graphics-for-communication.html)
-    * Jenny Bryan's [intro to ggplot](http://stat545.com/cm006_tibbles-dplyr-ggplot2.html) and her [ggplot tutorial](https://github.com/jennybc/ggplot2-tutorial) (with a [video presentation](https://www.youtube.com/watch?v=4MfUCX_KpdE) of the ggplot2 tutorial slides) 
+    * From R for Data Science: [basics](http://r4ds.had.co.nz/data-visualisation.html) and [advanced stuff](http://r4ds.had.co.nz/graphics-for-communication.html)
+    * Jenny Bryan's [ggplot tutorial](https://github.com/jennybc/ggplot2-tutorial) (with a [video presentation](https://www.youtube.com/watch?v=4MfUCX_KpdE) of the ggplot2 tutorial slides) 
     * From [R Programming for Research](https://geanders.github.io/RProgrammingForResearch/exploring-data-1.html#plots-to-explore-data)
     * The [Graphs](http://www.cookbook-r.com/Graphs/) chapter in the R Cookbook by Winston Chang
     * ... and his [R Graphics Cookbook](http://shop.oreilly.com/product/0636920023135.do)
-    * And, of course, a [cheatsheet](https://www.rstudio.com/wp-content/uploads/2016/11/ggplot2-cheatsheet-2.1.pdf)
+    * And, of course, a [cheatsheet](https://rstudio.github.io/cheatsheets/data-visualization.pdf)
 * There are arguments about ggplot vs base R graphics
-    * [Why I don't use ggplot2](https://simplystatistics.org/2016/02/11/why-i-dont-use-ggplot2/)
+    * [Why I don't use ggplot2](https://simplystatistics.org/posts/2016-02-11-why-i-dont-use-ggplot2/)
     * [Comparing ggplot2 and R Base Graphics](https://flowingdata.com/2016/03/22/comparing-ggplot2-and-r-base-graphics/)
     * [Why I use ggplot2](http://varianceexplained.org/r/why-I-use-ggplot2/)
 
