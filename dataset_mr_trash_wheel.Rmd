@@ -8,6 +8,7 @@ output:
 
 The version of the Mr. Trash Wheel data we'll use for this class is available  [here](./data/202309 Trash Wheel Collection Data.xlsx).
 
+**_UPDATE: A new version of the trash wheel data is [here](data/202409 Trash Wheel Collection Data.xlsx)._**
 
 ## Context
 
