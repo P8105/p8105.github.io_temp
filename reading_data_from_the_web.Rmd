@@ -157,27 +157,27 @@ For each element, I'll use the CSS selector in `html_elements()` to extract the 
 ```{r}
 title_vec = 
   swm_html |>
-  html_elements(".lister-item-header a") |>
+  html_elements(".ipc-title-link-wrapper .ipc-title__text") |>
   html_text()
 
-gross_rev_vec = 
+metascore_vec = 
   swm_html |>
-  html_elements(".text-small:nth-child(7) span:nth-child(5)") |>
+  html_elements(".metacritic-score-box") |>
   html_text()
 
 runtime_vec = 
   swm_html |>
-  html_elements(".runtime") |>
+  html_elements(".dli-title-metadata-item:nth-child(2)") |>
   html_text()
 
 swm_df = 
   tibble(
     title = title_vec,
-    rev = gross_rev_vec,
+    score = metascore_vec,
     runtime = runtime_vec)
 ```
 
-Some of these movies made real money ...
+Not everyone loved the prequels ...
 
 
 **_Learning Assessment:_** [This page](http://books.toscrape.com) contains some (made up) books. Use a process similar to the one above to extract the book titles, stars, and prices. 
@@ -259,11 +259,11 @@ poke =
   GET("http://pokeapi.co/api/v2/pokemon/1") |>
   content()
 
-poke$name
+poke[["name"]]
 
-poke$height
+poke[["height"]]
 
-poke$abilities
+poke[["abilities"]]
 ```
 
 To build a Pokemon dataset for analysis, you'd need to distill the data returned from the API into a useful format; iterate across all pokemon; and combine the results. 
