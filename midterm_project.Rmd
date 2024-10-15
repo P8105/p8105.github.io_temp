@@ -39,3 +39,43 @@ For this project, you should write a report describing your work in a way that t
 
 You can check your word count using `wordcountaddin::text_stats("p8105_mtp_YOURUNI.Rmd")`; installation instructions can be found on the [`wordcountaddin` package website](https://github.com/benmarwick/wordcountaddin). We'll use the "koRpus" count. **_NOTE:_** you do not need to include a word count in your report, and running `wordcountaddin::text_stats("p8105_mtp_YOURUNI.Rmd")` in your document can interfere with our automated reproducibility checks. 
 
+
+## Data
+
+Home and rental prices have generally increased over the last decade. [Zillow](https://www.zillow.com), a popular website used to search for homes for sale or rent, is uniquely positioned to provide insights into trends in the real estate market. In response to broad interest, the company releases [data for research](https://www.zillow.com/research/data/). In this project, we'll look at the Zillow Observed Rent Index (ZORI) in New York City between January 2015 and August 2024; we'll also examine the Zillow Home Value Index (ZHVI) in regions across the United States in 2023. Both datasets are available [here](data/Zillow.zip); more information can be found using Zillow's documentation.
+
+NYC is divided into five boroughs. Each of these boroughs is it's own county, and in some cases the borough name and county name differ; for example, Manhattan is New York County. Moreover, boroughs are divided into neighborhoods. Rental price data provided by Zillow does not include information neighborhoods within boroughs, and a supplementary dataset including these is available [here](data/zip_codes.html).
+
+## Problems
+
+### Problem 1 -- Data import and cleaning. 
+
+Provide a brief introduction to the raw data and the goals of your report. 
+
+Import, tidy, and otherwise clean the NYC Rental and ZIP code data. In the ZIP code data, create a `borough` variable using county names. Merging the NYC Rental and ZIP code data; identify and resolve any issues that arise. Restrict your dataset to only variables necessary for later parts of this report. Describe the major steps in the data wrangling process in words, including what steps you took to address data quality issues. 
+
+Briefly describe the resulting *tidy* dataset. How many total observations exist? How many unique ZIP codes are included, and how many unique neighborhoods? 
+
+Import, tidy, and otherwise clean the 2023 US Housing data. Restrict your dataset to only variables necessary for later parts of this report. Describe the major steps in the data wrangling process in words. 
+
+
+### Problem 2 -- Quality Control and EDA
+
+There are 116 months between January 2015 and August 2024, but in the NYC Rental dataset many ZIP codes have fewer than 116 observations. Discuss why this might be the case.
+
+Compare the number of ZIP codes in the NYC Rental dataset to the number of ZIP codes in the ZIP code dataset. What reasons might explain any discrepancy?
+
+Create a reader-friendly table showing the average rental price in each borough and year (not **month**). Comment on trends in this table. 
+
+Rental prices fluctuated dramatically during the COVID-19 pandemic. For all available ZIP codes, compare rental prices in January 2021 to prices in January 2020. Make a table that shows, for each Borough, the largest drop in price from 2020 to 2021; include the neighborhood with the largest drop. Comment. 
+
+
+### Problem 3 -- Visualization
+
+Make a plot showing NYC Rental Prices within ZIP codes for all available years. Your plot should facilitate comparisons across boroughs. Include this visualization in your report and export it to a `results` directory in your repository. Comment on any significant elements of this plot.
+
+Using the US House Price dataset, compute the average house price within each ZIP code over each month in 2023. Make a reader-friendly plot showing the distribution of ZIP-code-level house prices across states; put differently, your plot should faciliate the comparison of the distribution of house prices across states. Comment on this plot. 
+
+The Zillow data make it possible to compare rental and housing prices in each NYC ZIP code in 2023. To examine 2023 as a whole, average across months. Make a plot that shows ZIP-code-specific housing prices against ZIP-code-specific rental prices. Comment on this plot.
+
+Lastly, note any limitations of this dataset for understanding rental and housing prices in NYC. 
