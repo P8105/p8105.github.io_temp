@@ -28,7 +28,7 @@ The midterm project is not covered by the course policy on collaboration -- you 
 
 |                      | Available              | Due                    | Assignment   | Solution     |
 |:---------------------|:---------------------- |:---------------------- |:------------:|:------------:|
-| Midterm Project      | Oct 15, 10am           | Oct 21, 11:59 pm       | [<i class="far fa-file-code fa-lg"></i>](midterm_project.html) | [<i class="fas fa-check fa-lg"></i>](link)      |
+| Midterm Project      | Oct 15, 10am           | Oct 23, 11:59 pm       | [<i class="far fa-file-code fa-lg"></i>](midterm_project.html) | [<i class="fas fa-check fa-lg"></i>](link)      |
 
 ### Final
     
