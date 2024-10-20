@@ -107,7 +107,7 @@ z_scores(iris)
 z_scores(sample(c(TRUE, FALSE), 25, replace = TRUE))
 ```
 
-These all did something I didn't want, but only two returned errors. To avoid behavior you don't want (i.e. to ["fail noisily and as soon as possible"](http://www.faqs.org/docs/artu/ch01s06.html)) we'll add some checks on the argument values using conditional statements.
+These all did something I didn't want, but only two returned errors. To avoid behavior you don't want (i.e. to ["fail noisily and as soon as possible"](http://www.catb.org/esr/writings/taoup/html/ch01s06.html)) we'll add some checks on the argument values using conditional statements.
 
 ```{r}
 z_scores = function(x) {

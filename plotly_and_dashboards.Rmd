@@ -209,7 +209,6 @@ All of this `YAML` business is only an issue for dashboards embedded in websites
 * Plotly can take a while to get used to; starting with their [library](https://plot.ly/r/) and [reference](https://plot.ly/r/reference/) can help. I also like the [cheatsheet](https://images.plot.ly/plotly-documentation/images/r_cheat_sheet.pdf)
 * Dashboards are pretty well-supported. Check out the [overview](https://pkgs.rstudio.com/flexdashboard/articles/flexdashboard.html), [layout](https://pkgs.rstudio.com/flexdashboard/articles/layouts.html) discussion, and [examples](https://pkgs.rstudio.com/flexdashboard/articles/examples.html)
 * There are cool dashboards all over. To get a sense of how these work in the real world, check out: 
-    * The NYC Restaurant Inspection [dashboard](https://data.cityofnewyork.us/Health/DOHMH-New-York-City-Restaurant-Inspection-Results/rs6k-p7g6);
     * This [app](https://juliasilge.shinyapps.io/power-app/) for understanding power (blog post [here](https://juliasilge.com/blog/ab-testing/));
     * 538's [p-hacking tool](https://projects.fivethirtyeight.com/p-hacking/index.html?initialWidth=1024&childId=phacking&parentTitle=Science%20Isn’t%20Broken%20%7C%20FiveThirtyEight&parentUrl=https%3A%2F%2Ffivethirtyeight.com%2Ffeatures%2Fscience-isnt-broken%2F) (full article [here](https://fivethirtyeight.com/features/science-isnt-broken/#part3)).
 

@@ -481,9 +481,13 @@ new R Markdown document called <code>writing_functions.Rmd</code>, and
 I’m going to load the usual packages. I’m also setting the seed so that
 the output on this page is fixed.</p>
 <pre class="r"><code>library(tidyverse)
-library(rvest)
-
-set.seed(1)</code></pre>
+library(rvest)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;rvest&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:readr&#39;:
+## 
+##     guess_encoding</code></pre>
+<pre class="r"><code>set.seed(1)</code></pre>
 <div id="my-first-function" class="section level3">
 <h3>My first function</h3>
 <p>The best way to build up a function is to start with code you’ve
@@ -533,9 +537,9 @@ a variety of inputs to see what happens.</p>
 ## [25]  1.3063945</code></pre>
 <p>These all did something I didn’t want, but only two returned errors.
 To avoid behavior you don’t want (i.e. to <a
-href="http://www.faqs.org/docs/artu/ch01s06.html">“fail noisily and as
-soon as possible”</a>) we’ll add some checks on the argument values
-using conditional statements.</p>
+href="http://www.catb.org/esr/writings/taoup/html/ch01s06.html">“fail
+noisily and as soon as possible”</a>) we’ll add some checks on the
+argument values using conditional statements.</p>
 <pre class="r"><code>z_scores = function(x) {
   
   if (!is.numeric(x)) {
