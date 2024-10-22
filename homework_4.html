@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Homework 4</title>
+
+<script src="site_libs/header-attrs-2.28/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" />
+<script defer src="https://use.fontawesome.com/releases/v5.0.3/js/all.js"></script>
+<script defer src="https://use.fontawesome.com/releases/v5.0.0/js/v4-shims.js"></script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-151578452-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-151578452-1');
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">P8105</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="schedule.html">Schedule</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Topics
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="topic_what_is_data_science.html">What is Data Science?</a>
+    </li>
+    <li>
+      <a href="topic_building_blocks.html">Building Blocks</a>
+    </li>
+    <li>
+      <a href="topic_data_wrangling_i.html">Data Wrangling I</a>
+    </li>
+    <li>
+      <a href="topic_visualization_and_eda.html">Visualization and EDA</a>
+    </li>
+    <li>
+      <a href="topic_data_wrangling_ii.html">Data Wrangling II</a>
+    </li>
+    <li>
+      <a href="topic_interactivity.html">Interactivity</a>
+    </li>
+    <li>
+      <a href="topic_iteration.html">Iteration</a>
+    </li>
+    <li>
+      <a href="topic_linear_models.html">Linear Models</a>
+    </li>
+    <li>
+      <a href="topic_other_material.html">Other Materials</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Datasets
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="dataset_airbnb.html">Airbnb</a>
+    </li>
+    <li>
+      <a href="dataset_brfss.html">BRFSS</a>
+    </li>
+    <li>
+      <a href="dataset_fivethirtyeight.html">FiveThirtyEight</a>
+    </li>
+    <li>
+      <a href="dataset_instacart.html">Instacart</a>
+    </li>
+    <li>
+      <a href="dataset_mr_trash_wheel.html">Mr. Trash Wheel</a>
+    </li>
+    <li>
+      <a href="dataset_noaa.html">NOAA</a>
+    </li>
+    <li>
+      <a href="dataset_restaurant_inspections.html">NYC Restaurant Inspections</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="homework_and_projects.html">Homework and Projects</a>
+</li>
+<li>
+  <a href="course_communication.html">Communication</a>
+</li>
+<li>
+  <a href="https://github.com/P8105/p8105.github.io">
+    <span class="fa fa-github"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Homework 4</h1>
+
+</div>
+
+
+<div id="context" class="section level3">
+<h3>Context</h3>
+<p>This assignment reinforces ideas in <a
+href="topic_interactivity.html">Interactivity</a>.</p>
+</div>
+<div id="due-date-and-submission" class="section level3">
+<h3>Due date and submission</h3>
+<p>Due: November 1 at 11:59pm.</p>
+<p>Please submit (via courseworks) the web address of the GitHub repo
+containing your work for this assignment; git commits after the due date
+will cause the assignment to be considered late.</p>
+<p>R Markdown documents included as part of your solutions must not
+install packages, and should only load the packages necessary for your
+submission to knit.</p>
+</div>
+<div id="points" class="section level3">
+<h3>Points</h3>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Problem</th>
+<th align="left">Points</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Problem 0</td>
+<td align="left">20</td>
+</tr>
+<tr class="even">
+<td align="left">Problem 1</td>
+<td align="left">40</td>
+</tr>
+<tr class="odd">
+<td align="left">Problem 2</td>
+<td align="left">40</td>
+</tr>
+<tr class="even">
+<td align="left">Optional survey</td>
+<td align="left">No points</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="problem-0" class="section level3">
+<h3>Problem 0</h3>
+<p>This “problem” focuses on structure of your submission, especially
+the use git and GitHub for reproducibility, R Projects to organize your
+work, R Markdown to write reproducible reports, relative paths to load
+data from local files (if necessary), and reasonable naming structures
+for your files.</p>
+<p>To that end:</p>
+<ul>
+<li>create a public GitHub repo + local R Project for this
+assignment</li>
+<li>submit a link to <strong>your website</strong> (not your
+<em>repo</em>) via Courseworks</li>
+</ul>
+<p>Your solutions to Problems 1 and 2 should be implemented in your .Rmd
+file(s), and your git commit history should reflect the process you used
+to solve these Problems.</p>
+<p>For Problem 0, we will assess adherence to the instructions above
+regarding repo structure, git commit history, and whether we are able to
+knit your .Rmd to ensure that your work is reproducible. Adherence to
+appropriate styling and clarity of code will be assessed in Problems 1+
+using the homework <a href="homework_style_rubric.html">style
+rubric</a>.</p>
+<p>This homework includes figures; the readability of your embedded
+plots (e.g. font sizes, axis labels, titles) will be assessed in
+Problems 1+.</p>
+</div>
+<div id="problem-1" class="section level3">
+<h3>Problem 1</h3>
+<p>Create a personal website at
+<code>&lt;YOUR_GH_NAME&gt;.github.io</code> (or some other
+reasonably-named location). This page can be as extensive as you’d like,
+but it should include at least:</p>
+<ul>
+<li>A brief introductory landing page</li>
+<li>A page giving your academic and professional experience (i.e. a
+resume)</li>
+<li>Links in the site navigation for your GitHub account, your email,
+and other professional networks.</li>
+</ul>
+<p>Although it is not required and won’t be graded, I also encourage you
+to take a few minutes to review your GitHub page – make sure your name
+and place of work are correct, provide a link to your website, perhaps
+pin some repositories.</p>
+</div>
+<div id="problem-2" class="section level3">
+<h3>Problem 2</h3>
+<p>Create a flexdashboard using <code>plotly</code> for that includes at
+least three distinct plot types (e.g. scatterplots, line plots, bar
+plots, box plots, etc.). Use one of the following datasets, and load
+from the <code>p8105.datasets</code> package:</p>
+<ul>
+<li><a href="dataset_instacart.html">Instacart</a></li>
+<li><a href="dataset_noaa.html">NY NOAA</a></li>
+<li><a href="dataset_restaurant_inspections.html">NYC Restaurant
+Inspections</a></li>
+</ul>
+<p>These datasets are large; you may want / need to filter or randomly
+sample from the complete dataset to ensure a reasonable product.</p>
+</div>
+<div id="optional-post-assignment-survey" class="section level3">
+<h3>Optional post-assignment survey</h3>
+<p>If you’d like, a you can complete <a
+href="https://forms.gle/ud4gQNCKKHff4CAXA">this short survey</a> after
+you’ve finished the assignment.</p>
+</div>
+
+<br><br>
+<footer>
+  <img src="images/p8105_stickers.png" alt="stickers" style="width:30%">
+  <br>
+  <p class="copyright text-muted" align="center">Copyright &copy; 2019 Jeff Goldsmith</p>
+</footer>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
