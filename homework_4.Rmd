@@ -12,7 +12,7 @@ This assignment reinforces ideas in [Interactivity](topic_interactivity.html).
 
 ### Due date and submission
 
-Due: November 1 at 11:59pm. 
+Due: October 30 at 11:59pm. 
 
 Please submit (via courseworks) the web address of the GitHub repo containing your work for this assignment; git commits after the due date will cause the assignment to be considered late.
 
