@@ -429,7 +429,50 @@ This is great! We now have a data frame that has rows for each station; columns 
 This is, for sure, a fairly complex bit of code, but in just a few lines we're able to fit separate linear models to each of our stations. And, once you get used to list columns, `map`, and the rest of it, these lines of code are pretty clear and can be extended to larger datasets with more complex structures.
 
 
+### Using iteration for data import
 
+This [zip file](data/exp_data.zip) contains data from a longitudinal study that included a control arm and an experimental arm. Data for each participant is included in a separate file, and file names include the subject ID and arm. 
+
+The code chunk below imports the data in individual spreadsheets contained in `./data/zip_data/`. To do this, I create a dataframe that includes the list of all files in that directory and the complete path to each file. As a next step, I `map` over paths and import data using the `read_csv` function. Finally, I `unnest` the result of `map`.
+
+```{r}
+full_df = 
+  tibble(
+    files = list.files("data/exp_data/"),
+    path = str_c("data/exp_data/", files)
+  ) %>% 
+  mutate(data = map(path, read_csv)) %>% 
+  unnest()
+```
+
+The result of the previous code chunk isn't tidy -- data are wide rather than long, and some important variables are included as parts of others. The code chunk below tides the data using string manipulations on the file, converting from wide to long, and selecting relevant variables. 
+
+```{r}
+tidy_df = 
+  full_df %>% 
+  mutate(
+    files = str_replace(files, ".csv", ""),
+    group = str_sub(files, 1, 3)) %>% 
+  pivot_longer(
+    week_1:week_8,
+    names_to = "week",
+    values_to = "outcome",
+    names_prefix = "week_") %>% 
+  mutate(week = as.numeric(week)) %>% 
+  select(group, subj = files, week, outcome)
+```
+
+Finally, the code chunk below creates a plot showing individual data, faceted by group. 
+
+```{r}
+tidy_df %>% 
+  ggplot(aes(x = week, y = outcome, group = subj, color = group)) + 
+  geom_point() + 
+  geom_path() + 
+  facet_grid(~group)
+```
+
+This plot suggests high within-subject correlation -- subjects who start above average end up above average, and those that start below average end up below average. Subjects in the control group generally don't change over time, but those in the experiment group increase their outcome in a roughly linear way. 
 
 
 ## Other materials
