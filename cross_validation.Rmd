@@ -66,12 +66,13 @@ Implement cross validation to assess the predictive value of a model using tools
 
 ## Example
 
-I'll write code for today's content in a new R Markdown document called `cross_validation.Rmd` in the `linear_models` directory / repo. The code chunk below loads the usual packages (plus `mgcv`) and sets a seed for reproducibility.
+I'll write code for today's content in a new R Markdown document called `cross_validation.Rmd` in the `linear_models` directory / repo. The code chunk below loads the usual packages (plus `mgcv` and `SemiPar`) and sets a seed for reproducibility.
 
 ```{r}
 library(tidyverse)
 library(modelr)
 library(mgcv)
+library(SemiPar)
 
 set.seed(1)
 ```
@@ -79,28 +80,28 @@ set.seed(1)
 
 ### CV "by hand"
 
-We'll start with a simulated example. The code chunk below generates data under a non-linear model; I like to use this setting because "model complexity" is easiest for me to understand when I can see it. 
+We'll start with a simulated example. The code chunk below imports data that is non-linear model and shows increasing variance as the predictor increases. I like to use this setting because "model complexity" is easiest for me to understand when I can see it. However, "model complexity" is also an issue when you're dealing with lots of predictors -- you can't "see" overfitting as easily, but it definitely happens. 
 
 ```{r}
-nonlin_df = 
-  tibble(
-    id = 1:100,
-    x = runif(100, 0, 1),
-    y = 1 - 10 * (x - .3) ^ 2 + rnorm(100, 0, .3)
-  )
+data(lidar)
 
-nonlin_df |> 
-  ggplot(aes(x = x, y = y)) + 
+lidar_df = 
+  lidar |> 
+  as_tibble() |>
+  mutate(id = row_number())
+
+lidar_df |> 
+  ggplot(aes(x = range, y = logratio)) + 
   geom_point()
 ```
 
 I'll split this data into training and test sets (using `anti_join`!!), and replot showing the split. Our goal will be to use the training data (in black) to build candidate models, and then see how those models predict in the testing data (in red).
 
 ```{r}
-train_df = sample_n(nonlin_df, 80)
-test_df = anti_join(nonlin_df, train_df, by = "id")
+train_df = sample_frac(lidar_df, size = .8)
+test_df = anti_join(lidar_df, train_df, by = "id")
 
-ggplot(train_df, aes(x = x, y = y)) + 
+ggplot(train_df, aes(x = range, y = logratio)) + 
   geom_point() + 
   geom_point(data = test_df, color = "red")
 ```
@@ -110,9 +111,9 @@ I'll fit three three models to the training data. Throughout, I'm going to use `
 The three models below have very different levels of complexity and aren't nested, so testing approaches for nested model don't apply. 
 
 ```{r}
-linear_mod = lm(y ~ x, data = train_df)
-smooth_mod = mgcv::gam(y ~ s(x), data = train_df)
-wiggly_mod = mgcv::gam(y ~ s(x, k = 30), sp = 10e-6, data = train_df)
+linear_mod = lm(logratio ~ range, data = train_df)
+smooth_mod = mgcv::gam(logratio ~ s(range), data = train_df)
+wiggly_mod = mgcv::gam(logratio ~ s(range, k = 30), sp = 10e-6, data = train_df)
 ```
 
 To understand what these models have done, I'll plot the two `gam` fits.
@@ -120,12 +121,14 @@ To understand what these models have done, I'll plot the two `gam` fits.
 ```{r}
 train_df |> 
   add_predictions(smooth_mod) |> 
-  ggplot(aes(x = x, y = y)) + geom_point() + 
+  ggplot(aes(x = range, y = logratio)) + 
+  geom_point() + 
   geom_line(aes(y = pred), color = "red")
 
 train_df |> 
   add_predictions(wiggly_mod) |> 
-  ggplot(aes(x = x, y = y)) + geom_point() + 
+  ggplot(aes(x = range, y = logratio)) + 
+  geom_point() + 
   geom_line(aes(y = pred), color = "red")
 ```
 
@@ -135,7 +138,7 @@ In a case like this, I can also use the handy `modelr::gather_predictions` funct
 train_df |> 
   gather_predictions(linear_mod, smooth_mod, wiggly_mod) |> 
   mutate(model = fct_inorder(model)) |> 
-  ggplot(aes(x = x, y = y)) + 
+  ggplot(aes(x = range, y = logratio)) + 
   geom_point() + 
   geom_line(aes(y = pred), color = "red") + 
   facet_wrap(~model)
@@ -162,7 +165,7 @@ Luckily, `modelr` has tools to automate elements of the CV process. In particula
 
 ```{r}
 cv_df = 
-  crossv_mc(nonlin_df, 100) 
+  crossv_mc(lidar_df, 100) 
 ```
 
 `crossv_mc` tries to be smart about memory -- rather than repeating the dataset a bunch of times, it saves the data once and stores the indexes for each training / testing split using a `resample` object. This can be coerced to a dataframe, and can often be treated exactly like a dataframe. However, it's not compatible with `gam`, so we have to convert each training and testing dataset (and lose that nice memory-saving stuff in the process) using the code below. It's worth noting, though, that if all the models you want to fit use `lm`, you can skip this.
@@ -184,9 +187,9 @@ I now have many training and testing datasets, and I'd like to fit my candidate 
 cv_df = 
   cv_df |> 
   mutate(
-    linear_mod  = map(train, \(df) lm(y ~ x, data = df)),
-    smooth_mod  = map(train, \(df) mgcv::gam(y ~ s(x), data = df)),
-    wiggly_mod  = map(train, \(df) gam(y ~ s(x, k = 30), sp = 10e-6, data = df))) |> 
+    linear_mod  = map(train, \(df) lm(logratio ~ range, data = df)),
+    smooth_mod  = map(train, \(df) gam(logratio ~ s(range), data = df)),
+    wiggly_mod  = map(train, \(df) gam(logratio ~ s(range, k = 30), sp = 10e-6, data = df))) |> 
   mutate(
     rmse_linear = map2_dbl(linear_mod, test, \(mod, df) rmse(model = mod, data = df)),
     rmse_smooth = map2_dbl(smooth_mod, test, \(mod, df) rmse(model = mod, data = df)),
@@ -229,14 +232,14 @@ The plots suggests some non-linearity, especially at the low end of the weight d
 ```{r}
 child_growth =
   child_growth |> 
-  mutate(weight_cp = (weight > 7) * (weight - 7))
+  mutate(weight_cp7 = (weight > 7) * (weight - 7))
 ```
 
 The code chunk below fits each of the candidate models to the full dataset. The piecewise linear model is nested in the linear model and could be assessed using statistical significance, but the smooth model is not nested in anything else. (Also, comparing a piecewise model with a changepoint at 7 to a piecewise model with a changepoint at 8 would be a non-nested comparison...)
 
 ```{r}
 linear_mod = lm(armc ~ weight, data = child_growth)
-pwl_mod    = lm(armc ~ weight + weight_cp, data = child_growth)
+pwl_mod    = lm(armc ~ weight + weight_cp7, data = child_growth)
 smooth_mod = gam(armc ~ s(weight), data = child_growth)
 ```
 
@@ -269,7 +272,7 @@ cv_df =
   cv_df |> 
   mutate(
     linear_mod  = map(train, \(df) lm(armc ~ weight, data = df)),
-    pwl_mod     = map(train, \(df) lm(armc ~ weight + weight_cp, data = df)),
+    pwl_mod     = map(train, \(df) lm(armc ~ weight + weight_cp7, data = df)),
     smooth_mod  = map(train, \(df) gam(armc ~ s(weight), data = as_tibble(df)))) |> 
   mutate(
     rmse_linear = map2_dbl(linear_mod, test, \(mod, df) rmse(model = mod, data = df)),

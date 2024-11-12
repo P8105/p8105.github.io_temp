@@ -13,7 +13,7 @@
 
 <title>Cross Validation</title>
 
-<script src="site_libs/header-attrs-2.28/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.24/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
@@ -481,8 +481,8 @@ Goldsmith</a></strong>.
 <p>I’ll write code for today’s content in a new R Markdown document
 called <code>cross_validation.Rmd</code> in the
 <code>linear_models</code> directory / repo. The code chunk below loads
-the usual packages (plus <code>mgcv</code>) and sets a seed for
-reproducibility.</p>
+the usual packages (plus <code>mgcv</code> and <code>SemiPar</code>) and
+sets a seed for reproducibility.</p>
 <pre class="r"><code>library(tidyverse)
 library(modelr)
 library(mgcv)</code></pre>
@@ -492,32 +492,38 @@ library(mgcv)</code></pre>
 <pre><code>## The following object is masked from &#39;package:dplyr&#39;:
 ## 
 ##     collapse</code></pre>
-<pre><code>## This is mgcv 1.9-1. For overview type &#39;help(&quot;mgcv-package&quot;)&#39;.</code></pre>
-<pre class="r"><code>set.seed(1)</code></pre>
+<pre><code>## This is mgcv 1.9-0. For overview type &#39;help(&quot;mgcv-package&quot;)&#39;.</code></pre>
+<pre class="r"><code>library(SemiPar)
+
+set.seed(1)</code></pre>
 <div id="cv-by-hand" class="section level3">
 <h3>CV “by hand”</h3>
-<p>We’ll start with a simulated example. The code chunk below generates
-data under a non-linear model; I like to use this setting because “model
-complexity” is easiest for me to understand when I can see it.</p>
-<pre class="r"><code>nonlin_df = 
-  tibble(
-    id = 1:100,
-    x = runif(100, 0, 1),
-    y = 1 - 10 * (x - .3) ^ 2 + rnorm(100, 0, .3)
-  )
+<p>We’ll start with a simulated example. The code chunk below imports
+data that is non-linear model and shows increasing variance as the
+predictor increases. I like to use this setting because “model
+complexity” is easiest for me to understand when I can see it. However,
+“model complexity” is also an issue when you’re dealing with lots of
+predictors – you can’t “see” overfitting as easily, but it definitely
+happens.</p>
+<pre class="r"><code>data(lidar)
 
-nonlin_df |&gt; 
-  ggplot(aes(x = x, y = y)) + 
+lidar_df = 
+  lidar |&gt; 
+  as_tibble() |&gt;
+  mutate(id = row_number())
+
+lidar_df |&gt; 
+  ggplot(aes(x = range, y = logratio)) + 
   geom_point()</code></pre>
 <p><img src="cross_validation_files/figure-html/unnamed-chunk-3-1.png" width="90%" /></p>
 <p>I’ll split this data into training and test sets (using
 <code>anti_join</code>!!), and replot showing the split. Our goal will
 be to use the training data (in black) to build candidate models, and
 then see how those models predict in the testing data (in red).</p>
-<pre class="r"><code>train_df = sample_n(nonlin_df, 80)
-test_df = anti_join(nonlin_df, train_df, by = &quot;id&quot;)
+<pre class="r"><code>train_df = sample_frac(lidar_df, size = .8)
+test_df = anti_join(lidar_df, train_df, by = &quot;id&quot;)
 
-ggplot(train_df, aes(x = x, y = y)) + 
+ggplot(train_df, aes(x = range, y = logratio)) + 
   geom_point() + 
   geom_point(data = test_df, color = &quot;red&quot;)</code></pre>
 <p><img src="cross_validation_files/figure-html/unnamed-chunk-4-1.png" width="90%" /></p>
@@ -530,19 +536,21 @@ we’re putting smooth lines through data clouds, and we can control how
 smooth we want the fit to be.</p>
 <p>The three models below have very different levels of complexity and
 aren’t nested, so testing approaches for nested model don’t apply.</p>
-<pre class="r"><code>linear_mod = lm(y ~ x, data = train_df)
-smooth_mod = mgcv::gam(y ~ s(x), data = train_df)
-wiggly_mod = mgcv::gam(y ~ s(x, k = 30), sp = 10e-6, data = train_df)</code></pre>
+<pre class="r"><code>linear_mod = lm(logratio ~ range, data = train_df)
+smooth_mod = mgcv::gam(logratio ~ s(range), data = train_df)
+wiggly_mod = mgcv::gam(logratio ~ s(range, k = 30), sp = 10e-6, data = train_df)</code></pre>
 <p>To understand what these models have done, I’ll plot the two
 <code>gam</code> fits.</p>
 <pre class="r"><code>train_df |&gt; 
   add_predictions(smooth_mod) |&gt; 
-  ggplot(aes(x = x, y = y)) + geom_point() + 
+  ggplot(aes(x = range, y = logratio)) + 
+  geom_point() + 
   geom_line(aes(y = pred), color = &quot;red&quot;)</code></pre>
 <p><img src="cross_validation_files/figure-html/unnamed-chunk-6-1.png" width="90%" /></p>
 <pre class="r"><code>train_df |&gt; 
   add_predictions(wiggly_mod) |&gt; 
-  ggplot(aes(x = x, y = y)) + geom_point() + 
+  ggplot(aes(x = range, y = logratio)) + 
+  geom_point() + 
   geom_line(aes(y = pred), color = &quot;red&quot;)</code></pre>
 <p><img src="cross_validation_files/figure-html/unnamed-chunk-6-2.png" width="90%" /></p>
 <p>In a case like this, I can also use the handy
@@ -553,7 +561,7 @@ plottable.</p>
 <pre class="r"><code>train_df |&gt; 
   gather_predictions(linear_mod, smooth_mod, wiggly_mod) |&gt; 
   mutate(model = fct_inorder(model)) |&gt; 
-  ggplot(aes(x = x, y = y)) + 
+  ggplot(aes(x = range, y = logratio)) + 
   geom_point() + 
   geom_line(aes(y = pred), color = &quot;red&quot;) + 
   facet_wrap(~model)</code></pre>
@@ -571,11 +579,11 @@ bad!</p>
 <p>As a next step in my CV procedure, I’ll compute root mean squared
 errors (RMSEs) for each model.</p>
 <pre class="r"><code>rmse(linear_mod, test_df)</code></pre>
-<pre><code>## [1] 0.7052956</code></pre>
+<pre><code>## [1] 0.127317</code></pre>
 <pre class="r"><code>rmse(smooth_mod, test_df)</code></pre>
-<pre><code>## [1] 0.2221774</code></pre>
+<pre><code>## [1] 0.08302008</code></pre>
 <pre class="r"><code>rmse(wiggly_mod, test_df)</code></pre>
-<pre><code>## [1] 0.289051</code></pre>
+<pre><code>## [1] 0.08848557</code></pre>
 <p>The <code>modelr</code> has other outcome measures – RMSE is the most
 common, but median absolute deviation is pretty common as well.</p>
 <p>The RMSEs are suggestive that both nonlinear models work better than
@@ -591,7 +599,7 @@ process. In particular, <code>crossv_mc</code> preforms the training /
 testing split multiple times, a stores the datasets using list
 columns.</p>
 <pre class="r"><code>cv_df = 
-  crossv_mc(nonlin_df, 100) </code></pre>
+  crossv_mc(lidar_df, 100) </code></pre>
 <p><code>crossv_mc</code> tries to be smart about memory – rather than
 repeating the dataset a bunch of times, it saves the data once and
 stores the indexes for each training / testing split using a
@@ -602,35 +610,35 @@ and testing dataset (and lose that nice memory-saving stuff in the
 process) using the code below. It’s worth noting, though, that if all
 the models you want to fit use <code>lm</code>, you can skip this.</p>
 <pre class="r"><code>cv_df |&gt; pull(train) |&gt; nth(1) |&gt; as_tibble()</code></pre>
-<pre><code>## # A tibble: 79 × 3
-##       id      x       y
-##    &lt;int&gt;  &lt;dbl&gt;   &lt;dbl&gt;
-##  1     1 0.266   1.11  
-##  2     2 0.372   0.764 
-##  3     3 0.573   0.358 
-##  4     4 0.908  -3.04  
-##  5     6 0.898  -1.99  
-##  6     7 0.945  -3.27  
-##  7     8 0.661  -0.615 
-##  8     9 0.629   0.0878
-##  9    10 0.0618  0.392 
-## 10    11 0.206   1.63  
-## # ℹ 69 more rows</code></pre>
+<pre><code>## # A tibble: 176 × 3
+##    range logratio    id
+##    &lt;int&gt;    &lt;dbl&gt; &lt;int&gt;
+##  1   390  -0.0504     1
+##  2   394  -0.0510     4
+##  3   396  -0.0599     5
+##  4   399  -0.0596     7
+##  5   400  -0.0399     8
+##  6   402  -0.0294     9
+##  7   403  -0.0395    10
+##  8   405  -0.0476    11
+##  9   406  -0.0604    12
+## 10   408  -0.0312    13
+## # ℹ 166 more rows</code></pre>
 <pre class="r"><code>cv_df |&gt; pull(test) |&gt; nth(1) |&gt; as_tibble()</code></pre>
-<pre><code>## # A tibble: 21 × 3
-##       id      x      y
-##    &lt;int&gt;  &lt;dbl&gt;  &lt;dbl&gt;
-##  1     5 0.202   1.33 
-##  2    12 0.177   0.836
-##  3    19 0.380   0.982
-##  4    22 0.212   0.710
-##  5    28 0.382   0.932
-##  6    31 0.482   0.498
-##  7    37 0.794  -1.12 
-##  8    42 0.647   0.158
-##  9    47 0.0233 -0.148
-## 10    56 0.0995  1.13 
-## # ℹ 11 more rows</code></pre>
+<pre><code>## # A tibble: 45 × 3
+##    range logratio    id
+##    &lt;int&gt;    &lt;dbl&gt; &lt;int&gt;
+##  1   391  -0.0601     2
+##  2   393  -0.0419     3
+##  3   397  -0.0284     6
+##  4   412  -0.0500    16
+##  5   421  -0.0316    22
+##  6   424  -0.0884    24
+##  7   426  -0.0702    25
+##  8   427  -0.0288    26
+##  9   436  -0.0573    32
+## 10   445  -0.0647    38
+## # ℹ 35 more rows</code></pre>
 <pre class="r"><code>cv_df =
   cv_df |&gt; 
   mutate(
@@ -644,9 +652,9 @@ RMSEs using <code>mutate</code> + <code>map</code> &amp;
 <pre class="r"><code>cv_df = 
   cv_df |&gt; 
   mutate(
-    linear_mod  = map(train, \(df) lm(y ~ x, data = df)),
-    smooth_mod  = map(train, \(df) mgcv::gam(y ~ s(x), data = df)),
-    wiggly_mod  = map(train, \(df) gam(y ~ s(x, k = 30), sp = 10e-6, data = df))) |&gt; 
+    linear_mod  = map(train, \(df) lm(logratio ~ range, data = df)),
+    smooth_mod  = map(train, \(df) gam(logratio ~ s(range), data = df)),
+    wiggly_mod  = map(train, \(df) gam(logratio ~ s(range, k = 30), sp = 10e-6, data = df))) |&gt; 
   mutate(
     rmse_linear = map2_dbl(linear_mod, test, \(mod, df) rmse(model = mod, data = df)),
     rmse_smooth = map2_dbl(smooth_mod, test, \(mod, df) rmse(model = mod, data = df)),
@@ -680,7 +688,7 @@ data <a href="./data/nepalese_children.csv">here</a>; the code chunk
 below imports the data and plots the variables we’ll focus on.</p>
 <pre class="r"><code>child_growth = read_csv(&quot;./data/nepalese_children.csv&quot;)</code></pre>
 <pre><code>## Rows: 2705 Columns: 5
-## ── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────
+## ── Column specification ────────────────────────────────────────────────────────
 ## Delimiter: &quot;,&quot;
 ## dbl (5): age, sex, weight, height, armc
 ## 
@@ -700,7 +708,7 @@ the results soon, and the intuition from that is enough for our
 purposes.)</p>
 <pre class="r"><code>child_growth =
   child_growth |&gt; 
-  mutate(weight_cp = (weight &gt; 7) * (weight - 7))</code></pre>
+  mutate(weight_cp7 = (weight &gt; 7) * (weight - 7))</code></pre>
 <p>The code chunk below fits each of the candidate models to the full
 dataset. The piecewise linear model is nested in the linear model and
 could be assessed using statistical significance, but the smooth model
@@ -708,7 +716,7 @@ is not nested in anything else. (Also, comparing a piecewise model with
 a changepoint at 7 to a piecewise model with a changepoint at 8 would be
 a non-nested comparison…)</p>
 <pre class="r"><code>linear_mod = lm(armc ~ weight, data = child_growth)
-pwl_mod    = lm(armc ~ weight + weight_cp, data = child_growth)
+pwl_mod    = lm(armc ~ weight + weight_cp7, data = child_growth)
 smooth_mod = gam(armc ~ s(weight), data = child_growth)</code></pre>
 <p>As before, I’ll plot the three models to get intuition for goodness
 of fit.</p>
@@ -739,7 +747,7 @@ corresponding RMSEs for the testing data.</p>
   cv_df |&gt; 
   mutate(
     linear_mod  = map(train, \(df) lm(armc ~ weight, data = df)),
-    pwl_mod     = map(train, \(df) lm(armc ~ weight + weight_cp, data = df)),
+    pwl_mod     = map(train, \(df) lm(armc ~ weight + weight_cp7, data = df)),
     smooth_mod  = map(train, \(df) gam(armc ~ s(weight), data = as_tibble(df)))) |&gt; 
   mutate(
     rmse_linear = map2_dbl(linear_mod, test, \(mod, df) rmse(model = mod, data = df)),
