@@ -678,7 +678,7 @@ boot_straps</code></pre>
 intended. First we’ll look at a couple of bootstrap samples.</p>
 <pre class="r"><code>boot_straps |&gt; 
   slice(1:3) |&gt; 
-  mutate(strap_sample = map(strap_sample, arrange, x)) |&gt; 
+  mutate(strap_sample = map(strap_sample, \(s) arrange(s, x))) |&gt; 
   pull(strap_sample)</code></pre>
 <pre><code>## [[1]]
 ## # A tibble: 250 × 3

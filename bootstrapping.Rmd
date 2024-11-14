@@ -178,7 +178,7 @@ We can do a few of quick checks to make sure this has worked as intended. First 
 ```{r}
 boot_straps |> 
   slice(1:3) |> 
-  mutate(strap_sample = map(strap_sample, arrange, x)) |> 
+  mutate(strap_sample = map(strap_sample, \(s) arrange(s, x))) |> 
   pull(strap_sample)
 ```
 
