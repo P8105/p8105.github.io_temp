@@ -64,7 +64,7 @@ nyc_airbnb =
   mutate(rating = review_scores_location / 2) |>
   rename(latitude = lat, longitude = long) |>
   select(
-    boro = neighbourhood_group, neighbourhood, rating, price, room_type,
+    borough = neighbourhood_group, neighbourhood, rating, price, room_type,
     latitude, longitude) |>
   drop_na(rating)
 ```
@@ -78,22 +78,22 @@ We'll place code for widgets in the sidebar, but this is a stylistic choice and 
 The `selectInput` widget creates a drop-down menu with choices for the user to select from. By adding the code in the chunk below to the sidebar panel in the dashboard, we can obtain user input regarding the borough of interest.
 
 ```{r, eval = FALSE}
-boros = nyc_airbnb |> distinct(boro) |> pull()
+boroughs = nyc_airbnb |> distinct(borough) |> pull()
 
 # selectInput widget
 selectInput(
-  "boro_choice", 
-  label = h3("Select boro"),
-  choices = boros, selected = "Manhattan")
+  "borough_choice", 
+  label = h3("Select borough"),
+  choices = boroughs, selected = "Manhattan")
 ```
 
-Now a user can select each of the different boros in New York, although it's not clear yet where this input goes. In the background, Shiny is creating an object called `input` of class `reactivevalues` -- it's not critical that you know much about this, but it's something you can treat like a named list and use inside `render` functions. The "named" part matters, too -- your input widget names are how you access elements of the `input` object.
+Now a user can select each of the different boroughs in New York, although it's not clear yet where this input goes. In the background, Shiny is creating an object called `input` of class `reactivevalues` -- it's not critical that you know much about this, but it's something you can treat like a named list and use inside `render` functions. The "named" part matters, too -- your input widget names are how you access elements of the `input` object.
 
 Try adding the code below to one of the panels (later we'll use these for plots, but for now it's helpful to get a sense for how Shiny works).
 
 ```{r, eval = FALSE}
 renderPrint({ 
-  input[["boro_choice"]]
+  input[["borough_choice"]]
 })
 ```
 
@@ -148,9 +148,9 @@ The plot does appear, but we haven't incorporated user input yet. To do that, we
 renderPlotly({
   nyc_airbnb |>
   filter(
-    boro == input$boro_choice, 
-    price %in% input$price_range[1]:input$price_range[2],
-    room_type == input$room_choice) |>
+    borough == input[["borough_choice"]], 
+    price %in% input[["price_range"]][1]:input[["price_range"]][2],
+    room_type == input[["room_choice"]]) |>
   mutate(text_label = str_c("Price: $", price, '\nRating: ', rating)) |> 
   plot_ly(
     x = ~longitude, y = ~latitude, type = "scatter", mode = "markers",
@@ -180,9 +180,9 @@ The code chunk below, when added to the dashboard, will update the bar chart bas
 renderPlotly({
   nyc_airbnb |> 
     filter(
-      boro == input$boro_choice, 
-      price %in% input$price_range[1]:input$price_range[2],
-      room_type == input$room_choice) |>
+      borough == input[["borough_choice"]], 
+      price %in% input[["price_range"]][1]:input[["price_range"]][2],
+      room_type == input[["room_choice"]]) |>
     count(neighbourhood) |> 
     mutate(neighbourhood = fct_reorder(neighbourhood, n)) |> 
     plot_ly(x = ~neighbourhood, y = ~n, color = ~neighbourhood, type = "bar")
@@ -198,18 +198,18 @@ renderPlotly({
   common_neighborhoods =
     nyc_airbnb |> 
     filter(
-      boro == input$boro_choice,
-      price %in% input$price_range[1]:input$price_range[2],
-      room_type == input$room_choice) |>
+      borough == input[["borough_choice"]],
+      price %in% input[["price_range"]][1]:input[["price_range"]][2],
+      room_type == input[["room_choice"]]) |>
     count(neighbourhood, sort = TRUE) |> 
     top_n(8) |> 
     select(neighbourhood)
 
   nyc_airbnb |>
     filter(
-      boro == input$boro_choice,
-      price %in% input$price_range[1]:input$price_range[2],
-      room_type == input$room_choice) |>
+      borough == input[["borough_choice"]],
+      price %in% input[["price_range"]][1]:input[["price_range"]][2],
+      room_type == input[["room_choice"]]) |>
     inner_join(., common_neighborhoods, by = "neighbourhood") |> 
     plot_ly(y = ~price, color = ~neighbourhood, type = "box")
 })

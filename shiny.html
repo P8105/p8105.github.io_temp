@@ -514,7 +514,18 @@ library(viridis)
 ## Loading required package: viridisLite
 library(p8105.datasets)
 
-library(plotly)</code></pre>
+library(plotly)
+## 
+## Attaching package: &#39;plotly&#39;
+## The following object is masked from &#39;package:ggplot2&#39;:
+## 
+##     last_plot
+## The following object is masked from &#39;package:stats&#39;:
+## 
+##     filter
+## The following object is masked from &#39;package:graphics&#39;:
+## 
+##     layout</code></pre>
 <p>As in <a href="plotly_and_dashboards.html">plotly and dashboards</a>,
 we’re going to focus on the <a href="dataset_airbnb.html">Airbnb</a>
 data. Our goal is to make a dashboard similar to the one produced there,
@@ -531,7 +542,7 @@ nyc_airbnb =
   mutate(rating = review_scores_location / 2) |&gt;
   rename(latitude = lat, longitude = long) |&gt;
   select(
-    boro = neighbourhood_group, neighbourhood, rating, price, room_type,
+    borough = neighbourhood_group, neighbourhood, rating, price, room_type,
     latitude, longitude) |&gt;
   drop_na(rating)</code></pre>
 <p>Previously, we chose to focus on Manhattan rentals in a certain price
@@ -547,14 +558,14 @@ choice and they could be placed elsewhere in the dashboard.</p>
 choices for the user to select from. By adding the code in the chunk
 below to the sidebar panel in the dashboard, we can obtain user input
 regarding the borough of interest.</p>
-<pre class="r"><code>boros = nyc_airbnb |&gt; distinct(boro) |&gt; pull()
+<pre class="r"><code>boroughs = nyc_airbnb |&gt; distinct(borough) |&gt; pull()
 
 # selectInput widget
 selectInput(
-  &quot;boro_choice&quot;, 
-  label = h3(&quot;Select boro&quot;),
-  choices = boros, selected = &quot;Manhattan&quot;)</code></pre>
-<p>Now a user can select each of the different boros in New York,
+  &quot;borough_choice&quot;, 
+  label = h3(&quot;Select borough&quot;),
+  choices = boroughs, selected = &quot;Manhattan&quot;)</code></pre>
+<p>Now a user can select each of the different boroughs in New York,
 although it’s not clear yet where this input goes. In the background,
 Shiny is creating an object called <code>input</code> of class
 <code>reactivevalues</code> – it’s not critical that you know much about
@@ -566,7 +577,7 @@ object.</p>
 for plots, but for now it’s helpful to get a sense for how Shiny
 works).</p>
 <pre class="r"><code>renderPrint({ 
-  input[[&quot;boro_choice&quot;]]
+  input[[&quot;borough_choice&quot;]]
 })</code></pre>
 <p>This produces a string containing the selected borough, and updates
 when a user manipulates the input widget.</p>
@@ -624,9 +635,9 @@ do that, we’ll add some data manipuation that uses the
 <pre class="r"><code>renderPlotly({
   nyc_airbnb |&gt;
   filter(
-    boro == input$boro_choice, 
-    price %in% input$price_range[1]:input$price_range[2],
-    room_type == input$room_choice) |&gt;
+    borough == input[[&quot;borough_choice&quot;]], 
+    price %in% input[[&quot;price_range&quot;]][1]:input[[&quot;price_range&quot;]][2],
+    room_type == input[[&quot;room_choice&quot;]]) |&gt;
   mutate(text_label = str_c(&quot;Price: $&quot;, price, &#39;\nRating: &#39;, rating)) |&gt; 
   plot_ly(
     x = ~longitude, y = ~latitude, type = &quot;scatter&quot;, mode = &quot;markers&quot;,
@@ -650,9 +661,9 @@ bar chart based on user input.</p>
 <pre class="r"><code>renderPlotly({
   nyc_airbnb |&gt; 
     filter(
-      boro == input$boro_choice, 
-      price %in% input$price_range[1]:input$price_range[2],
-      room_type == input$room_choice) |&gt;
+      borough == input[[&quot;borough_choice&quot;]], 
+      price %in% input[[&quot;price_range&quot;]][1]:input[[&quot;price_range&quot;]][2],
+      room_type == input[[&quot;room_choice&quot;]]) |&gt;
     count(neighbourhood) |&gt; 
     mutate(neighbourhood = fct_reorder(neighbourhood, n)) |&gt; 
     plot_ly(x = ~neighbourhood, y = ~n, color = ~neighbourhood, type = &quot;bar&quot;)
@@ -665,18 +676,18 @@ borough.</p>
   common_neighborhoods =
     nyc_airbnb |&gt; 
     filter(
-      boro == input$boro_choice,
-      price %in% input$price_range[1]:input$price_range[2],
-      room_type == input$room_choice) |&gt;
+      borough == input[[&quot;borough_choice&quot;]],
+      price %in% input[[&quot;price_range&quot;]][1]:input[[&quot;price_range&quot;]][2],
+      room_type == input[[&quot;room_choice&quot;]]) |&gt;
     count(neighbourhood, sort = TRUE) |&gt; 
     top_n(8) |&gt; 
     select(neighbourhood)
 
   nyc_airbnb |&gt;
     filter(
-      boro == input$boro_choice,
-      price %in% input$price_range[1]:input$price_range[2],
-      room_type == input$room_choice) |&gt;
+      borough == input[[&quot;borough_choice&quot;]],
+      price %in% input[[&quot;price_range&quot;]][1]:input[[&quot;price_range&quot;]][2],
+      room_type == input[[&quot;room_choice&quot;]]) |&gt;
     inner_join(., common_neighborhoods, by = &quot;neighbourhood&quot;) |&gt; 
     plot_ly(y = ~price, color = ~neighbourhood, type = &quot;box&quot;)
 })</code></pre>
