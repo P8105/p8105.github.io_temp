@@ -20,7 +20,7 @@ In addition to grading for content, we reserve the right to deduct points for st
 | Homework 4           | Oct 22, 10am           | Oct 30, 11:59 pm       | [<i class="far fa-file-code fa-lg"></i>](homework_4.html) | [<i class="fas fa-check fa-lg"></i>]()                                     |
 | Homework 5           | Oct 31, 10am           | Nov 15, 11:59 pm       | [<i class="far fa-file-code fa-lg"></i>](homework_5.html) | [<i class="fas fa-check fa-lg"></i>](./resources/p8105_hw5_ajg2202.zip)    |
 | Homework 6           | Nov 14, 10am           | Dec 2, 11:59 pm        | [<i class="far fa-file-code fa-lg"></i>](homework_6.html) | [<i class="fas fa-check fa-lg"></i>](./resources/p8105_hw6_ajg2202.zip)    |
-| Homework 7           | Nov 21, 10am           | Dec 9, 11:59 pm        | [<i class="far fa-file-code fa-lg"></i>](homework_7.html) | [<i class="fas fa-check fa-lg"></i>](./resources/p8105_hw7_ajg2202.zip)    |
+| Homework 7           | Dec 3, 10am            | Dec 12, 11:59 pm        | [<i class="far fa-file-code fa-lg"></i>](homework_7.html) | [<i class="fas fa-check fa-lg"></i>](./resources/p8105_hw7_ajg2202.zip)    |
 
 ### Midterm
 
