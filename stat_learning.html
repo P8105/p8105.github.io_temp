@@ -438,6 +438,16 @@ various goals, including prediction, pattern recognition, and
 classification; they also vary in complexity and interpretability. This
 lecture is intended to provide a very broad overview of two methods:
 lasso and k-means clustering.</p>
+<pre><code>## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+## ✔ dplyr     1.1.4     ✔ readr     2.1.5
+## ✔ forcats   1.0.0     ✔ stringr   1.5.1
+## ✔ ggplot2   3.5.1     ✔ tibble    3.2.1
+## ✔ lubridate 1.9.3     ✔ tidyr     1.3.1
+## ✔ purrr     1.0.2     
+## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+## ✖ dplyr::filter() masks stats::filter()
+## ✖ dplyr::lag()    masks stats::lag()
+## ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
 <div id="some-slides" class="section level2">
 <h2>Some slides</h2>
 <script async class="speakerdeck-embed" data-id="911acc341b434b02b24df1fdab954c7e" data-ratio="1.77777777777778" src="//speakerdeck.com/assets/embed.js"></script>
@@ -475,20 +485,32 @@ from the result.</p>
   read_csv(&quot;data/birthweight.csv&quot;) |&gt; 
   janitor::clean_names() |&gt;
   mutate(
-    babysex = as.factor(babysex),
-    babysex = fct_recode(babysex, &quot;male&quot; = &quot;1&quot;, &quot;female&quot; = &quot;2&quot;),
-    frace = as.factor(frace),
-    frace = fct_recode(
-      frace, &quot;white&quot; = &quot;1&quot;, &quot;black&quot; = &quot;2&quot;, &quot;asian&quot; = &quot;3&quot;, 
-      &quot;puerto rican&quot; = &quot;4&quot;, &quot;other&quot; = &quot;8&quot;),
-    malform = as.logical(malform),
-    mrace = as.factor(mrace),
-    mrace = fct_recode(
-      mrace, &quot;white&quot; = &quot;1&quot;, &quot;black&quot; = &quot;2&quot;, &quot;asian&quot; = &quot;3&quot;, 
-      &quot;puerto rican&quot; = &quot;4&quot;)) |&gt; 
+    babysex = 
+        case_match(babysex,
+            1 ~ &quot;male&quot;,
+            2 ~ &quot;female&quot;
+        ),
+    babysex = fct_infreq(babysex),
+    frace = 
+        case_match(frace,
+            1 ~ &quot;white&quot;,
+            2 ~ &quot;black&quot;, 
+            3 ~ &quot;asian&quot;, 
+            4 ~ &quot;puerto rican&quot;, 
+            8 ~ &quot;other&quot;),
+    frace = fct_infreq(frace),
+    mrace = 
+        case_match(mrace,
+            1 ~ &quot;white&quot;,
+            2 ~ &quot;black&quot;, 
+            3 ~ &quot;asian&quot;, 
+            4 ~ &quot;puerto rican&quot;,
+            8 ~ &quot;other&quot;),
+    mrace = fct_infreq(mrace),
+    malform = as.logical(malform)) |&gt; 
   sample_n(200)</code></pre>
 <pre><code>## Rows: 4342 Columns: 20
-## ── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────
+## ── Column specification ────────────────────────────────────────────────────────
 ## Delimiter: &quot;,&quot;
 ## dbl (20): babysex, bhead, blength, bwt, delwt, fincome, frace, gaweeks, malf...
 ## 
@@ -508,7 +530,7 @@ grid <code>lambda</code>, and then compare the fits using cross
 validation. I chose this grid using the trusty “try things until it
 looks right” method; <code>glmnet</code> will pick something reasonable
 by default if you prefer that.</p>
-<pre class="r"><code>lambda = 10^(seq(3, -2, -0.1))
+<pre class="r"><code>lambda = 10^(seq(-2, 2.75, 0.1))
 
 lasso_fit =
   glmnet(x, y, lambda = lambda)
@@ -516,7 +538,7 @@ lasso_fit =
 lasso_cv =
   cv.glmnet(x, y, lambda = lambda)
 
-lambda_opt = lasso_cv$lambda.min</code></pre>
+lambda_opt = lasso_cv[[&quot;lambda.min&quot;]]</code></pre>
 <p>The plot below shows coefficient estimates corresponding to a subset
 of the predictors in the dataset – these are predictors that have
 non-zero coefficients for at least one tuning parameter value in the
@@ -528,9 +550,9 @@ determined using cross validation, is shown by a vertical blue line.</p>
   select(term, lambda, estimate) |&gt; 
   complete(term, lambda, fill = list(estimate = 0) ) |&gt; 
   filter(term != &quot;(Intercept)&quot;) |&gt; 
-  ggplot(aes(x = log(lambda, 10), y = estimate, group = term, color = term)) + 
+  ggplot(aes(x = lambda, y = estimate, group = term, color = term)) + 
   geom_path() + 
-  geom_vline(xintercept = log(lambda_opt, 10), color = &quot;blue&quot;, size = 1.2) +
+  geom_vline(xintercept = lambda_opt, color = &quot;blue&quot;, size = 1.2) +
   theme(legend.position = &quot;none&quot;)</code></pre>
 <p><img src="stat_learning_files/figure-html/unnamed-chunk-5-1.png" width="90%" /></p>
 <p>The next plot shows the CV curve itself. This is relatively shallow –
@@ -579,11 +601,11 @@ information about pokemon. The full dataset contains several variables
 we won’t address). To make results easy to visualize, we look only at
 <code>hp</code> and <code>speed</code>; a scatterplot is below.</p>
 <pre class="r"><code>poke_df = 
-  read_csv(&quot;./data/pokemon.csv&quot;) |&gt; 
+  read_csv(&quot;data/pokemon.csv&quot;) |&gt; 
   janitor::clean_names() |&gt; 
   select(hp, speed)</code></pre>
 <pre><code>## Rows: 800 Columns: 13
-## ── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────
+## ── Column specification ────────────────────────────────────────────────────────
 ## Delimiter: &quot;,&quot;
 ## chr (3): Name, Type 1, Type 2
 ## dbl (9): #, Total, HP, Attack, Defense, Sp. Atk, Sp. Def, Speed, Generation
@@ -708,9 +730,9 @@ process we’ll focus on is:</p>
 </ul>
 <p>Below we import and plot the trajectory data.</p>
 <pre class="r"><code>traj_data = 
-  read_csv(&quot;./data/trajectories.csv&quot;)</code></pre>
+  read_csv(&quot;data/trajectories.csv&quot;)</code></pre>
 <pre><code>## Rows: 1600 Columns: 3
-## ── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────
+## ── Column specification ────────────────────────────────────────────────────────
 ## Delimiter: &quot;,&quot;
 ## dbl (3): subj, week, value
 ## 
@@ -727,7 +749,7 @@ extract estimates, and format the data for k-means clustering.</p>
   traj_data |&gt; 
   nest(data = week:value) |&gt; 
   mutate(
-    models = map(data, \(df) lm(value ~ week, data = df)),
+    models = map(data, \(x) lm(value ~ week, data = x)),
     result = map(models, broom::tidy)
   ) |&gt; 
   select(subj, result) |&gt; 

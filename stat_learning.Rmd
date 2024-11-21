@@ -56,17 +56,29 @@ bwt_df =
   read_csv("data/birthweight.csv") |> 
   janitor::clean_names() |>
   mutate(
-    babysex = as.factor(babysex),
-    babysex = fct_recode(babysex, "male" = "1", "female" = "2"),
-    frace = as.factor(frace),
-    frace = fct_recode(
-      frace, "white" = "1", "black" = "2", "asian" = "3", 
-      "puerto rican" = "4", "other" = "8"),
-    malform = as.logical(malform),
-    mrace = as.factor(mrace),
-    mrace = fct_recode(
-      mrace, "white" = "1", "black" = "2", "asian" = "3", 
-      "puerto rican" = "4")) |> 
+    babysex = 
+    	case_match(babysex,
+    		1 ~ "male",
+    		2 ~ "female"
+    	),
+    babysex	= fct_infreq(babysex),
+    frace = 
+    	case_match(frace,
+    		1 ~ "white",
+    		2 ~ "black", 
+    		3 ~ "asian", 
+    		4 ~ "puerto rican", 
+    		8 ~ "other"),
+    frace = fct_infreq(frace),
+    mrace = 
+	    case_match(mrace,
+	    	1 ~ "white",
+	    	2 ~ "black", 
+	    	3 ~ "asian", 
+	    	4 ~ "puerto rican",
+	    	8 ~ "other"),
+    mrace = fct_infreq(mrace),
+    malform = as.logical(malform)) |> 
   sample_n(200)
 ```
 
@@ -80,7 +92,7 @@ y = bwt_df |> pull(bwt)
 We fit the lasso model for each tuning parameter in a pre-defined grid `lambda`, and then compare the fits using cross validation. I chose this grid using the trusty "try things until it looks right" method; `glmnet` will pick something reasonable by default if you prefer that.
 
 ```{r}
-lambda = 10^(seq(3, -2, -0.1))
+lambda = 10^(seq(-2, 2.75, 0.1))
 
 lasso_fit =
   glmnet(x, y, lambda = lambda)
@@ -88,7 +100,7 @@ lasso_fit =
 lasso_cv =
   cv.glmnet(x, y, lambda = lambda)
 
-lambda_opt = lasso_cv$lambda.min
+lambda_opt = lasso_cv[["lambda.min"]]
 ```
 
 The plot below shows coefficient estimates corresponding to a subset of the predictors in the dataset -- these are predictors that have non-zero coefficients for at least one tuning parameter value in the pre-defined grid. As lambda increases, the coefficient values are shrunk to zero and the model becomes more sparse. The optimal tuning parameter, determined using cross validation, is shown by a vertical blue line.
@@ -99,9 +111,9 @@ lasso_fit |>
   select(term, lambda, estimate) |> 
   complete(term, lambda, fill = list(estimate = 0) ) |> 
   filter(term != "(Intercept)") |> 
-  ggplot(aes(x = log(lambda, 10), y = estimate, group = term, color = term)) + 
+  ggplot(aes(x = lambda, y = estimate, group = term, color = term)) + 
   geom_path() + 
-  geom_vline(xintercept = log(lambda_opt, 10), color = "blue", size = 1.2) +
+  geom_vline(xintercept = lambda_opt, color = "blue", size = 1.2) +
   theme(legend.position = "none")
 ```
 
@@ -133,7 +145,7 @@ For the first clustering example, we'll use a dataset containing information abo
 
 ```{r}
 poke_df = 
-  read_csv("./data/pokemon.csv") |> 
+  read_csv("data/pokemon.csv") |> 
   janitor::clean_names() |> 
   select(hp, speed)
 
@@ -244,7 +256,7 @@ Below we import and plot the trajectory data.
 
 ```{r}
 traj_data = 
-  read_csv("./data/trajectories.csv")
+  read_csv("data/trajectories.csv")
 
 traj_data |> 
   ggplot(aes(x = week, y = value, group = subj)) + 
@@ -259,7 +271,7 @@ int_slope_df =
   traj_data |> 
   nest(data = week:value) |> 
   mutate(
-    models = map(data, \(df) lm(value ~ week, data = df)),
+    models = map(data, \(x) lm(value ~ week, data = x)),
     result = map(models, broom::tidy)
   ) |> 
   select(subj, result) |> 
