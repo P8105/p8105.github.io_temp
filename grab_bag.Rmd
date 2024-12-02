@@ -1,0 +1,15 @@
+---
+title: "Data Science Grab Bag"
+output:
+  html_document
+---
+
+At the end of the year, we take suggestions for Extra Topics; each year there are a few that are important but not quite enough for a full lecture. So, now, we'll cover a few of those:
+
+* Working with PHI
+  * Why I wrote / use [projectr](https://github.com/jeff-goldsmith/projectr)
+* [here::here](https://here.r-lib.org)
+* Traditional statistical methods (or why everything is just regression)
+* LLMs in data science
+
+We'll revisit some examples from the course, and also take a look at the data in this [zip file](jury_data.zip) (described [here](https://github.com/APM-Reports/jury-data)). 
