@@ -8,8 +8,8 @@ At the end of the year, we take suggestions for Extra Topics; each year there ar
 
 * Working with PHI
   * Why I wrote / use [projectr](https://github.com/jeff-goldsmith/projectr)
-* [here::here](https://here.r-lib.org)
+* [here::here()](https://here.r-lib.org) and a [discussion](https://github.com/jennybc/here_here) of why it's great
 * Traditional statistical methods (or why everything is just regression)
 * LLMs in data science
 
-We'll revisit some examples from the course, and also take a look at the data in this [zip file](jury_data.zip) (described [here](https://github.com/APM-Reports/jury-data)). 
+We'll revisit some examples from the course, and also take a look at the data in this [zip file](data/jury_data.zip) (described [here](https://github.com/APM-Reports/jury-data)). 
