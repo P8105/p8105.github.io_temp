@@ -122,13 +122,21 @@ As noted above, we anticipate that team members will recieve the same grade in m
 
 The examples below are drawn from previous submissions in the to give an idea of the range of possible projects.
 
+#### Fall 2024
+
+* [Inflammatory Indices](https://danglin1214.github.io/Inflammatory_Indices.github.io/)
+* [Green Spaces in the Concrete Jungle](https://kd2942.github.io/nycgardens.github.io/)
+* [Superheroes Across Multi-universe](https://cj0915.github.io/superhero.github.io/)
+* [Barking Up the Right Tree](https://joielizeqi.github.io/p8105_final.github.io/)
+* [Elk Migration](https://brooklynnrm.github.io/Elk-Migration.github.io/)
+
 #### Fall 2023
 
-* [Project 1](https://fish-carolyn.github.io/p8105_squirrel_final/)
-* [Project 2](https://nishalingam.github.io/p8105_final-project/)
-* [Project 3](https://pengshihui99.github.io/cholesterol.github.io/)
-* [Project 4](https://skulali.github.io/operation_lorax.github.io/)
-* [Project 5](https://mirahk.github.io/p8105_museums_finalproject.github.io/)
+* [Squirrels in Central Park](https://fish-carolyn.github.io/p8105_squirrel_final/)
+* [Aliens Among Us](https://nishalingam.github.io/p8105_final-project/)
+* [High Cholesterol Research](https://pengshihui99.github.io/cholesterol.github.io/)
+* [Operation Lorax](https://skulali.github.io/operation_lorax.github.io/)
+* [Museums, Aquariums, and Zoos](https://mirahk.github.io/p8105_museums_finalproject.github.io/)
 
 #### Fall 2022
 
